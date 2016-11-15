@@ -6,6 +6,8 @@ import {
   ScrollView, View,
 } from 'react-native';
 
+import ChannelCard from '../components/ChannelCard'
+
 class ChannelsTabBar extends Component {
 
   state = {
@@ -15,8 +17,10 @@ class ChannelsTabBar extends Component {
   _renderContent = () => {
     return (
       <ScrollView>
-        <View>
-          <Text>{this.state.selectedTab}</Text>
+        <View style={{ padding: 20 }}>
+          <ChannelCard style={{ marginBottom: 20 }}/>
+          <ChannelCard style={{ marginBottom: 20 }}/>
+          <ChannelCard style={{ marginBottom: 20 }}/>
         </View>
       </ScrollView>
     )
@@ -26,7 +30,7 @@ class ChannelsTabBar extends Component {
     return (
       <TabBarIOS>
         <TabBarIOS.Item
-          systemIcon="favorites"
+          icon={require('../img/icons/star.png')}
           title="Favorites"
           selected={this.state.selectedTab === 'favorites'}
           onPress={() => {
@@ -37,7 +41,7 @@ class ChannelsTabBar extends Component {
           {this._renderContent()}
         </TabBarIOS.Item>
         <TabBarIOS.Item
-          systemIcon="most-viewed"
+          icon={require('../img/icons/music.png')}
           title="Explore"
           selected={this.state.selectedTab === 'explore'}
           onPress={() => {
@@ -48,7 +52,18 @@ class ChannelsTabBar extends Component {
           {this._renderContent()}
         </TabBarIOS.Item>
         <TabBarIOS.Item
-          systemIcon="more"
+          icon={require('../img/icons/radio.png')}
+          title="Broadcast"
+          selected={this.state.selectedTab === 'broadcast'}
+          onPress={() => {
+            this.setState({
+              selectedTab: 'broadcast'
+            });
+          }}>
+          {this._renderContent()}
+        </TabBarIOS.Item>
+        <TabBarIOS.Item
+          icon={require('../img/icons/more.png')}
           title="More"
           selected={this.state.selectedTab === 'more'}
           onPress={() => {
