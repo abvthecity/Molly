@@ -1,46 +1,66 @@
-import React, { Component } from 'react'
+import React, { Component, PropTypes } from 'react'
 import {
   View, Text, Image,
-  StyleSheet
+  StyleSheet, Animated
 } from 'react-native'
+
+import constants from '../common/constants'
 
 import PlayBar from './PlayBar'
 
 class ChannelCard extends Component {
 
+  static propTypes = {
+    title: PropTypes.string.isRequired,
+    host: PropTypes.string.isRequired,
+    distance: PropTypes.string.isRequired,
+    live: PropTypes.bool.isRequired,
+    nowPlaying: PropTypes.shape({
+      album_cover: PropTypes.number.isRequired,
+      song_title: PropTypes.string.isRequired,
+      artist_name: PropTypes.string.isRequired,
+      neutral: PropTypes.string.isRequired,
+      accent: PropTypes.string.isRequired,
+      progress: PropTypes.number.isRequired
+    })
+  }
+
   render() {
+
     return(
-      <View style={[this.props.style, styles.cardShadow]}>
+      <View {...this.props} style={[this.props.style, styles.cardShadow]}>
         <View style={styles.card_wrap}>
           <View style={styles.card_image}>
             <View style={styles.card_image_wrap}>
-              <Image source={require('../img/album/example2.jpg')}
+              <Image source={this.props.nowPlaying.album_cover}
                 blurRadius={10}
                 style={styles.card_image_img} />
             </View>
           </View>
-          <View style={[styles.card_overlay, { backgroundColor: 'rgb(84, 107, 132)' }]}></View>
+          <View style={[styles.card_overlay, { backgroundColor: this.props.nowPlaying.netural }]}></View>
           <View style={styles.card}>
             <View style={styles.card_content}>
               <View style={styles.content_heading}>
-                <Text style={[styles.heading1, styles.text_shadow]}>Rachit's Bangers</Text>
-                <Text style={[styles.heading2, styles.text_shadow]}>hosted by <Text style={{ fontWeight: 'bold' }}>Rachit Kataria</Text></Text>
+                <Text style={[styles.heading1, styles.text_shadow]}>{this.props.title}</Text>
+                <Text style={[styles.heading2, styles.text_shadow]}>hosted by <Text style={{ fontWeight: 'bold' }}>{this.props.host}</Text></Text>
               </View>
               <View style={styles.content_labels}>
-                <Text style={[styles.xs_heading]}>400 FT</Text>
-                <View style={styles.live_wrap}>
-                  <Text style={[styles.xs_heading, styles.live]}>LIVE</Text>
-                </View>
+                <Text style={[styles.xs_heading]}>{this.props.distance}</Text>
+                {(() => {
+                  if (this.props.live) {
+                    return (
+                      <View style={styles.live_wrap}>
+                        <Text style={[styles.xs_heading, styles.live]}>LIVE</Text>
+                      </View>
+                    )
+                  }
+                })()}
               </View>
               <View></View>
             </View>
             <PlayBar
-              accent="rgb(207, 66, 65)"
-              nowPlaying={{
-                album_cover: require('../img/album/example2.jpg'),
-                song_title: 'Murder',
-                artist_name: 'Lido'
-              }}
+              accent={this.props.nowPlaying.accent}
+              nowPlaying={this.props.nowPlaying}
             />
           </View>
         </View>
@@ -50,13 +70,9 @@ class ChannelCard extends Component {
 
 }
 
-const borderRadiusSm = 4
-const borderRadiusLg = 5
-const unit = 5
-
 const styles = StyleSheet.create({
   cardShadow: {
-    borderRadius: borderRadiusLg + 1,
+    borderRadius: constants.borderRadiusLg + 1,
     shadowColor: 'black',
     shadowOffset: {
       width: 0,
@@ -64,11 +80,10 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.35,
     shadowRadius: 14,
-    borderWidth: 1,
-    borderColor: 'rgba(0, 0, 0, 0.25)'
+    backgroundColor: 'white'
   },
   card_wrap: {
-    borderRadius: borderRadiusLg,
+    borderRadius: constants.borderRadiusLg,
     overflow: 'hidden',
   },
   card_image: {
@@ -110,7 +125,7 @@ const styles = StyleSheet.create({
     minHeight: 92.5
   },
   content_heading: {
-    padding: unit * 2,
+    padding: constants.unit * 2,
   },
   content_labels: {
     flex: 1,
@@ -118,8 +133,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-end',
     position: 'absolute',
-    top: unit,
-    right: unit
+    top: constants.unit,
+    right: constants.unit
   },
   heading1: {
     color: 'white',
@@ -136,9 +151,9 @@ const styles = StyleSheet.create({
   },
   live_wrap: {
     padding: 1,
-    marginLeft: unit,
+    marginLeft: constants.unit,
     backgroundColor: 'rgba(255, 255, 255, 0.5)',
-    borderRadius: borderRadiusSm,
+    borderRadius: constants.borderRadiusSm,
     overflow: 'hidden'
   },
   live: {
@@ -146,7 +161,7 @@ const styles = StyleSheet.create({
     paddingBottom: 2.5,
     paddingLeft: 3.5,
     paddingRight: 3.5,
-    borderRadius: borderRadiusSm,
+    borderRadius: constants.borderRadiusSm,
     backgroundColor: '#C41200',
     overflow: 'hidden'
   },

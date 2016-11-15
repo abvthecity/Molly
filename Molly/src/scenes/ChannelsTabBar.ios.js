@@ -4,26 +4,21 @@ import {
   TabBarIOS,
   Text,
   ScrollView, View,
+  TouchableHighlight,
+  PropTypes
 } from 'react-native';
 
-import ChannelCard from '../components/ChannelCard'
+import { BlurView } from 'react-native-blur'
+
+import FavoritesScene from './FavoritesScene'
+import ExploreScene from './ExploreScene'
+import BroadcastScene from './BroadcastScene'
+import MoreScene from './MoreScene'
 
 class ChannelsTabBar extends Component {
 
   state = {
     selectedTab: 'explore'
-  }
-
-  _renderContent = () => {
-    return (
-      <ScrollView>
-        <View style={{ padding: 20 }}>
-          <ChannelCard style={{ marginBottom: 20 }}/>
-          <ChannelCard style={{ marginBottom: 20 }}/>
-          <ChannelCard style={{ marginBottom: 20 }}/>
-        </View>
-      </ScrollView>
-    )
   }
 
   render() {
@@ -38,7 +33,7 @@ class ChannelsTabBar extends Component {
               selectedTab: 'favorites',
             });
           }}>
-          {this._renderContent()}
+          <FavoritesScene />
         </TabBarIOS.Item>
         <TabBarIOS.Item
           icon={require('../img/icons/music.png')}
@@ -49,7 +44,7 @@ class ChannelsTabBar extends Component {
               selectedTab: 'explore'
             });
           }}>
-          {this._renderContent()}
+          <ExploreScene />
         </TabBarIOS.Item>
         <TabBarIOS.Item
           icon={require('../img/icons/radio.png')}
@@ -60,7 +55,7 @@ class ChannelsTabBar extends Component {
               selectedTab: 'broadcast'
             });
           }}>
-          {this._renderContent()}
+          <BroadcastScene />
         </TabBarIOS.Item>
         <TabBarIOS.Item
           icon={require('../img/icons/more.png')}
@@ -71,14 +66,14 @@ class ChannelsTabBar extends Component {
               selectedTab: 'more'
             });
           }}>
-          {this._renderContent()}
+          <MoreScene />
         </TabBarIOS.Item>
       </TabBarIOS>
     );
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   tabContent: {
     flex: 1,
     alignItems: 'center',
@@ -88,5 +83,10 @@ var styles = StyleSheet.create({
     margin: 50,
   },
 });
+
+// ChannelsTabBar.propTypes = {
+//   title: PropTypes.string,
+//   navigator: PropTypes.object.isRequired,
+// }
 
 export default ChannelsTabBar

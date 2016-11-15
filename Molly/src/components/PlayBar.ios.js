@@ -1,19 +1,35 @@
-import React, { Component } from 'react'
+import React, { Component, PropTypes } from 'react'
 import {
   View, Text, Image,
-  StyleSheet
+  StyleSheet, ProgressViewIOS
 } from 'react-native'
+
+import constants from '../common/constants'
 
 import LinearGradient from 'react-native-linear-gradient'
 
 class PlayBar extends Component {
 
+  static propTypes = {
+    nowPlaying: PropTypes.shape({
+      album_cover: PropTypes.number.isRequired,
+      song_title: PropTypes.string.isRequired,
+      artist_name: PropTypes.string.isRequired,
+      neutral: PropTypes.string.isRequired,
+      accent: PropTypes.string.isRequired,
+      progress: PropTypes.number.isRequired
+    })
+  }
+
   render() {
     return (
       <View style={this.props.style}>
-        {/* TOOD: PROGRESS BAR */}
+        {/* PROGRESS BAR */}
         <View style={styles.progress_bar}>
-          <View style={[styles.progress_track, { backgroundColor: this.props.accent }]} />
+          <ProgressViewIOS
+            progress={this.props.nowPlaying.progress}
+            progressTintColor={this.props.nowPlaying.accent}
+          />
         </View>
 
         {/* BOUNDING BOX FOR PLAYER BAR */}
@@ -25,8 +41,8 @@ class PlayBar extends Component {
               style={styles.album_art} />
             <View style={styles.barContent}>
               <Text style={styles.xs_heading}>NOW PLAYING</Text>
-              <Text>Lost in the World</Text>
-              <Text>Kanye West</Text>
+              <Text>{this.props.nowPlaying.song_title}</Text>
+              <Text>{this.props.nowPlaying.artist_name}</Text>
             </View>
           </View>
           <View style={styles.up_next}>
@@ -61,20 +77,11 @@ class PlayBar extends Component {
 
 }
 
-const borderRadiusSm = 4
-const borderRadiusLg = 5
-const unit = 5
-
 const styles = StyleSheet.create({
   progress_bar: {
     height: 2,
     paddingTop: 0.5,
     backgroundColor: 'rgba(255, 255, 255, 0.6)'
-  },
-  progress_track: {
-    height: 1.5,
-    backgroundColor: 'white',
-    width: 100
   },
   bounding_box: {
     flex: 1,
@@ -82,13 +89,13 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between'
   },
   now_playing: {
-    margin: unit,
+    margin: constants.unit,
     flex: 1,
     flexDirection: 'row',
     backgroundColor: 'transparent'
   },
   up_next: {
-    margin: unit,
+    margin: constants.unit,
     flex: 1,
     flexDirection: 'column',
     backgroundColor: 'transparent',
@@ -99,12 +106,12 @@ const styles = StyleSheet.create({
     width: 46,
     height: 46,
     backgroundColor: 'white',
-    borderRadius: borderRadiusSm,
+    borderRadius: constants.borderRadiusSm,
     overflow: 'hidden',
     position: 'relative'
   },
   barContent: {
-    marginLeft: unit
+    marginLeft: constants.unit
   },
   xs_heading: {
     fontSize: 8,
@@ -119,7 +126,7 @@ const styles = StyleSheet.create({
   next_album: {
     backgroundColor: 'white',
     resizeMode: 'cover',
-    borderRadius: borderRadiusSm,
+    borderRadius: constants.borderRadiusSm,
     overflow: 'hidden'
   },
   next_album_major: {
