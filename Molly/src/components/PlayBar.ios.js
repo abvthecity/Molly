@@ -23,7 +23,7 @@ class PlayBar extends Component {
 
   render() {
     return (
-      <View style={this.props.style}>
+      <View {...this.props} style={this.props.style}>
         {/* PROGRESS BAR */}
         <View style={styles.progress_bar}>
           <ProgressViewIOS

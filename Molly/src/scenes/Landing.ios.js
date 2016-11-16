@@ -19,6 +19,7 @@ class Landing extends Component {
   render() {
     return (
       <View>
+        <StatusBar barStyle="dark-content" />
         <Text>Landing!</Text>
         <Text>Landing!</Text>
         <Text>Landing!</Text>

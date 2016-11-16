@@ -3,7 +3,7 @@ import React, { Component } from 'react'
 //
 // } from 'react-native'
 
-import Channels from '../views/Channels'
+import ChannelsList from '../views/ChannelsList'
 
 class FavoritesScene extends Component {
 
@@ -11,7 +11,7 @@ class FavoritesScene extends Component {
     let title = "Favorites"
 
     return(
-      <Channels
+      <ChannelsList
         title={title}
       />
     )

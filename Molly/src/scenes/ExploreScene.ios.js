@@ -3,7 +3,7 @@ import React, { Component } from 'react'
 //
 // } from 'react-native'
 
-import Channels from '../views/Channels'
+import ChannelsList from '../views/ChannelsList'
 
 class ExploreScene extends Component {
 
@@ -11,7 +11,7 @@ class ExploreScene extends Component {
     let title = "Explore"
 
     return(
-      <Channels
+      <ChannelsList
         title={title}
       />
     )

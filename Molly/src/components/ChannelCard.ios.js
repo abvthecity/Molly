@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react'
 import {
-  View, Text, Image,
-  StyleSheet, Animated
+  View,
+  StyleSheet
 } from 'react-native'
 
 import constants from '../common/constants'
@@ -27,10 +27,17 @@ class ChannelCard extends Component {
     })
   }
 
+  setNativeProps(nativeProps) {
+    this._root.setNativeProps(nativeProps);
+  }
+
   render() {
 
     return(
-      <View {...this.props} style={[this.props.style, styles.cardShadow]}>
+      <View
+        ref={component => this._root = component}
+        {...this.props}
+        style={[this.props.style, styles.cardShadow]}>
         <View style={styles.card_wrap}>
           <BlurredBackgroundImage image={this.props.nowPlaying.album_cover}>
             <View style={[styles.card_overlay, { backgroundColor: this.props.nowPlaying.neutral }]}></View>

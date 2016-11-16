@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react'
 import {
   ScrollView, View,
   Text, TouchableHighlight,
-  Image
+  Image, StatusBar
 } from 'react-native'
 
 import constants from '../common/constants'
@@ -13,19 +13,34 @@ const IMAGE_PREFETCH_URL = 'https://pbs.twimg.com/profile_images/781996435961032
 const album_cover = { uri: IMAGE_PREFETCH_URL }
 Image.prefetch(IMAGE_PREFETCH_URL)
 
-class Channels extends Component {
+class ChannelsList extends Component {
 
   state = {
-    cards: [0, 1, 2]
+    cards: [{
+      title: 'Rachit\'s Bangers',
+      host: 'Rachit Kataria',
+      distance: '400 FT',
+      live: true,
+      nowPlaying: {
+        album_cover: album_cover,
+        song_title: 'Murder',
+        artist_name: 'Lido',
+        neutral: 'rgb(84, 107, 132)',
+        accent: 'rgb(207, 66, 65)',
+        progress: 0.7
+      }
+    }]
   }
 
-  _openChannel = () => {
+  _openChannel = (card) => {
       // console.log("triggered")
   }
 
   render() {
     return (
       <ScrollView style={{ padding: 20 }}>
+        <StatusBar barStyle="dark-content" />
+
         <View>
           <Text style={{
             fontSize: 36,
@@ -38,24 +53,13 @@ class Channels extends Component {
           <TouchableHighlight
             key={i}
             style={{ marginBottom: 20, borderRadius: constants.borderRadiusLg + 1 }}
-            onPress={this._openChannel}>
-            <View>
-              <ChannelCard
-                title="Rachit's Bangers"
-                host="Rachit Kataria"
-                distance="400 FT"
-                live={true}
-                nowPlaying={{
-                  album_cover: album_cover,
-                  song_title: 'Murder',
-                  artist_name: 'Lido',
-                  neutral: 'rgb(84, 107, 132)',
-                  accent: 'rgb(207, 66, 65)',
-                  progress: 0.7
-                }}
-
-              />
-            </View>
+            onPress={() => this._openChannel(card)}>
+            <ChannelCard
+              title={card.title}
+              host={card.host}
+              distance={card.distance}
+              live={card.live}
+              nowPlaying={card.nowPlaying} />
           </TouchableHighlight>
         ))}
       </ScrollView>
@@ -64,4 +68,4 @@ class Channels extends Component {
 
 }
 
-export default Channels;
+export default ChannelsList;
