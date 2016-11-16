@@ -7,7 +7,7 @@ import {
 import constants from '../common/constants'
 
 const CardInfoContent = props => (
-  <View {...props} style={styles.card_content}>
+  <View {...props} style={[props.style, styles.card_content]}>
 
     {/* HEADING */}
     <View style={styles.content_heading}>

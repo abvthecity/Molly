@@ -37,7 +37,9 @@ const styles = StyleSheet.create({
   },
   card_image_img: {
     flex: 1,
-    resizeMode: 'cover'
+    resizeMode: 'cover',
+    position: 'relative',
+    zIndex: 1
   }
 })
 

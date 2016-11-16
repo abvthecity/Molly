@@ -33,15 +33,19 @@ class ChannelPlayer extends Component {
       <View {...this.props} style={[this.props.style, styles.channel_player ]}>
         <StatusBar barStyle="light-content" />
         <BlurredBackgroundImage image={this.props.nowPlaying.album_cover}>
-          <View style={[styles.card_overlay, { backgroundColor: this.props.nowPlaying.neutral }]}></View>
+          {/* <View style={[styles.card_overlay, { backgroundColor: this.props.nowPlaying.neutral }]}></View> */}
+          <View style={[styles.card_overlay]}></View>
         </BlurredBackgroundImage>
-        <View style={styles.card}>
-          <CardInfoContent
-            title={this.props.title}
-            host={this.props.host}
-            distance={this.props.distance}
-            live={this.props.live} />
-        </View>
+        <CardInfoContent
+          style={styles.card}
+          title={this.props.title}
+          host={this.props.host}
+          distance={this.props.distance}
+          live={this.props.live}>
+          <View style={styles.album_wrap}>
+            <Image source={this.props.nowPlaying.album_cover} style={styles.album_cover} />
+          </View>
+        </CardInfoContent>
         <PlayBar
           accent={this.props.nowPlaying.accent}
           nowPlaying={this.props.nowPlaying}
@@ -61,13 +65,11 @@ const styles = StyleSheet.create({
   },
   card_overlay: {
     backgroundColor: 'black',
-    opacity: 0.8,
+    opacity: 0.3,
     flex: 1
   },
   card: {
     flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'space-between',
     zIndex: 3,
     backgroundColor: 'transparent'
   },
@@ -77,6 +79,21 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     zIndex: 4
+  },
+  album_wrap: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+    padding: constants.unit * 4
+  },
+  album_cover: {
+    resizeMode: 'cover',
+    width: 335,
+    height: 335,
+    borderRadius: constants.borderRadiusLg,
+    borderWidth: 2,
+    borderColor: 'rgba(255, 255, 255, 0.35)'
   }
 })
 
