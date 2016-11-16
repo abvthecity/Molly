@@ -12,7 +12,7 @@ class PlayBar extends Component {
 
   static propTypes = {
     nowPlaying: PropTypes.shape({
-      album_cover: PropTypes.number.isRequired,
+      album_cover: PropTypes.object.isRequired,
       song_title: PropTypes.string.isRequired,
       artist_name: PropTypes.string.isRequired,
       neutral: PropTypes.string.isRequired,

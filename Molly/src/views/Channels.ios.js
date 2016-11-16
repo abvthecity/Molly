@@ -1,12 +1,17 @@
 import React, { Component, PropTypes } from 'react'
 import {
   ScrollView, View,
-  Text, TouchableHighlight
+  Text, TouchableHighlight,
+  Image
 } from 'react-native'
 
 import constants from '../common/constants'
 
 import ChannelCard from '../components/ChannelCard'
+
+const IMAGE_PREFETCH_URL = 'https://pbs.twimg.com/profile_images/781996435961032705/1cSsL68X.jpg'
+const album_cover = { uri: IMAGE_PREFETCH_URL }
+Image.prefetch(IMAGE_PREFETCH_URL)
 
 class Channels extends Component {
 
@@ -41,7 +46,7 @@ class Channels extends Component {
                 distance="400 FT"
                 live={true}
                 nowPlaying={{
-                  album_cover: require('../img/album/example2.jpg'),
+                  album_cover: album_cover,
                   song_title: 'Murder',
                   artist_name: 'Lido',
                   neutral: 'rgb(84, 107, 132)',
