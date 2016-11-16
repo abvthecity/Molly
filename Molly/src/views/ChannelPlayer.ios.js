@@ -30,7 +30,7 @@ class ChannelPlayer extends Component {
 
   render() {
     return (
-      <View {...this.props} style={[this.props.style, styles.channel_player]}>
+      <View {...this.props} style={[this.props.style, styles.channel_player ]}>
         <StatusBar barStyle="light-content" />
         <BlurredBackgroundImage image={this.props.nowPlaying.album_cover}>
           <View style={[styles.card_overlay, { backgroundColor: this.props.nowPlaying.neutral }]}></View>
@@ -56,8 +56,8 @@ class ChannelPlayer extends Component {
 const styles = StyleSheet.create({
   channel_player: {
     flex: 1,
-    padding: constants.unit * 2,
-    paddingTop: 22
+    paddingLeft: constants.unit * 2,
+    paddingRight: constants.unit * 2
   },
   card_overlay: {
     backgroundColor: 'black',
@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
   },
   playbar: {
     position: 'absolute',
-    bottom: 49,
+    bottom: 0,
     left: 0,
     right: 0,
     zIndex: 4

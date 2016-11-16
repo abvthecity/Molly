@@ -29,6 +29,45 @@ class ChannelsList extends Component {
         accent: 'rgb(207, 66, 65)',
         progress: 0.7
       }
+    },{
+      title: 'Rachit\'s Bangers',
+      host: 'Rachit Kataria',
+      distance: '400 FT',
+      live: true,
+      nowPlaying: {
+        album_cover: album_cover,
+        song_title: 'Murder',
+        artist_name: 'Lido',
+        neutral: 'rgb(84, 107, 132)',
+        accent: 'rgb(207, 66, 65)',
+        progress: 0.7
+      }
+    },{
+      title: 'Rachit\'s Bangers',
+      host: 'Rachit Kataria',
+      distance: '400 FT',
+      live: true,
+      nowPlaying: {
+        album_cover: album_cover,
+        song_title: 'Murder',
+        artist_name: 'Lido',
+        neutral: 'rgb(84, 107, 132)',
+        accent: 'rgb(207, 66, 65)',
+        progress: 0.7
+      }
+    },{
+      title: 'Rachit\'s Bangers',
+      host: 'Rachit Kataria',
+      distance: '400 FT',
+      live: true,
+      nowPlaying: {
+        album_cover: album_cover,
+        song_title: 'Murder',
+        artist_name: 'Lido',
+        neutral: 'rgb(84, 107, 132)',
+        accent: 'rgb(207, 66, 65)',
+        progress: 0.7
+      }
     }]
   }
 
@@ -38,7 +77,7 @@ class ChannelsList extends Component {
 
   render() {
     return (
-      <ScrollView style={{ padding: 20 }}>
+      <ScrollView {...this.props} style={[this.props.style, { padding: constants.unit * 4, marginBottom: 0 }, ]}>
         <StatusBar barStyle="dark-content" />
 
         <View>

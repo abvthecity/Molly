@@ -12,6 +12,7 @@ class ExploreScene extends Component {
 
     return(
       <ChannelsList
+        {...this.props}
         title={title}
       />
     )

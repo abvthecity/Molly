@@ -33,7 +33,7 @@ class ChannelsTabBar extends Component {
               selectedTab: 'favorites',
             });
           }}>
-          <FavoritesScene />
+          <FavoritesScene style={styles.tabView} />
         </TabBarIOS.Item>
         <TabBarIOS.Item
           icon={require('../img/icons/music.png')}
@@ -44,7 +44,7 @@ class ChannelsTabBar extends Component {
               selectedTab: 'explore'
             });
           }}>
-          <ExploreScene />
+          <ExploreScene style={styles.tabView} />
         </TabBarIOS.Item>
         <TabBarIOS.Item
           icon={require('../img/icons/radio.png')}
@@ -55,7 +55,7 @@ class ChannelsTabBar extends Component {
               selectedTab: 'broadcast'
             });
           }}>
-          <BroadcastScene />
+          <BroadcastScene style={styles.tabView} />
         </TabBarIOS.Item>
         <TabBarIOS.Item
           icon={require('../img/icons/more.png')}
@@ -66,7 +66,7 @@ class ChannelsTabBar extends Component {
               selectedTab: 'more'
             });
           }}>
-          <MoreScene />
+          <MoreScene style={styles.tabView} />
         </TabBarIOS.Item>
       </TabBarIOS>
     );
@@ -74,14 +74,10 @@ class ChannelsTabBar extends Component {
 }
 
 const styles = StyleSheet.create({
-  tabContent: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  tabText: {
-    color: 'white',
-    margin: 50,
-  },
+  tabView: {
+    paddingTop: 22,
+    marginBottom: 49
+  }
 });
 
 // ChannelsTabBar.propTypes = {

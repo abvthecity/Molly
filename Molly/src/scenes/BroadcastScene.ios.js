@@ -33,12 +33,14 @@ class BroadcastScene extends Component {
 
     return(
       <ChannelPlayer
+        {...this.props}
+        style={this.props.style}
         title={this.state.title}
         host={this.state.host}
         distance={this.state.distance}
         live={this.state.live}
         nowPlaying={this.state.nowPlaying}
-        style={{ flex: 1 }}
+        style={[{ flex: 1 }, this.props.style]}
       />
     )
   }

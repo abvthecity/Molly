@@ -12,6 +12,7 @@ class FavoritesScene extends Component {
 
     return(
       <ChannelsList
+        {...this.props}
         title={title}
       />
     )
