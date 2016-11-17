@@ -2,7 +2,8 @@ import React, { Component } from 'react'
 import {
   View, ScrollView,
   Image, Text,
-  TouchableHighlight, StyleSheet
+  TouchableOpacity, TouchableHighlight,
+  StyleSheet
 } from 'react-native'
 
 import LinearGradient from 'react-native-linear-gradient'
@@ -84,9 +85,9 @@ class ExploreScene extends Component {
           <LinearGradient colors={['white', '#F2F2F2']} style={{ backgroundColor: 'transparent', padding: constants.unit * 4 }}>
             <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end'}}>
               <Text style={{ fontSize: 40, fontWeight: '900' }}>Molly</Text>
-              <TouchableHighlight onPress={() => {}}>
-                <Text style={{ color: '#007AFF', fontSize: 17, letterSpacing: -0.23, fontWeight: '600', padding: constants.unit, marginRight: -constants.unit }}>Start a channel</Text>
-              </TouchableHighlight>
+              <TouchableOpacity onPress={() => {}}>
+                <Text style={styles.button}>Start a channel</Text>
+              </TouchableOpacity>
             </View>
             <View style={{ height: 169, flex: 1, flexDirection: 'row', marginTop: constants.unit * 2, marginBottom: constants.unit * 2}}>
               <TouchableHighlight onPress={() => {}}
@@ -143,6 +144,14 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(0, 0, 0, 0.1)',
     backgroundColor: 'transparent'
+  },
+  button: {
+    color: '#007AFF',
+    fontSize: 17,
+    letterSpacing: -0.23,
+    fontWeight: '600',
+    padding: constants.unit,
+    marginRight: -constants.unit
   }
 })
 

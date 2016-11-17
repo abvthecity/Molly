@@ -29,7 +29,6 @@ INDEX VERSION 1.127+/Users/andrewjiang/Desktop/fp_team_05/.metadata/.plugins/org
 2790654560.index
 563772191.index
 1271342938.index
-2014197430.index
 1540970505.index
 3329621110.index
 3059193231.index
