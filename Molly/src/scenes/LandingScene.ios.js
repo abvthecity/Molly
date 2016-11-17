@@ -58,6 +58,7 @@ class LandingScene extends Component {
               style={{ tintColor: '#808080' }} />
           </View>
         </View>
+
       </LinearGradient>
     )
   }
