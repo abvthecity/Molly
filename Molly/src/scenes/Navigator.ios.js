@@ -5,14 +5,15 @@ import {
 } from 'react-native'
 
 import Landing from './Landing'
+import Testing from './Testing'
 
 class Navigator extends Component {
   render() {
     return (
       <NavigatorIOS
         initialRoute={{
-          title: 'Landing',
-          component: Landing,
+          title: 'Testing',
+          component: Testing,
         }}
         navigationBarHidden={true}
         style={{ flex: 1 }}

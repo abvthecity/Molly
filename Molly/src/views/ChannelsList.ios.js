@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react'
 import {
   ScrollView, View,
   Text, TouchableHighlight,
-  Image, StatusBar
+  Image, StatusBar, Button
 } from 'react-native'
 
 import constants from '../common/constants'
@@ -101,6 +101,28 @@ class ChannelsList extends Component {
               nowPlaying={card.nowPlaying} />
           </TouchableHighlight>
         ))}
+        <Button
+          title="HELLO"
+          onPress={() => {
+            let cardsCache = this.state.cards;
+            cardsCache.push({
+              title: 'Rachit\'s Bangers',
+              host: 'Rachit Kataria',
+              distance: '400 FT',
+              live: true,
+              nowPlaying: {
+                album_cover: album_cover,
+                song_title: 'Murder',
+                artist_name: 'Lido',
+                neutral: 'rgb(84, 107, 132)',
+                accent: 'rgb(207, 66, 65)',
+                progress: 0.7
+              }
+            });
+            this.setState({
+              cards: cardsCache
+            })
+          }} />
       </ScrollView>
     )
   }
