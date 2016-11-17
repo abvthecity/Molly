@@ -11,4 +11,20 @@ import UIKit
 @objc(SpotifyAPI)
 class SpotifyAPI: NSObject {
   
+  var player: SPTAudioStreamingController!
+  
+  /* SPOTIFY AUTH SECTION */
+  var auth: SPTAuth!
+  
+  @objc(clientID:redirectURL:callback:)
+  func authenticate(clientID: String!, redirectURL: String!, callback: RCTResponseSenderBlock) {
+    // set auth and player
+    self.auth = SPTAuth.defaultInstance();
+    self.player = SPTAudioStreamingController.sharedInstance();
+    
+    // set clientID and redirectURL
+    self.auth.clientID = clientID;
+    self.auth.redirectURL = URL(string: redirectURL);
+    self.auth.requestedScopes = [SPTAuthStreamingScope];
+  }
 }
