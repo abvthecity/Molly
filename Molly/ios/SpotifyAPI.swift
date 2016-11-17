@@ -59,4 +59,44 @@ class SpotifyAPI: NSObject, SPTAudioStreamingDelegate {
       delegate.window.rootViewController?.present(self.authVC, animated: true, completion: nil);
     }
   }
+  
+  @objc(playing:callback:)
+  func setIsPlaying(playing:Bool, callback:@escaping RCTResponseSenderBlock) {
+    self.player.setIsPlaying(playing) { (error) -> Void in
+      
+      if error == nil {
+        // Pause
+        callback([NSNull(), NSNull()])
+        
+      } else {
+        print("Failed to stop spotify player: " + (error?.localizedDescription)!)
+        callback([error!, NSNull()])
+        
+        self.checkSession()
+      }
+    }
+  }
+  
+  @objc(callback:)
+  func getCurrentSeconds(callback:RCTResponseSenderBlock) {
+     callback([NSNull(), self.player.playbackState.position])
+  }
+  
+  //Check if session is valid and renew it if not
+  func checkSession() {
+    if(self.auth.session.isValid()) {
+      self.auth.renewSession(auth.session, callback: { (error, session) in
+        if(error != nil) {
+          print(error!)
+//          [sharedManager startAuth:sharedManager.clientID setRedirectURL:sharedManager.myScheme setRequestedScopes:sharedManager.requestedScopes];
+//        } else {
+//          [sharedManager setSession:session];
+//          [[sharedManager player] loginWithAccessToken:session.accessToken];
+//        }
+//      }];
+
+        }
+      })
+    }
+  }
 }
