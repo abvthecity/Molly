@@ -5,6 +5,7 @@ import {
 
 import LandingScene from './LandingScene'
 import ExploreScene from './ExploreScene'
+import BroadcastScene from './BroadcastScene'
 
 const Testing = props => {
 
@@ -40,17 +41,17 @@ const Testing = props => {
             component:
           })
         }}
-      />
+      /> */}
       <Button
         title="Go LIVE"
         onPress={() => {
           props.navigator.push({
             title: 'Go LIVE',
-            component:
+            component: BroadcastScene
           })
         }}
       />
-      <Button
+      {/* <Button
         title="Player"
         onPress={() => {
           props.navigator.push({

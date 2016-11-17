@@ -5,7 +5,7 @@ import {
 
 import { BlurView, VibrancyView } from 'react-native-blur'
 
-const BlurStatusBarLight = props => (
+const BlurStatusBarDark = props => (
   <VibrancyView {...props}
     blurType="light"
     blurAmount={27.18}
@@ -16,8 +16,8 @@ const BlurStatusBarLight = props => (
       right: 0,
       zIndex: 999
     }, props.style]}>
-    <StatusBar barStyle="dark-content" />
+    <StatusBar barStyle="light-content" />
   </VibrancyView>
 )
 
-export default BlurStatusBarLight
+export default BlurStatusBarDark
