@@ -10,9 +10,5 @@ import UIKit
 
 @objc(SpotifyAPI)
 class SpotifyAPI: NSObject {
-    
-    @objc(addEvent:location:date:)
-    func addEvent(name: String, location: String, date: NSNumber) -> Void {
-        // Date is ready to use!
-    }
+  
 }
