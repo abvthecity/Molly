@@ -9,5 +9,4 @@
 #ifndef SpotifyAPIBridge_h
 #define SpotifyAPIBridge_h
 
-
 #endif /* SpotifyAPIBridge_h */
