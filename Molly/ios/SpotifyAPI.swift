@@ -19,7 +19,7 @@ class SpotifyAPI: NSObject, SPTAudioStreamingDelegate {
   var auth: SPTAuth!
   var authVC: SFSafariViewController!
   
-  @objc(authenticate:redirectURL:callback:)
+  @objc(clientID:redirectURL:callback:)
   func authenticate(clientID: String!, redirectURL: String!, callback: RCTResponseSenderBlock) {
     // set auth and player
     self.auth = SPTAuth.defaultInstance();
