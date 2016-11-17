@@ -16,7 +16,7 @@ class SpotifyAPI: NSObject {
   /* SPOTIFY AUTH SECTION */
   var auth: SPTAuth!
   
-  @objc(authenticate:clientID:redirectURL:callback:)
+  @objc(clientID:redirectURL:callback:)
   func authenticate(clientID: String!, redirectURL: String!, callback: RCTResponseSenderBlock) {
     // set auth and player
     self.auth = SPTAuth.defaultInstance();
@@ -44,7 +44,6 @@ class SpotifyAPI: NSObject {
       }
     }
   }
-  
   
   @objc(callback:)
   func getCurrentSeconds(callback:RCTResponseSenderBlock) {

@@ -10,7 +10,7 @@
 
 @interface RCT_EXTERN_MODULE(SpotifyAPI, NSObject)
 
-RCT_EXTERN_METHOD(authenticate: (NSString *)clientID redirectURL:(NSString *)redirectURL callback:(RCTResponseSenderBlock)block)
+RCT_EXTERN_METHOD(authenticate:(NSString *)clientID redirectURL:(NSString *)redirectURL callback:(RCTResponseSenderBlock)block)
 
 @end
 
