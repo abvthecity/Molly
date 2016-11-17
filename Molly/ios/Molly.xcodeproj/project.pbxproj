@@ -23,6 +23,12 @@
 		140ED2AC1D01E1AD002B40FF /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146834041AC3E56700842450 /* libReact.a */; };
 		146834051AC3E58100842450 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146834041AC3E56700842450 /* libReact.a */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
+		B620FE481DDDAAF7008A2A1A /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B620FE471DDDAAF7008A2A1A /* WebKit.framework */; };
+		B620FE4A1DDDAAFC008A2A1A /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B620FE491DDDAAFC008A2A1A /* SystemConfiguration.framework */; };
+		B6E122ED1DDDA6CB00EE98E7 /* SpotifyAudioPlayback.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6E122EA1DDDA6CB00EE98E7 /* SpotifyAudioPlayback.framework */; };
+		B6E122EE1DDDA6CB00EE98E7 /* SpotifyAuthentication.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6E122EB1DDDA6CB00EE98E7 /* SpotifyAuthentication.framework */; };
+		B6E122EF1DDDA6CB00EE98E7 /* SpotifyMetadata.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6E122EC1DDDA6CB00EE98E7 /* SpotifyMetadata.framework */; };
+		B6F7C6C01DDDA351004BE494 /* SpotifyAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6F7C6BE1DDDA351004BE494 /* SpotifyAPI.swift */; };
 		C4BBF2AA9D354B589E4CC39D /* libRNBlur.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 658F1BB148A2455AAD90386A /* libRNBlur.a */; };
 		FE3DA482E6A340DCA9761364 /* libBVLinearGradient.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B94C48B54E5459F8B65B6F1 /* libBVLinearGradient.a */; };
 /* End PBXBuildFile section */
@@ -195,6 +201,14 @@
 		658F1BB148A2455AAD90386A /* libRNBlur.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNBlur.a; sourceTree = "<group>"; };
 		78C398B01ACF4ADC00677621 /* RCTLinking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTLinking.xcodeproj; path = "../node_modules/react-native/Libraries/LinkingIOS/RCTLinking.xcodeproj"; sourceTree = "<group>"; };
 		832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = "../node_modules/react-native/Libraries/Text/RCTText.xcodeproj"; sourceTree = "<group>"; };
+		B620FE471DDDAAF7008A2A1A /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
+		B620FE491DDDAAFC008A2A1A /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		B6E122EA1DDDA6CB00EE98E7 /* SpotifyAudioPlayback.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SpotifyAudioPlayback.framework; sourceTree = "<group>"; };
+		B6E122EB1DDDA6CB00EE98E7 /* SpotifyAuthentication.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SpotifyAuthentication.framework; sourceTree = "<group>"; };
+		B6E122EC1DDDA6CB00EE98E7 /* SpotifyMetadata.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SpotifyMetadata.framework; sourceTree = "<group>"; };
+		B6F7C6AA1DDDA351004BE494 /* Molly-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Molly-Bridging-Header.h"; sourceTree = "<group>"; };
+		B6F7C6BE1DDDA351004BE494 /* SpotifyAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpotifyAPI.swift; sourceTree = "<group>"; };
+		B6F7C6BF1DDDA351004BE494 /* SpotifyAPIBridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpotifyAPIBridge.h; sourceTree = "<group>"; };
 		BD596AFC4A3E4D298356EDCB /* RNBlur.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNBlur.xcodeproj; path = "../node_modules/react-native-blur/ios/RNBlur.xcodeproj"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -211,14 +225,19 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B620FE4A1DDDAAFC008A2A1A /* SystemConfiguration.framework in Frameworks */,
+				B620FE481DDDAAF7008A2A1A /* WebKit.framework in Frameworks */,
 				146834051AC3E58100842450 /* libReact.a in Frameworks */,
+				B6E122EE1DDDA6CB00EE98E7 /* SpotifyAuthentication.framework in Frameworks */,
 				00C302E51ABCBA2D00DB3ED1 /* libRCTActionSheet.a in Frameworks */,
 				00C302E71ABCBA2D00DB3ED1 /* libRCTGeolocation.a in Frameworks */,
 				00C302E81ABCBA2D00DB3ED1 /* libRCTImage.a in Frameworks */,
 				133E29F31AD74F7200F7D852 /* libRCTLinking.a in Frameworks */,
 				00C302E91ABCBA2D00DB3ED1 /* libRCTNetwork.a in Frameworks */,
 				139105C61AF99C1200B5F7CC /* libRCTSettings.a in Frameworks */,
+				B6E122ED1DDDA6CB00EE98E7 /* SpotifyAudioPlayback.framework in Frameworks */,
 				832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */,
+				B6E122EF1DDDA6CB00EE98E7 /* SpotifyMetadata.framework in Frameworks */,
 				00C302EA1ABCBA2D00DB3ED1 /* libRCTVibration.a in Frameworks */,
 				139FDEF61B0652A700C62182 /* libRCTWebSocket.a in Frameworks */,
 				C4BBF2AA9D354B589E4CC39D /* libRNBlur.a in Frameworks */,
@@ -309,6 +328,8 @@
 		13B07FAE1A68108700A75B9A /* Molly */ = {
 			isa = PBXGroup;
 			children = (
+				B6F7C6BE1DDDA351004BE494 /* SpotifyAPI.swift */,
+				B6F7C6BF1DDDA351004BE494 /* SpotifyAPIBridge.h */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
@@ -316,6 +337,7 @@
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				13B07FB11A68108700A75B9A /* LaunchScreen.xib */,
 				13B07FB71A68108700A75B9A /* main.m */,
+				B6F7C6AA1DDDA351004BE494 /* Molly-Bridging-Header.h */,
 			);
 			name = Molly;
 			sourceTree = "<group>";
@@ -369,6 +391,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				B6E122D61DDDA6C100EE98E7 /* Frameworks */,
 				13B07FAE1A68108700A75B9A /* Molly */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* MollyTests */,
@@ -385,6 +408,18 @@
 				00E356EE1AD99517003FC87E /* MollyTests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		B6E122D61DDDA6C100EE98E7 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				B620FE491DDDAAFC008A2A1A /* SystemConfiguration.framework */,
+				B620FE471DDDAAF7008A2A1A /* WebKit.framework */,
+				B6E122EA1DDDA6CB00EE98E7 /* SpotifyAudioPlayback.framework */,
+				B6E122EB1DDDA6CB00EE98E7 /* SpotifyAuthentication.framework */,
+				B6E122EC1DDDA6CB00EE98E7 /* SpotifyMetadata.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		F22392A01DDC63CE008F8CC6 /* Products */ = {
@@ -448,7 +483,7 @@
 		83CBB9F71A601CBA00E9B192 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 610;
+				LastUpgradeCheck = 0810;
 				ORGANIZATIONNAME = Facebook;
 				TargetAttributes = {
 					00E356ED1AD99517003FC87E = {
@@ -458,6 +493,7 @@
 					};
 					13B07F861A680F5B00A75B9A = {
 						DevelopmentTeam = W56W37KQ33;
+						LastSwiftMigration = 0810;
 					};
 				};
 			};
@@ -715,6 +751,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B6F7C6C01DDDA351004BE494 /* SpotifyAPI.swift in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 			);
@@ -746,6 +783,7 @@
 		00E356F61AD99517003FC87E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				DEVELOPMENT_TEAM = W56W37KQ33;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -760,6 +798,7 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Molly.app/Molly";
 			};
@@ -768,6 +807,7 @@
 		00E356F71AD99517003FC87E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
 				DEVELOPMENT_TEAM = W56W37KQ33;
@@ -779,6 +819,7 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Molly.app/Molly";
 			};
@@ -788,9 +829,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = W56W37KQ33;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
@@ -807,6 +853,9 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = cs201.Molly;
 				PRODUCT_NAME = Molly;
+				SWIFT_OBJC_BRIDGING_HEADER = "Molly-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 3.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
@@ -815,8 +864,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = W56W37KQ33;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
@@ -833,6 +887,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = cs201.Molly;
 				PRODUCT_NAME = Molly;
+				SWIFT_OBJC_BRIDGING_HEADER = "Molly-Bridging-Header.h";
+				SWIFT_VERSION = 3.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;
@@ -850,15 +906,20 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = "/Users/aniruddh/Documents/CSCI/201/CSCIProjectCode/fp_team_05/Molly/ios/**";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -898,15 +959,19 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = "/Users/aniruddh/Documents/CSCI/201/CSCIProjectCode/fp_team_05/Molly/ios/**";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -923,6 +988,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
