@@ -7,7 +7,7 @@ import { BlurView, VibrancyView } from 'react-native-blur'
 
 const BlurStatusBarLight = props => (
   <VibrancyView {...props}
-    blurType="light"
+    blurType="xlight"
     blurAmount={27.18}
     style={[{
       height: 20,

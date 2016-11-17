@@ -29,7 +29,9 @@ const Testing = props => {
         onPress={() => {
           props.navigator.push({
             title: 'Homepage',
-            component: ExploreScene
+            component: ExploreScene,
+            leftButtonTitle: 'Back',
+            onLeftButtonPress: () => props.navigator.pop()
           })
         }}
       />

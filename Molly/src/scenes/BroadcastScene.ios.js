@@ -75,14 +75,15 @@ class BroadcastScene extends Component {
 
   render() {
 
+    let title = <Text style={{ color: 'white', fontSize: 40, fontWeight: '300' }}>Go <Text style={{fontWeight: '900'}}>LIVE</Text></Text>
+
     return (
       <LinearGradient colors={['#FF6E88', '#BF2993']} {...this.props} style={[{ flex: 1 }, this.props.style]}>
-        <BlurStatusBarLight />
+        <BlurStatusBarDark />
         <ScrollView style={{ backgroundColor: 'transparent' }}>
 
-          <View>
-            <Text>HI</Text>
-            <Text>HI</Text>
+          <View style={{ padding: constants.unit * 4 }}>
+            {title}
           </View>
 
           {/* SECTION 1 */}
