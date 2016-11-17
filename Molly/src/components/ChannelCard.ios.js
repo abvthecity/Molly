@@ -39,7 +39,7 @@ class ChannelCard extends Component {
 
       return (
         <View ref={component => this._root = component} {...this.props}
-          style={[styles.card, styles.cardShadow, this.props.style]}>
+          style={[styles.card, styles.cardShadow, this.props.style, { zIndex: 1 }]}>
           <LinearGradient
             colors={['white', '#F2F2F2']}
             style={styles.card_wrap}>
@@ -85,7 +85,7 @@ class ChannelCard extends Component {
 
       return (
         <View ref={component => this._root = component} {...this.props}
-          style={[styles.card, styles.cardOffline, this.props.style]}>
+          style={[styles.card, styles.cardOffline, this.props.style, { zIndex: 0 }]}>
           <View style={styles.card_wrap}>
 
             <View style={styles.lower}>
@@ -107,21 +107,24 @@ class ChannelCard extends Component {
 const styles = StyleSheet.create({
   card: {
     borderRadius: constants.borderRadiusLg,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: '#BFBFBF',
     backgroundColor: 'white',
   },
   cardShadow: {
     shadowColor: 'black',
     shadowOffset: {
       width: 0,
-      height: 7,
+      height: 6,
     },
-    shadowOpacity: 0.25,
-    shadowRadius: 30,
+    shadowOpacity: 0.2,
+    shadowRadius: 26,
     overflow: 'visible'
   },
   cardOffline: {
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: '#BFBFBF'
+    borderColor: '#BFBFBF',
+    backgroundColor: 'transparent'
   },
   card_wrap: {
     borderRadius: constants.borderRadiusLg,

@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import {
   StatusBar,
   View, ScrollView,
-  Image, Text, Button,
+  Image, Text,
   TouchableHighlight, StyleSheet
 } from 'react-native'
 
@@ -86,7 +86,9 @@ class ExploreScene extends Component {
           <LinearGradient colors={['white', '#F2F2F2']} style={{ backgroundColor: 'transparent', padding: constants.unit * 4 }}>
             <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end'}}>
               <Text style={{ fontSize: 40, fontWeight: '900' }}>Molly</Text>
-              <Button title="Start a channel" onPress={() => {}}/>
+              <TouchableHighlight onPress={() => {}}>
+                <Text style={{ color: '#007AFF', fontSize: 17, letterSpacing: -0.23, fontWeight: '600', padding: constants.unit, marginRight: -constants.unit }}>Start a channel</Text>
+              </TouchableHighlight>
             </View>
             <View style={{ height: 169, flex: 1, flexDirection: 'row', marginTop: constants.unit * 2, marginBottom: constants.unit * 2}}>
               <TouchableHighlight onPress={() => {}}
