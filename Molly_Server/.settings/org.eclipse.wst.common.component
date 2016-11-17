@@ -2,6 +2,7 @@
     <wb-module deploy-name="Molly_Server">
         <wb-resource deploy-path="/" source-path="/WebContent" tag="defaultRootSource"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/sql scripts"/>
         <property name="context-root" value="Molly_Server"/>
         <property name="java-output-path" value="/Molly_Server/build/classes"/>
     </wb-module>
