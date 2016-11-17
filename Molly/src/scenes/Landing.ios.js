@@ -8,7 +8,7 @@ import {
 
 import constants from '../common/constants'
 
-import ChannelsTabBar from './ChannelsTabBar'
+// import ChannelsTabBar from './ChannelsTabBar'
 
 class Landing extends Component {
 
@@ -18,10 +18,10 @@ class Landing extends Component {
   }
 
   _goToChannels = () => {
-    this.props.navigator.push({
-      title: 'Channels',
-      component: ChannelsTabBar
-    })
+    // this.props.navigator.push({
+    //   title: 'Channels',
+    //   component: ChannelsTabBar
+    // })
   }
 
   render() {
@@ -35,7 +35,7 @@ class Landing extends Component {
           <Text style={[styles.white_text, styles.text_shadow, styles.heading2]}>Music, syncronized.</Text>
         </View>
 
-        <TouchableHighlight onPress={this._goToChannels}>
+        <TouchableHighlight onPress={this._goToChannels} style={{ borderRadius: 22 }}>
           <View style={styles.green_button}>
             <Text style={[styles.green_button_text, styles.white_text]}>LOGIN WITH SPOTIFY</Text>
           </View>

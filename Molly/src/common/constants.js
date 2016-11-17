@@ -1,5 +1,6 @@
 export default {
   borderRadiusSm: 4,
-  borderRadiusLg: 5,
-  unit: 5,
+  borderRadiusMd: 6,
+  borderRadiusLg: 8,
+  unit: 4,
 }
