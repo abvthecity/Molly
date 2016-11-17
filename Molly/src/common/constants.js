@@ -3,4 +3,5 @@ export default {
   borderRadiusMd: 6,
   borderRadiusLg: 8,
   unit: 4,
+  navpad: 44
 }

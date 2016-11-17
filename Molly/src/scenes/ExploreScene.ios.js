@@ -8,7 +8,7 @@ import {
 
 import constants from '../common/constants'
 import LinearGradient from 'react-native-linear-gradient'
-import BlurStatusBarLight from '../components/BlurStatusBarLight'
+import BlurStatusBar from '../components/BlurStatusBar'
 
 // import ChannelsList from '../views/ChannelsList'
 import ChannelCard from '../components/ChannelCard'
@@ -77,8 +77,15 @@ class ExploreScene extends Component {
   }
 
   render() {
-    const title = <Text style={{ fontSize: 40, fontWeight: '900' }}>Molly</Text>
-    const button = <Text style={styles.button}>Start a channel</Text>
+
+    const header = (
+      <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+        <Text style={{ fontSize: 40, fontWeight: '900' }}>Molly</Text>
+        <TouchableOpacity onPress={() => {}}>
+          <Text style={styles.button}>Start a channel</Text>
+        </TouchableOpacity>
+      </View>
+    )
 
     const favoritesBlock = (<LinearGradient
       colors={['#FFA832', '#FF5F33']} style={styles.colorBlock}>
@@ -93,15 +100,12 @@ class ExploreScene extends Component {
 
     return (
       <View {...this.props}>
-        <BlurStatusBarLight />
+        <BlurStatusBar light={false} />
         <ScrollView>
 
           {/* SECTION 1 */}
-          <LinearGradient colors={['white', '#F2F2F2']} style={{ backgroundColor: 'transparent', padding: constants.unit * 4 }}>
-            <View style={styles.header}>
-              {title}
-              <TouchableOpacity onPress={() => {}}>{button}</TouchableOpacity>
-            </View>
+          <LinearGradient colors={['white', '#F0F0F0']} style={{ backgroundColor: 'transparent', padding: constants.unit * 4 }}>
+            {header}
             <View style={styles.blocks_wrap}>
               <TouchableHighlight onPress={() => {}} style={[styles.colorBlockWrap, { marginRight: 2.5 }]}>{favoritesBlock}</TouchableHighlight>
               <TouchableHighlight onPress={() => {}} style={[styles.colorBlockWrap, { marginLeft: 2.5 }]}>{liveBlock}</TouchableHighlight>
@@ -148,12 +152,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(0, 0, 0, 0.1)',
     backgroundColor: 'transparent'
-  },
-  header: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-end'
   },
   button: {
     color: '#007AFF',

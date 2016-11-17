@@ -6,6 +6,8 @@ import {
 import LandingScene from './LandingScene'
 import ExploreScene from './ExploreScene'
 import BroadcastScene from './BroadcastScene'
+import FavoritesScene from './FavoritesScene'
+import PlayerScene from './PlayerScene'
 
 const Testing = props => {
 
@@ -29,39 +31,52 @@ const Testing = props => {
         onPress={() => {
           props.navigator.push({
             title: 'Homepage',
-            component: ExploreScene,
-            leftButtonTitle: 'Back',
-            onLeftButtonPress: () => props.navigator.pop()
+            component: ExploreScene
           })
         }}
       />
-      {/* <Button
+      <Button
         title="Favorites"
         onPress={() => {
           props.navigator.push({
             title: 'Favorites',
-            component:
+            component: FavoritesScene,
+            passProps: {
+              goBack: e => {
+                props.navigator.pop()
+              }
+            }
           })
         }}
-      /> */}
+      />
       <Button
         title="Go LIVE"
         onPress={() => {
           props.navigator.push({
             title: 'Go LIVE',
-            component: BroadcastScene
+            component: BroadcastScene,
+            passProps: {
+              goBack: e => {
+                props.navigator.pop()
+              }
+            }
           })
         }}
       />
-      {/* <Button
+      <Button
         title="Player"
         onPress={() => {
           props.navigator.push({
             title: 'Player',
-            component:
+            component: PlayerScene,
+            passProps: {
+              goBack: e => {
+                props.navigator.pop()
+              }
+            }
           })
         }}
-      /> */}
+      />
     </View>
   )
 

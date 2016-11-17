@@ -8,7 +8,6 @@ import {
 
 import LinearGradient from 'react-native-linear-gradient'
 import constants from '../common/constants'
-import BlurStatusBarLight from '../components/BlurStatusBarLight'
 
 // import ChannelsTabBar from './ChannelsTabBar'
 
@@ -55,7 +54,7 @@ class LandingScene extends Component {
             <Text style={styles.spotify_powered_by}>powered by</Text>
             <Image
               source={require('../img/landing/spotify_logo.png')}
-              style={{ tintColor: '#808080' }} />
+              style={{ tintColor: '#B2B2B2' }} />
           </View>
         </View>
 
@@ -136,7 +135,7 @@ const styles = StyleSheet.create({
   spotify_powered_by: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#808080',
+    color: '#B2B2B2',
     textAlign: 'center',
     marginBottom: constants.unit
   }

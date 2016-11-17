@@ -4,9 +4,8 @@ import {
   StyleSheet, ProgressViewIOS
 } from 'react-native'
 
-import LinearGradient from 'react-native-linear-gradient'
-
 import constants from '../common/constants'
+import Card from './Card'
 
 // import CardInfoContent from './CardInfoContent'
 // import PlayBar from './PlayBar'
@@ -35,103 +34,58 @@ class ChannelCard extends Component {
 
   render() {
 
-    if (this.props.live) {
+    return (
+      <Card ref={component => this._root = component} {...this.props}
+        shadow={this.props.live} style={[{ zIndex: (this.props.live) ? 1 : 0 }, this.props.style]}>
 
-      return (
-        <View ref={component => this._root = component} {...this.props}
-          style={[styles.card, styles.cardShadow, this.props.style, { zIndex: 1 }]}>
-          <LinearGradient
-            colors={['white', '#F2F2F2']}
-            style={styles.card_wrap}>
+        {/* UPPER SIDE */}
+        {(() => {
 
-            {/* UPPER SIDE */}
-            <View style={styles.playing}>
-              <View style={styles.playing_album_art}>
-                <Image style={{ flex: 1 }} source={this.props.nowPlaying.album_cover} />
-              </View>
-              <View style={styles.playing_details}>
-                <View>
-                  <Text style={[styles.smallText, { color: '#FF2D55' }]}>LIVE • {this.props.distance}</Text>
-                  <Text style={{ fontSize: 18, fontWeight: '700', color: 'black' }}>{this.props.nowPlaying.song_title}</Text>
-                  <Text style={{ fontSize: 18, fontWeight: '500', color: '#808080' }}>{this.props.nowPlaying.artist_name}</Text>
+          if (this.props.live) {
+            return (
+              <View style={styles.playing}>
+                <View style={styles.playing_album_art}>
+                  <Image style={{ flex: 1 }} source={this.props.nowPlaying.album_cover} />
                 </View>
-                <View style={{ marginTop: -constants.unit * 8 }}>
-                  <Text style={{ fontSize: 13, fontWeight: '500', color: '#B2B2B2', textAlign: 'right' }}>1:27</Text>
-                  <ProgressViewIOS
-                    progress={this.props.nowPlaying.progress}
-                    progressTintColor={this.props.nowPlaying.accent || '#FF2D55'}
-                    trackTintColor={'#E5E5E5'}
-                  />
+                <View style={styles.playing_details}>
+                  <View>
+                    <Text style={[styles.smallText, { color: '#FF2D55' }]}>LIVE • {this.props.distance}</Text>
+                    <Text style={{ fontSize: 18, fontWeight: '700', color: 'black' }}>{this.props.nowPlaying.song_title}</Text>
+                    <Text style={{ fontSize: 18, fontWeight: '500', color: '#808080' }}>{this.props.nowPlaying.artist_name}</Text>
+                  </View>
+                  <View style={{ marginTop: -constants.unit * 8 }}>
+                    <Text style={{ fontSize: 13, fontWeight: '500', color: '#B2B2B2', textAlign: 'right' }}>1:27</Text>
+                    <ProgressViewIOS
+                      progress={this.props.nowPlaying.progress}
+                      progressTintColor={this.props.nowPlaying.accent || '#FF2D55'}
+                      trackTintColor={'#E5E5E5'}
+                    />
+                  </View>
+                  <Text style={[styles.smallText, { color: '#808080' }]}>54 LISTENERS</Text>
                 </View>
-                <Text style={[styles.smallText, { color: '#808080' }]}>54 LISTENERS</Text>
               </View>
-            </View>
+            )
+          }
 
-            <View style={styles.separator} />
+        })()}
+        {(() => { if (this.props.live) { return (<View style={styles.separator} />) } })()}
 
-            {/* LOWER SIDE */}
-            <View style={styles.lower}>
-              <View>
-                <Text style={{ fontSize: 22, fontWeight: '700', letterSpacing: -0.3 }}>{this.props.title}</Text>
-                <Text style={{ fontSize: 14, fontWeight: '500' }}>{this.props.host}</Text>
-              </View>
-            </View>
-
-          </LinearGradient>
-        </View>
-      )
-
-    } else {
-
-      return (
-        <View ref={component => this._root = component} {...this.props}
-          style={[styles.card, styles.cardOffline, this.props.style, { zIndex: 0 }]}>
-          <View style={styles.card_wrap}>
-
-            <View style={styles.lower}>
-              <View>
-                <Text style={{ fontSize: 22, fontWeight: '700', letterSpacing: -0.3 }}>{this.props.title}</Text>
-                <Text style={{ fontSize: 14, fontWeight: '500' }}>{this.props.host}</Text>
-              </View>
-            </View>
-
+        {/* LOWER SIDE */}
+        <View style={styles.lower}>
+          <View>
+            <Text style={{ fontSize: 22, fontWeight: '700', letterSpacing: -0.3 }}>{this.props.title}</Text>
+            <Text style={{ fontSize: 14, fontWeight: '500' }}>{this.props.host}</Text>
           </View>
         </View>
-      )
 
-    }
+      </Card>
+    )
+
   }
 
 }
 
 const styles = StyleSheet.create({
-  card: {
-    borderRadius: constants.borderRadiusLg,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: '#BFBFBF',
-    backgroundColor: 'white',
-  },
-  cardShadow: {
-    shadowColor: 'black',
-    shadowOffset: {
-      width: 0,
-      height: 6,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 26,
-    overflow: 'visible'
-  },
-  cardOffline: {
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: '#BFBFBF',
-    backgroundColor: 'transparent'
-  },
-  card_wrap: {
-    borderRadius: constants.borderRadiusLg,
-    backgroundColor: 'transparent',
-    overflow: 'hidden',
-    minHeight: 72,
-  },
   separator: {
     height: StyleSheet.hairlineWidth,
     backgroundColor: '#BFBFBF'
