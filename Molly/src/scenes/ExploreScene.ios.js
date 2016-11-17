@@ -1,13 +1,13 @@
 import React, { Component } from 'react'
 import {
-  StatusBar,
   View, ScrollView,
   Image, Text,
   TouchableHighlight, StyleSheet
 } from 'react-native'
 
 import LinearGradient from 'react-native-linear-gradient'
-import { BlurView } from 'react-native-blur'
+
+import BlurStatusBarLight from '../components/BlurStatusBarLight'
 
 // import ChannelsList from '../views/ChannelsList'
 import ChannelCard from '../components/ChannelCard'
@@ -78,9 +78,7 @@ class ExploreScene extends Component {
   render() {
     return(
       <View>
-        <BlurView blurType="light" blurAmount={27.18} style={{ height: 20, position: 'absolute', left: 0, right: 0, zIndex: 100}}>
-          <StatusBar barStyle="dark-content" />
-        </BlurView>
+        <BlurStatusBarLight />
         <ScrollView>
 
           <LinearGradient colors={['white', '#F2F2F2']} style={{ backgroundColor: 'transparent', padding: constants.unit * 4 }}>
