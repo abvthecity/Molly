@@ -6,3 +6,4 @@
 #import "SpotifyAudioPlayback/SpotifyAudioPlayback.h"
 #import "SpotifyMetadata/SpotifyMetadata.h"
 #import "RCTBridgeModule.h"
+#import "AppDelegate.h"
