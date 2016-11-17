@@ -3,6 +3,7 @@ import {
   View, Button
 } from 'react-native'
 
+import LandingScene from './LandingScene'
 import ExploreScene from './ExploreScene'
 
 const Testing = props => {
@@ -13,15 +14,15 @@ const Testing = props => {
       flexDirection: 'column',
       justifyContent: 'center'
     }}>
-      {/* <Button
+      <Button
         title="Landing"
         onPress={() => {
           props.navigator.push({
             title: 'Landing',
-            component:
+            component: LandingScene
           })
         }}
-      /> */}
+      />
       <Button
         title="Homepage"
         onPress={() => {

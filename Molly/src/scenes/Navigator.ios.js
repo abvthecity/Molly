@@ -4,7 +4,7 @@ import {
   View, Text
 } from 'react-native'
 
-import Landing from './Landing'
+// import Landing from './Landing'
 import Testing from './Testing'
 
 class Navigator extends Component {
