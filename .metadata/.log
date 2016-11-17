@@ -650,3 +650,10 @@ org.eclipse.core.runtime.CoreException: The Tomcat server configuration at /Serv
 
 !ENTRY org.eclipse.jst.server.tomcat.core 4 0 2016-11-17 02:32:36.160
 !MESSAGE The Tomcat server configuration at /Servers/Molly-Tomcat-Server at localhost-config is missing. Check the server for errors.
+
+!ENTRY org.eclipse.core.resources 2 2 2016-11-17 02:38:01.334
+!MESSAGE Save operation warnings.
+!SUBENTRY 1 org.eclipse.core.resources 2 234 2016-11-17 02:38:01.334
+!MESSAGE The project description file (.project) for 'Molly-java-server' was missing.  This file contains important information about the project.  A new project description file has been created, but some information about the project may have been lost.
+!SUBENTRY 1 org.eclipse.core.resources 2 234 2016-11-17 02:38:01.334
+!MESSAGE The project description file (.project) for 'RemoteSystemsTempFiles' was missing.  This file contains important information about the project.  A new project description file has been created, but some information about the project may have been lost.
