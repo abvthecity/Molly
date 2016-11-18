@@ -34,9 +34,9 @@ public class User extends HttpServlet {
 		//response.getWriter().append("Served at: ").append(request.getContextPath());
 		// Get the printwriter object from response to write the required json object to the output stream
 				String clientID = request.getParameter("clientID");
-				User u = UserDataManager.getUser(clientID);
+				User u = UserDataManager.getUser(clientID); //search in sql
 				String [] tags = u.getClientTags();
-				Integer [] bookmarks = u.getBookmarks();
+				String [] bookmarks = u.getClientBookmarks();
 				String b;
 				if(u.getIfClientIsDJ()){
 					b = "true";
@@ -51,7 +51,7 @@ public class User extends HttpServlet {
 						jsonObject += ", ";
 					}
 				}
-				jsonObject += "], \"isClientDJ\": \""+b+"\", \"bookmarks\": [";
+				jsonObject += "], \"isClientDJ\": \""+b+"\", \"clientBookmarks\": [";
 				for(int i = 0; i< bookmarks.length; i++){
 					jsonObject += "{\""+bookmarks[i]+"\"}";
 					if(i!=bookmarks.length - 1){
@@ -76,13 +76,12 @@ public class User extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		//doGet(request, response);
 		String clientID=request.getParameter("clientID"); 
 		String[] tags =request.getParameterValues("tags");
 		//String isDJ = request.getParameter("isDJ"); 
 		//String email = request.getParameter("email");
-		Integer[] clientBookmarks = new Integer[50];
-		UserDataManager.createUser(clientID, tags, false, clientBookmarks);
+		String[] clientBookmarks = new String[50];
+		UserDataManager.createUser(clientID, tags, false, clientBookmarks); //insert in sql
 	}
 
 }

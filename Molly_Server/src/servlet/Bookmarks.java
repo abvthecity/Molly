@@ -9,18 +9,17 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-
 /**
- * Servlet implementation class Reaction
+ * Servlet implementation class Bookmarks
  */
-@WebServlet("/Reaction")
-public class Reaction extends HttpServlet {
+@WebServlet("/Bookmarks")
+public class Bookmarks extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public Reaction() {
+    public Bookmarks() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -28,15 +27,22 @@ public class Reaction extends HttpServlet {
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		String clientID = request.getParameter("clientID");
-		Integer likes = ChannelDataManager.getLikes(clientID); //search in sql
+		String[] bookmarks = UserDataManager.getClientBookmarks();//search in sql
 		response.setContentType("application/json");
 		PrintWriter out = response.getWriter();      
 		
 		//Create String to send in response to get request
-		String jsonObject = "{\"likes\": \""+likes+"\"}";
+		String jsonObject = "\"clientBookmarks\": [";
+		for(int i = 0; i< bookmarks.length; i++){
+			jsonObject += "{\""+bookmarks[i]+"\"}";
+			if(i!=bookmarks.length - 1){
+				jsonObject += ", ";
+			}
+		}
+		jsonObject += "]}";
 		
 		// Assuming your json object is **jsonObject**, perform the following, it will return your json object  
 		out.print(jsonObject);
@@ -48,8 +54,10 @@ public class Reaction extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		String clientID = request.getParameter("clientID"); 
-		ChannelDataManager.addLikes(clientID); //update in sql
+		
+			String clientID = request.getParameter("userClientID");
+			String  channelID = request.getParameter("DJClientID");
+			UserDataManager.addBookmark(clientID, channelID);
 	}
 
 }

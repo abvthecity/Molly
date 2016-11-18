@@ -9,18 +9,17 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-
 /**
- * Servlet implementation class Reaction
+ * Servlet implementation class Channel
  */
-@WebServlet("/Reaction")
-public class Reaction extends HttpServlet {
+@WebServlet("/Channel")
+public class Channel extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public Reaction() {
+    public Channel() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -30,13 +29,26 @@ public class Reaction extends HttpServlet {
 	 */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
+		//response.getWriter().append("Served at: ").append(request.getContextPath());
 		String clientID = request.getParameter("clientID");
-		Integer likes = ChannelDataManager.getLikes(clientID); //search in sql
+		Channel c = ChannelDataManager.getChannel(clientID);
+		String clientID = c.getClientID();
+		String[] channelTags = c.getChannelTags();
+		Integer numChannelSubscribers = c.getNumChannelSubscribers();
+		Integer numChannelLikes = c.getNumChannelLikes();
 		response.setContentType("application/json");
 		PrintWriter out = response.getWriter();      
 		
 		//Create String to send in response to get request
-		String jsonObject = "{\"likes\": \""+likes+"\"}";
+		String jsonObject = "{\"clientID\": \""+clientID+"\", \"channelTags\": [";
+		for(int i = 0; i< channelTags.length; i++){
+			jsonObject += "{\""+channelTags[i]+"\"}";
+			if(i!=4){
+				jsonObject += ", ";
+			}
+		}
+		jsonObject += "], \"numChannelSubscribers\": \""+numChannelSubscribers+"\", \"numChannelLikes\": \""+
+				numChannelLikes+"\"}";
 		
 		// Assuming your json object is **jsonObject**, perform the following, it will return your json object  
 		out.print(jsonObject);
@@ -48,8 +60,14 @@ public class Reaction extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		String clientID = request.getParameter("clientID"); 
-		ChannelDataManager.addLikes(clientID); //update in sql
+		
+		String clientID=request.getParameter("clientID"); 
+		String[] channelTags =request.getParameterValues("channelTags");
+		//String isDJ = request.getParameter("isDJ"); 
+		//String email = request.getParameter("email");
+		String[] clientBookmarks = new String[50];
+		ChannelDataManager.createChannel(clientID, channelTags, 0, 0); //insert in sql
+		UserDataManager.makeDJ(clientID); //update in sql
 	}
 
 }
