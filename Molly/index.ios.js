@@ -3,11 +3,11 @@ import {
   AppRegistry
 } from 'react-native'
 
-import Navigator from './src/scenes/Navigator'
+import Router from './src/scenes/Router'
 
 class Molly extends Component {
   render() {
-    return <Navigator />
+    return <Router />
   }
 }
 

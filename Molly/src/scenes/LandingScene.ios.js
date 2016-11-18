@@ -14,15 +14,9 @@ import constants from '../common/constants'
 class LandingScene extends Component {
 
   static propTypes = {
-    title: PropTypes.string,
-    navigator: PropTypes.object.isRequired,
-  }
-
-  _goToChannels = () => {
-    // this.props.navigator.push({
-    //   title: 'Channels',
-    //   component: ChannelsTabBar
-    // })
+    // title: PropTypes.string,
+    // navigator: PropTypes.object.isRequired,
+    login: PropTypes.func.isRequired
   }
 
   render() {
@@ -45,7 +39,7 @@ class LandingScene extends Component {
 
         <View style={styles.content}>
           <Text style={styles.content_blurb}>Ever wanted to hear what music your friends are listening to? Now you can in real time.</Text>
-          <TouchableHighlight onPress={this._goToChannels} style={{ borderRadius: 22 }}>
+          <TouchableHighlight onPress={this.props.login} style={{ borderRadius: 22 }}>
             <View style={styles.login_button}>
               <Text style={styles.login_button_text}>LOGIN WITH SPOTIFY</Text>
             </View>

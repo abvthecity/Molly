@@ -1,8 +1,9 @@
 import React, { Component } from 'react'
 import {
-  View, ScrollView,
+  View, ScrollView, ListView,
   Image, Text,
   TouchableOpacity, TouchableHighlight,
+  TouchableWithoutFeedback,
   StyleSheet
 } from 'react-native'
 
@@ -10,7 +11,6 @@ import constants from '../common/constants'
 import LinearGradient from 'react-native-linear-gradient'
 import BlurStatusBar from '../components/BlurStatusBar'
 
-// import ChannelsList from '../views/ChannelsList'
 import ChannelCard from '../components/ChannelCard'
 
 const IMAGE_PREFETCH_URL = 'https://pbs.twimg.com/profile_images/781996435961032705/1cSsL68X.jpg'
@@ -19,61 +19,68 @@ Image.prefetch(IMAGE_PREFETCH_URL)
 
 class ExploreScene extends Component {
 
-  state = {
-    browseTitle: 'Explore',
-    cards: [{
-      title: 'Rachit\'s Bangers',
-      host: 'Rachit Kataria',
-      distance: '400 FT',
-      live: true,
-      nowPlaying: {
-        album_cover: album_cover,
-        song_title: 'Murder',
-        artist_name: 'Lido',
-        neutral: 'rgb(84, 107, 132)',
-        accent: 'rgb(207, 66, 65)',
-        progress: 0.7
-      }
-    },{
-      title: 'Rachit\'s Bangers',
-      host: 'Rachit Kataria',
-      distance: '400 FT',
-      live: true,
-      nowPlaying: {
-        album_cover: album_cover,
-        song_title: 'Murder',
-        artist_name: 'Lido',
-        neutral: 'rgb(84, 107, 132)',
-        accent: 'rgb(207, 66, 65)',
-        progress: 0.7
-      }
-    },{
-      title: 'Rachit\'s Bangers',
-      host: 'Rachit Kataria',
-      distance: '400 FT',
-      live: false,
-      nowPlaying: {
-        album_cover: album_cover,
-        song_title: 'Murder',
-        artist_name: 'Lido',
-        neutral: 'rgb(84, 107, 132)',
-        accent: 'rgb(207, 66, 65)',
-        progress: 0.7
-      }
-    },{
-      title: 'Rachit\'s Bangers',
-      host: 'Rachit Kataria',
-      distance: '400 FT',
-      live: false,
-      nowPlaying: {
-        album_cover: album_cover,
-        song_title: 'Murder',
-        artist_name: 'Lido',
-        neutral: 'rgb(84, 107, 132)',
-        accent: 'rgb(207, 66, 65)',
-        progress: 0.7
-      }
-    }]
+  constructor(props) {
+    super(props)
+
+    const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+
+    this.state = {
+      browseTitle: 'Explore',
+      cards: ds.cloneWithRows([{
+        title: 'Rachit\'s Bangers',
+        host: 'Rachit Kataria',
+        distance: '400 FT',
+        live: true,
+        nowPlaying: {
+          album_cover: album_cover,
+          song_title: 'Murder',
+          artist_name: 'Lido',
+          neutral: 'rgb(84, 107, 132)',
+          accent: 'rgb(207, 66, 65)',
+          progress: 0.7
+        }
+      },{
+        title: 'Rachit\'s Bangers',
+        host: 'Rachit Kataria',
+        distance: '400 FT',
+        live: true,
+        nowPlaying: {
+          album_cover: album_cover,
+          song_title: 'Murder',
+          artist_name: 'Lido',
+          neutral: 'rgb(84, 107, 132)',
+          accent: 'rgb(207, 66, 65)',
+          progress: 0.7
+        }
+      },{
+        title: 'Rachit\'s Bangers',
+        host: 'Rachit Kataria',
+        distance: '400 FT',
+        live: false,
+        nowPlaying: {
+          album_cover: album_cover,
+          song_title: 'Murder',
+          artist_name: 'Lido',
+          neutral: 'rgb(84, 107, 132)',
+          accent: 'rgb(207, 66, 65)',
+          progress: 0.7
+        }
+      },{
+        title: 'Rachit\'s Bangers',
+        host: 'Rachit Kataria',
+        distance: '400 FT',
+        live: false,
+        nowPlaying: {
+          album_cover: album_cover,
+          song_title: 'Murder',
+          artist_name: 'Lido',
+          neutral: 'rgb(84, 107, 132)',
+          accent: 'rgb(207, 66, 65)',
+          progress: 0.7
+        }
+      }])
+    }
+
   }
 
   render() {
@@ -82,7 +89,7 @@ class ExploreScene extends Component {
       <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>
         <Text style={{ fontSize: 40, fontWeight: '900' }}>Molly</Text>
         <TouchableOpacity onPress={() => {}}>
-          <Text style={styles.button}>Start a channel</Text>
+          <Text style={styles.button}>Settings</Text>
         </TouchableOpacity>
       </View>
     )
@@ -101,14 +108,14 @@ class ExploreScene extends Component {
     return (
       <View {...this.props}>
         <BlurStatusBar light={false} />
-        <ScrollView>
+        <ScrollView style={{ paddingTop: 20 }}>
 
           {/* SECTION 1 */}
           <LinearGradient colors={['white', '#F0F0F0']} style={{ backgroundColor: 'transparent', padding: constants.unit * 4 }}>
             {header}
             <View style={styles.blocks_wrap}>
-              <TouchableHighlight onPress={() => {}} style={[styles.colorBlockWrap, { marginRight: 2.5 }]}>{favoritesBlock}</TouchableHighlight>
-              <TouchableHighlight onPress={() => {}} style={[styles.colorBlockWrap, { marginLeft: 2.5 }]}>{liveBlock}</TouchableHighlight>
+              <TouchableHighlight onPress={this.props.openFavorites} style={[styles.colorBlockWrap, { marginRight: 2.5 }]}>{favoritesBlock}</TouchableHighlight>
+              <TouchableHighlight onPress={this.props.openLive} style={[styles.colorBlockWrap, { marginLeft: 2.5 }]}>{liveBlock}</TouchableHighlight>
             </View>
           </LinearGradient>
 
@@ -116,19 +123,25 @@ class ExploreScene extends Component {
           <View style={{ padding: constants.unit * 4 }}>
             <Text style={styles.heading1}>{this.state.browseTitle}</Text>
 
-            {this.state.cards.map((card, i) => (
-              <TouchableHighlight key={i}
-                style={{ marginBottom: constants.unit * 3, borderRadius: constants.borderRadiusLg }}
-                onPress={() => {}}>
-                <ChannelCard
-                  title={card.title}
-                  host={card.host}
-                  distance={card.distance}
-                  live={card.live}
-                  nowPlaying={card.nowPlaying}
-                />
-              </TouchableHighlight>
-            ))}
+            <ListView
+              style={{ overflow: 'visible' }}
+              dataSource={this.state.cards}
+              renderRow={(card) => (
+                <TouchableWithoutFeedback
+                  onPress={() => {
+                    this.props.openPlayer()
+                  }} disabled={!card.live}>
+                  <ChannelCard
+                    style={{ marginBottom: constants.unit * 3, borderRadius: constants.borderRadiusLg }}
+                    title={card.title}
+                    host={card.host}
+                    distance={card.distance}
+                    live={card.live}
+                    nowPlaying={card.nowPlaying}
+                  />
+                </TouchableWithoutFeedback>
+              )}
+            />
 
           </View>
 

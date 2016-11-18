@@ -1,9 +1,25 @@
+////
+////  RCTBlurableManager.m
+////  Molly
+////
+////  Created by Andrew Jiang on 11/18/16.
+////  Copyright © 2016 Facebook. All rights reserved.
+////
 //
-//  RCTBlurableManager.m
-//  Molly
+//#import <Foundation/Foundation.h>
 //
-//  Created by Andrew Jiang on 11/18/16.
-//  Copyright © 2016 Facebook. All rights reserved.
+//#import "RCTViewManager.h"
 //
-
-#import <Foundation/Foundation.h>
+//@interface RCTMapManager : RCTViewManager
+//@end
+//
+//@implementation RCTMapManager
+//
+//RCT_EXPORT_MODULE()
+//
+//- (UIView *)view
+//{
+//  return [[MKMapView alloc] init];
+//}
+//
+//@end

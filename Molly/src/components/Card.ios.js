@@ -66,6 +66,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     overflow: 'hidden',
     minHeight: 72,
+    flex: 1
   },
 })
 

@@ -7,7 +7,7 @@ import { BlurView } from 'react-native-blur'
 
 const BlurStatusBar = props => {
 
-  let statusbar = <StatusBar barStyle={(props.light || !props.dark) ? 'light-content' : 'dark-content'} animated={true} />
+  let statusbar = <StatusBar barStyle={(props.light || props.dark) ? 'light-content' : 'dark-content'} animated={true} />
 
   if (props.static === true) {
 
@@ -38,9 +38,15 @@ const BlurStatusBar = props => {
 }
 
 BlurStatusBar.propTypes = {
-  light: PropTypes.bool,
+  light: PropTypes.bool, // true:
   dark: PropTypes.bool,
   static: PropTypes.bool
+}
+
+BlurStatusBar.defaultProps = {
+  light: false,
+  dark: false,
+  static: false
 }
 
 const styles = StyleSheet.create({
