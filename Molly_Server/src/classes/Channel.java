@@ -10,7 +10,7 @@ public class Channel {
 	public int numChannelLikes; 
 	
 	
-	public channel( String clientId, String[] channelTags, int numSubscribers, int numlikes ){
+	public Channel( String clientId, String[] channelTags, int numSubscribers, int numlikes ){
 		//this.channelID = channelId;
 		this.clientID = clientId;
 		this.channelTags = channelTags;
@@ -35,7 +35,7 @@ public class Channel {
 		return numChannelSubscribers;
 		
 	}
-	public int getNumChannelLikess(){
+	public int getNumChannelLikes(){
 		return numChannelLikes;
 		
 	}
@@ -44,20 +44,20 @@ public class Channel {
 //		 channelID = chId;
 //		
 //	}
-	public void getClientID(String clientId){
-		return clientID = clientId;
+	public void setClientID(String clientId){
+		this.clientID = clientId;
 		
 	}
-	public  addChannelTags(int pos, String[]  tags){
-		 channelTags[pos]=tags;
+	public void addChannelTags(String [] tags){
+		 this.channelTags = tags;
 		
 	}
 	public void setNumChannelSubscribers(int numSubscribes){
-		 numChannelSubscribers=numSubscribes;
+		 this.numChannelSubscribers=numSubscribes;
 		
 	}
 	public void setNumChannelLikes(int numLikes){
-		 numChannelLikes = numLikes;
+		 this.numChannelLikes = numLikes;
 		
 	}
 }

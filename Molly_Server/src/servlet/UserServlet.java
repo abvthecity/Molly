@@ -9,19 +9,19 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.catalina.User;
+import classes.User;
 
 /**
- * Servlet implementation class User
+ * Servlet implementation class UserServlet
  */
-@WebServlet("/User")
-public class User extends HttpServlet {
+@WebServlet("/UserServlet")
+public class UserServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public User() {
+    public UserServlet() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -38,13 +38,13 @@ public class User extends HttpServlet {
 				String [] tags = u.getClientTags();
 				String [] bookmarks = u.getClientBookmarks();
 				String b;
-				if(u.getIfClientIsDJ()){
+				if(u.getIfCLientIsDJ()){
 					b = "true";
 				}
 				else{
 					b = "false";
 				}
-				String jsonObject = "{\"clientID\": \""+u.getClientID+"\", \"clientTags\": [";
+				String jsonObject = "{\"clientID\": \""+u.clientID+"\", \"clientTags\": [";
 				for(int i = 0; i< tags.length; i++){
 					jsonObject += "{\""+tags[i]+"\"}";
 					if(i!=4){

@@ -9,17 +9,19 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import classes.Channel;
+
 /**
- * Servlet implementation class Channel
+ * Servlet implementation class ChannelServlet
  */
-@WebServlet("/Channel")
-public class Channel extends HttpServlet {
+@WebServlet("/ChannelServlet")
+public class ChannelServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public Channel() {
+    public ChannelServlet() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -32,7 +34,7 @@ public class Channel extends HttpServlet {
 		//response.getWriter().append("Served at: ").append(request.getContextPath());
 		String clientID = request.getParameter("clientID");
 		Channel c = ChannelDataManager.getChannel(clientID);
-		String clientID = c.getClientID();
+		//String clientID = c.getClientID();
 		String[] channelTags = c.getChannelTags();
 		Integer numChannelSubscribers = c.getNumChannelSubscribers();
 		Integer numChannelLikes = c.getNumChannelLikes();
@@ -65,7 +67,7 @@ public class Channel extends HttpServlet {
 		String[] channelTags =request.getParameterValues("channelTags");
 		//String isDJ = request.getParameter("isDJ"); 
 		//String email = request.getParameter("email");
-		String[] clientBookmarks = new String[50];
+		//String[] clientBookmarks = new String[50];
 		ChannelDataManager.createChannel(clientID, channelTags, 0, 0); //insert in sql
 		UserDataManager.makeDJ(clientID); //update in sql
 	}

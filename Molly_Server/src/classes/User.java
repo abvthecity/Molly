@@ -10,10 +10,10 @@ public class User {
 	public String[] clienBookmarks;
 	
 	
-	public User (String cID, String[] cTags, boolean isDj, String[] bookmark){
+	public User (String cID, String[] cTags, boolean isDJ, String[] bookmark){
 		this.clientID = cID;
 		this.clientTags = cTags;
-		this.isClienDJ = isDj;
+		this.isClienDJ = isDJ;
 		this.clienBookmarks = bookmark;
 		
 	}
@@ -26,27 +26,27 @@ public class User {
 		return clientTags;
 	
 	}
-	public boolean getIfCLienIsDj(){
+	public boolean getIfCLientIsDJ(){
 		return isClienDJ;
 	}
 	
 	public String[] getClientBookmarks(){
-		return clientBookmarks;
+		return getClientBookmarks();
 		
 	}
-	public void setClienID(String cId){
+	public void setClientID(String cId){
 		this.clientID = cId;
 	}
 	
-	public void addClienTags(int pos, String cTag){
+	public void addClientTags(int pos, String cTag){
 		this.clientTags[pos]=cTag;
 	}
 	
-	public void setClientIsDj(boolean isDj){
-		this.isClienDJ = isDj;
+	public void setClientIsDJ(boolean isDJ){
+		this.isClienDJ = isDJ;
 	}
-	public void addClientBookmarks(int pos, int bookmark){
-		this.clienBookmarks[pos]=bookmark;
+	public void addClientBookmarks(String[] bookmarks){
+		this.clienBookmarks=bookmarks;
 	}
 
 }
