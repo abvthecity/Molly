@@ -53,7 +53,7 @@ class Molly extends Component {
           />*/}
           <Text>PLES LOGIN</Text>
         </TouchableHighlight>
-        <TouchableHighlight style={styles.button} onPress={() => SpotifyAPI.playURI('spotify:track:1OAYKfE0YdrN7C1yLWaLJo', (error) => {
+        <TouchableHighlight style={styles.button} onPress={() => SpotifyAPI.playURI('spotify:track:1OAYKfE0YdrN7C1yLWaLJo', 100, (error) => {
             console.log(error);
           })
         }>
