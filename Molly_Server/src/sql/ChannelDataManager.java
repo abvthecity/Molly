@@ -1,7 +1,5 @@
 package sql;
 
-
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -36,7 +34,7 @@ public class ChannelDataManager {
 	   
 			Class.forName(JDBC_DRIVER);
 			conn = DriverManager.getConnection(DB_URL);
-			ps = conn.prepareStatement("INSERT INTO Channels (clientID, channelTags, subscribersNum, likesNum) VALUES (?, ?, ?, ?);");
+			ps = conn.prepareStatement("INSERT INTO Channel (clientID, channelTags, subscribersNum, likesNum) VALUES (?, ?, ?, ?);");
 			ps.setString(1, clientId);
 			ps.setString(2, tags);
 			ps.setInt(3, channelsSubscriberNum);
@@ -70,7 +68,7 @@ public static Channel getChannel(String clientID){
 			
 			Class.forName(JDBC_DRIVER);
 			conn = DriverManager.getConnection(DB_URL);
-			ps = conn.prepareStatement("SELECT * FROM Channels WHERE clientID=?");
+			ps = conn.prepareStatement("SELECT * FROM Channel WHERE clientID=?");
 			
 	
 			tags = new String[5];
@@ -108,7 +106,7 @@ public static Channel getChannel(String clientID){
 			
 			Class.forName(JDBC_DRIVER);
 			conn = DriverManager.getConnection(DB_URL);
-			ps = conn.prepareStatement("SELECT channelLikesNum FROM Channels WHERE clientID=?");
+			ps = conn.prepareStatement("SELECT channelLikesNum FROM Channel WHERE clientID=?");
 			
 	        
 			ps.setString(1, clientID);
@@ -141,7 +139,7 @@ public static Channel getChannel(String clientID){
 			try {
 				Class.forName(JDBC_DRIVER);
 				conn = DriverManager.getConnection(DB_URL);
-				ps = conn.prepareStatement("UPDATE Users SET likesNum="+likes+" WHERE clientID=?");
+				ps = conn.prepareStatement("UPDATE Channel SET likesNum="+likes+" WHERE clientID=?");
 				ps.setString(1, clientID);
 				int result = ps.executeUpdate();
 				if (result == 0) {
@@ -175,7 +173,7 @@ public static int getNumChannelSubscribers(String clientID){
 			
 			Class.forName(JDBC_DRIVER);
 			conn = DriverManager.getConnection(DB_URL);
-			ps = conn.prepareStatement("SELECT channelSubscribersNum FROM Channels WHERE clientID=?");
+			ps = conn.prepareStatement("SELECT channelSubscribersNum FROM Channel WHERE clientID=?");
 			
 	        
 			ps.setString(1, clientID);
@@ -207,7 +205,7 @@ public static int getNumChannelSubscribers(String clientID){
 			try {
 				Class.forName(JDBC_DRIVER);
 				conn = DriverManager.getConnection(DB_URL);
-				ps = conn.prepareStatement("UPDATE Users SET subscribersNum="+sub+" WHERE clientID=?");
+				ps = conn.prepareStatement("UPDATE Channel SET subscribersNum="+sub+" WHERE clientID=?");
 				ps.setString(1, clientID);
 				int result = ps.executeUpdate();
 				if (result == 0) {

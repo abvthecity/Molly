@@ -22,13 +22,12 @@ public  class UserDataManager {
 //    static BufferedReader br;
 	static User  user = null;
     
-<<<<<<< HEAD
+
 	public  static void createUser(String clientId, String[] clientTags, boolean isClienDJ, String[] bookmarks ){
 		User  user = null;
-=======
-	public  static void CreateUser(String clientId, String[] clientTags, boolean isClienDJ, String[] bookmarks ){
-		
->>>>>>> origin/master
+
+
+
 		Connection conn = null;
 		PreparedStatement ps = null;
 		 String bm="", tags="";
