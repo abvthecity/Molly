@@ -21,6 +21,9 @@ class SpotifyAPI: RCTEventEmitter, SPTAudioStreamingDelegate {
   // Notification Name
   let closeUserAuthVC: String! = "closeUserAuthVC"
   
+  // First App Launch?
+  var firstAppLaunch: Bool! = true
+  
   // Authenticate User With Spotify
   @objc(authenticate:redirectURL:)
   func authenticate(clientID: String!, redirectURL: String) {
@@ -31,14 +34,19 @@ class SpotifyAPI: RCTEventEmitter, SPTAudioStreamingDelegate {
     SPTAuth.defaultInstance().requestedScopes = [SPTAuthStreamingScope]
     
     // set notification name
-    NotificationCenter.default.addObserver(self, selector: #selector(SpotifyAPI.afterAuthentication(notification:)), name: NSNotification.Name(rawValue: self.closeUserAuthVC), object: nil)
+    if firstAppLaunch == true {
+      NotificationCenter.default.addObserver(self, selector: #selector(SpotifyAPI.afterAuthentication(notification:)), name: NSNotification.Name(rawValue: self.closeUserAuthVC), object: nil)
+      firstAppLaunch = false
+    }
     
     // become controller's delegate
     SPTAudioStreamingController.sharedInstance().delegate = self
     
     // start streaming controller
     do {
-      try SPTAudioStreamingController.sharedInstance().start(withClientId: clientID)
+      if SPTAudioStreamingController.sharedInstance().initialized {
+        try SPTAudioStreamingController.sharedInstance().start(withClientId: clientID)
+      }
     } catch {
       // something went wrong! figure out what to put here later!
     }

@@ -11,27 +11,45 @@
 
 #import "RCTBundleURLProvider.h"
 #import "RCTRootView.h"
+#import "SpotifyAuthentication/SpotifyAuthentication.h"
+#import "SpotifyAudioPlayback/SpotifyAudioPlayback.h"
 
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   NSURL *jsCodeLocation;
-
+  
   jsCodeLocation = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index.ios" fallbackResource:nil];
-
+  
   RCTRootView *rootView = [[RCTRootView alloc] initWithBundleURL:jsCodeLocation
-                                                      moduleName:@"Molly"
+                                                      moduleName:@"SpotifyTestProj"
                                                initialProperties:nil
                                                    launchOptions:launchOptions];
   rootView.backgroundColor = [[UIColor alloc] initWithRed:1.0f green:1.0f blue:1.0f alpha:1];
-
+  
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
   UIViewController *rootViewController = [UIViewController new];
   rootViewController.view = rootView;
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
   return YES;
+}
+
+- (BOOL) application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
+{
+  if ([[SPTAuth defaultInstance] canHandleURL:url]) {
+    [[SPTAuth defaultInstance] handleAuthCallbackWithTriggeredAuthURL:url callback:^(NSError *error, SPTSession *session) {
+      if (session != NULL) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"closeUserAuthVC" object:session];
+        [[SPTAudioStreamingController sharedInstance] loginWithAccessToken:[[[SPTAuth defaultInstance] session] accessToken]];
+      } else {
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"closeUserAuthVC" object:NULL];
+      }
+    }];
+    return YES;
+  }
+  return NO;
 }
 
 @end
