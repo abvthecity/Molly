@@ -1,38 +1,119 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- * @flow
- */
-
-import React, { Component } from 'react';
+import React, { Component } from 'react'
 import {
-  AppRegistry,
-  Image,
-  StyleSheet,
-  NativeModules,
-  NativeEventEmitter,
+  AppRegistry, NativeModules, NativeEventEmitter,
   NavigatorIOS,
-  Text,
-  TouchableHighlight,
-  View
-} from 'react-native';
+  View, Text, Modal
+} from 'react-native'
+
+import LandingScene from './src/scenes/LandingScene'
+import ExploreScene from './src/scenes/ExploreScene'
+import BroadcastScene from './src/scenes/BroadcastScene'
+import FavoritesScene from './src/scenes/FavoritesScene'
+import PlayerScene from './src/scenes/PlayerScene'
 
 const SpotifyAPI = NativeModules.SpotifyAPI;
 const SpotifyAPIEventEmitter = new NativeEventEmitter(SpotifyAPI);
 
-class Molly extends Component {
+class ExploreRoute extends Component {
+  state = {
+    showPlayer: false
+  }
 
-  constructor(props) {
-    super(props)
+  _openFavorites = () => {
+    this.props.navigator.push({
+      component: FavoritesRoute,
+      passProps: {
+        goBack: () => {
+          this.props.navigator.pop()
+        }
+      }
+    })
+  }
+
+  _openLive = () => {
+    this.props.navigator.push({
+      component: BroadcastScene,
+      passProps: {
+        goBack: () => {
+          this.props.navigator.pop()
+        }
+      }
+    })
+  }
+
+  render() {
+    return (
+      <View {...this.props} style={[{ flex: 1 }, this.props.style]}>
+        <ExploreScene
+          openFavorites={this._openFavorites}
+          openLive={this._openLive}
+          openPlayer={() => this.setState({ showPlayer: true })} />
+
+        {/* PLAYER */}
+        <Modal transparent={false}
+          visible={this.state.showPlayer}
+          supportedOrientations={['portrait']}
+          animationType={'slide'}>
+          <PlayerScene goBack={() => this.setState({ showPlayer: false })} />
+        </Modal>
+      </View>
+    )
+  }
+}
+
+class FavoritesRoute extends Component {
+  state = {
+    showPlayer: false
+  }
+
+  render() {
+    return (
+      <View {...this.props} style={[{ flex: 1 }, this.props.style]}>
+
+        <FavoritesScene
+          goBack={this.props.goBack}
+          openPlayer={() => this.setState({ showPlayer: true }) }
+        />
+
+        {/* PLAYER */}
+        <Modal transparent={false}
+          visible={this.state.showPlayer}
+          supportedOrientations={['portrait']}
+          animationType={'slide'}>
+          <PlayerScene goBack={() => this.setState({ showPlayer: false })} />
+        </Modal>
+      </View>
+    )
+  }
+}
+
+const LiveRoute = props => (
+  <View {...props} style={[{ flex: 1 }, props.style]}>
+    <BroadcastScene goBack={props.goBack} />
+  </View>
+)
+
+class Molly extends Component {
+  state = {
+    isLoggedIn: false
+  }
+
+  componentWillMount() {
+    SpotifyAPI.isLoggedIn((error, loggedInState) => {
+      this.setState({
+        isLoggedIn: loggedInState
+      })
+    })
   }
 
   componentDidMount() {
     this.LoginSubscriber = SpotifyAPIEventEmitter.addListener('Login', res => {
       if (res.success === true) {
-        console.log("Client ID:", res.userSpotifyID)
-      } else {
-        console.log("failed to login")
-      }
+        console.log("CLIENT_ID:", res.userSpotifyID)
+        SpotifyAPI.isLoggedIn((error, loggedInState) => {
+          this.setState({ isLoggedIn: loggedInState })
+        })
+      } else console.log("FAILED TO BEGIN")
     })
   }
 
@@ -40,82 +121,36 @@ class Molly extends Component {
     this.LoginSubscriber.remove()
   }
 
+  _login = () => {
+    SpotifyAPI.authenticate('b9aa2793ac1a476ea7ed07175f38a6dd', 'molly://callback')
+    console.log("CALLED")
+  }
+
+  _logout = () => {
+    // this.setState({ isLoggedIn: false })
+  }
+
   render() {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.normalText}>
-          React Native Spotify Module Basic Example!
-        </Text>
-        <TouchableHighlight style={styles.button} onPress={() => SpotifyAPI.authenticate('b9aa2793ac1a476ea7ed07175f38a6dd', 'molly://callback')}>
-          {/*<Image resizeMode ={'contain'}
-            style={styles.image}
-            source={require('./assets/login-button-mobile.png')}
-          />*/}
-          <Text>PLES LOGIN</Text>
-        </TouchableHighlight>
-        <TouchableHighlight style={styles.button} onPress={() => SpotifyAPI.playURI('spotify:track:1OAYKfE0YdrN7C1yLWaLJo', 100, (error) => {
-            console.log(error);
-          })
-        }>
-          <Text style={styles.normalText}>
-            Play some music!
-          </Text>
-        </TouchableHighlight>
-        <TouchableHighlight style={styles.button} onPress={() => SpotifyAPI.getMetadata((error, metadataArr) => {
-            console.log(metadataArr);
-          })
-        }>
-          <Text style={styles.normalText}>
-            Get Song Metadata!
-          </Text>
-        </TouchableHighlight>
-        <TouchableHighlight style={styles.button} onPress={() => SpotifyAPI.getCurrentSeconds((error, seconds) => {
-            console.log(seconds);
-          })
-        }>
-          <Text style={styles.normalText}>
-            Current time of song!
-          </Text>
-        </TouchableHighlight>
-      </View>
-    );
+    if (this.state.isLoggedIn) {
+      return (
+        <NavigatorIOS
+          initialRoute={{
+            title: 'Explore',
+            component: ExploreRoute
+          }}
+          interactivePopGestureEnabled={false}
+          navigationBarHidden={true}
+          style={{ flex: 1 }}
+        />
+      )
+    } else {
+      return (
+        <LandingScene login={this._login} />
+      )
+    }
   }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'black',
-  },
-  button: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: 250,
-    height: 45,
-    borderRadius: 64
-  },
-  image: {
-    width: 250,
-    height: 50
-  },
-  normalText: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-    color: 'white'
-  },
-  btnText: {
-    fontSize: 25,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    margin: 10,
-    color: 'white'
-  },
-
-});
-
-AppRegistry.registerComponent('Molly', () => Molly);
+AppRegistry.registerComponent('Molly', () => Molly)
 
 export default Molly

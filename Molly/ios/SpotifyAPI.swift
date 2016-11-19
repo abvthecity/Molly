@@ -16,6 +16,7 @@ class SpotifyAPI: RCTEventEmitter, SPTAudioStreamingDelegate {
   var auth: SPTAuth!
   var session: SPTSession!
   var player: SPTAudioStreamingController!
+  
   var authVC: UIViewController!
   
   // Notification Name
@@ -122,6 +123,11 @@ class SpotifyAPI: RCTEventEmitter, SPTAudioStreamingDelegate {
     callback([NSNull(), categories])
   }
   
+  @objc(isLoggedIn:)
+  func isLoggedIn(callback: @escaping RCTResponseSenderBlock) {
+    callback([NSNull(), (self.player != nil)])
+  }
+  
   // Is Audio Currently Being Played?
   @objc(isPlaying:)
   func isPlaying(callback: @escaping RCTResponseSenderBlock) {
@@ -167,42 +173,57 @@ class SpotifyAPI: RCTEventEmitter, SPTAudioStreamingDelegate {
   @objc(playURI:timeToStart:callback:)
   func playURI(songURI: String!, timeToStart: NSNumber!, callback: @escaping RCTResponseSenderBlock) {
     // play music through streaming controller
-    self.player.playSpotifyURI(songURI, startingWith: 0, startingWithPosition: timeToStart as TimeInterval, callback: { (error) in
-      // handle error
-      if error == nil {
-        callback([NSNull()])
-      } else {
-        callback([error!])
-      }
-    })
+    if (self.player == nil) {
+      callback([NSNull()])
+    } else {
+    
+      self.player.playSpotifyURI(songURI, startingWith: 0, startingWithPosition: timeToStart as TimeInterval, callback: { (error) in
+        // handle error
+        if error == nil {
+          callback([NSNull()])
+        } else {
+          callback([error!])
+        }
+      })
+      
+    }
   }
   
   // Get Metadata Given URI (REQUIRES PLAY URI BEFORE CALLS)
   @objc(getMetadata:)
   func getMetadata(callback: @escaping RCTResponseSenderBlock) {
     
-    let currentTrack = self.player.metadata.currentTrack!
+    let currentTrack = self.player?.metadata?.currentTrack
     
-    let metadata: [String:Any] = [
-      "uri": currentTrack.uri as String,
-      "playbackSourceUri": currentTrack.playbackSourceUri as String,
-      "playbackSourceName": currentTrack.playbackSourceName as String,
-      "artistName": currentTrack.artistName as String,
-      "artistUri": currentTrack.artistUri as String,
-      "albumName": currentTrack.albumName as String,
-      "albumUri": currentTrack.albumUri as String,
-      "albumCoverArtURL": currentTrack.albumCoverArtURL! as String,
-      "duration": currentTrack.duration as TimeInterval,
-      "indexInContext": currentTrack.indexInContext as UInt
-    ]
+    if (currentTrack != nil) {
     
-    callback([NSNull(), metadata])
+      let metadata: [String:Any] = [
+        "uri": currentTrack!.uri as String,
+        "playbackSourceUri": currentTrack!.playbackSourceUri as String,
+        "playbackSourceName": currentTrack!.playbackSourceName as String,
+        "artistName": currentTrack!.artistName as String,
+        "artistUri": currentTrack!.artistUri as String,
+        "albumName": currentTrack!.albumName as String,
+        "albumUri": currentTrack!.albumUri as String,
+        "albumCoverArtURL": currentTrack!.albumCoverArtURL! as String,
+        "duration": currentTrack!.duration as TimeInterval,
+        "indexInContext": currentTrack!.indexInContext as UInt
+      ]
+      
+      callback([NSNull(), metadata])
+    } else {
+      callback([NSNull(), NSNull()])
+    }
   }
   
   // Get current track's seconds
   @objc(getCurrentSeconds:)
   func getCurrentSeconds(callback: @escaping RCTResponseSenderBlock) {
-    callback([NSNull(), self.player.playbackState.position])
+    if (self.player != nil) {
+      callback([NSNull(), self.player.playbackState.position])
+    } else {
+      callback([NSNull(), NSNull()])
+    }
   }
   
   // Queue Music Given URI

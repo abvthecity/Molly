@@ -31,7 +31,6 @@
 		F2AEBCED1DDEEB400088A9E4 /* SpotifyAudioPlayback.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F2AEBCEA1DDEEB400088A9E4 /* SpotifyAudioPlayback.framework */; };
 		F2AEBCEE1DDEEB400088A9E4 /* SpotifyAuthentication.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F2AEBCEB1DDEEB400088A9E4 /* SpotifyAuthentication.framework */; };
 		F2AEBCEF1DDEEB400088A9E4 /* SpotifyMetadata.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F2AEBCEC1DDEEB400088A9E4 /* SpotifyMetadata.framework */; };
-		F2AEBCF11DDF0F410088A9E4 /* FMBlurable.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2AEBCF01DDF0F410088A9E4 /* FMBlurable.swift */; };
 		FE3DA482E6A340DCA9761364 /* libBVLinearGradient.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B94C48B54E5459F8B65B6F1 /* libBVLinearGradient.a */; };
 /* End PBXBuildFile section */
 
@@ -212,7 +211,6 @@
 		F2AEBCEA1DDEEB400088A9E4 /* SpotifyAudioPlayback.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SpotifyAudioPlayback.framework; sourceTree = "<group>"; };
 		F2AEBCEB1DDEEB400088A9E4 /* SpotifyAuthentication.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SpotifyAuthentication.framework; sourceTree = "<group>"; };
 		F2AEBCEC1DDEEB400088A9E4 /* SpotifyMetadata.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SpotifyMetadata.framework; sourceTree = "<group>"; };
-		F2AEBCF01DDF0F410088A9E4 /* FMBlurable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FMBlurable.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -331,7 +329,6 @@
 		13B07FAE1A68108700A75B9A /* Molly */ = {
 			isa = PBXGroup;
 			children = (
-				F2AEBCF21DDF11240088A9E4 /* UI Components */,
 				B6F7C6BE1DDDA351004BE494 /* SpotifyAPI.swift */,
 				B620FE6C1DDDBF4B008A2A1A /* SpotifyAPIBridge.m */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
@@ -440,14 +437,6 @@
 				F22392A61DDC63CF008F8CC6 /* libBVLinearGradient.a */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		F2AEBCF21DDF11240088A9E4 /* UI Components */ = {
-			isa = PBXGroup;
-			children = (
-				F2AEBCF01DDF0F410088A9E4 /* FMBlurable.swift */,
-			);
-			name = "UI Components";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -762,7 +751,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F2AEBCF11DDF0F410088A9E4 /* FMBlurable.swift in Sources */,
 				B6F7C6C01DDDA351004BE494 /* SpotifyAPI.swift in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
 				B620FE6D1DDDBF4B008A2A1A /* SpotifyAPIBridge.m in Sources */,
