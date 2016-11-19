@@ -1,5 +1,5 @@
 //
-//  SpotifyHelper.swift
+//  SpotifyAPI.swift
 //  SpotifyTestProj
 //
 //  Created by Aniruddh Bharadwaj on 11/17/16.
@@ -9,8 +9,8 @@
 import SafariServices
 import NotificationCenter
 
-@objc(SpotifyHelper)
-class SpotifyHelper: RCTEventEmitter, SPTAudioStreamingDelegate {
+@objc(SpotifyAPI)
+class SpotifyAPI: RCTEventEmitter, SPTAudioStreamingDelegate {
   
   /* SPOTIFY AUTH SECTION */
   var auth: SPTAuth!
@@ -31,7 +31,7 @@ class SpotifyHelper: RCTEventEmitter, SPTAudioStreamingDelegate {
     SPTAuth.defaultInstance().requestedScopes = [SPTAuthStreamingScope]
     
     // set notification name
-    NotificationCenter.default.addObserver(self, selector: #selector(SpotifyHelper.afterAuthentication(notification:)), name: NSNotification.Name(rawValue: self.closeUserAuthVC), object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(SpotifyAPI.afterAuthentication(notification:)), name: NSNotification.Name(rawValue: self.closeUserAuthVC), object: nil)
     
     // become controller's delegate
     SPTAudioStreamingController.sharedInstance().delegate = self

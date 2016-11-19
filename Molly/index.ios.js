@@ -17,8 +17,8 @@ import {
   View
 } from 'react-native';
 
-var SpotifyHelper = NativeModules.SpotifyHelper;
-this.eventEmitter = new NativeEventEmitter(NativeModules.SpotifyHelper);
+var SpotifyAPI = NativeModules.SpotifyAPI;
+this.eventEmitter = new NativeEventEmitter(NativeModules.SpotifyAPI);
 this.eventEmitter.addListener('Login', (res) => {
   if (res.success == true) {
     console.log("Client ID: " + res.userSpotifyID);
@@ -34,13 +34,14 @@ export default class SpotifyTestProj extends Component {
         <Text style={styles.normalText}>
           React Native Spotify Module Basic Example!
         </Text>
-        <TouchableHighlight style={styles.button} onPress={() => SpotifyHelper.authenticate('b9aa2793ac1a476ea7ed07175f38a6dd', 'molly://callback')}>
-          <Image resizeMode ={'contain'}
-           style={styles.image}
-           source={require('./assets/login-button-mobile.png')}
-          />
+        <TouchableHighlight style={styles.button} onPress={() => SpotifyAPI.authenticate('b9aa2793ac1a476ea7ed07175f38a6dd', 'molly://callback')}>
+          {/*<Image resizeMode ={'contain'}
+            style={styles.image}
+            source={require('./assets/login-button-mobile.png')}
+          />*/}
+          <Text>PLES LOGIN</Text>
         </TouchableHighlight>
-        <TouchableHighlight style={styles.button} onPress={() => SpotifyHelper.playURI('spotify:track:1OAYKfE0YdrN7C1yLWaLJo', (error) => {
+        <TouchableHighlight style={styles.button} onPress={() => SpotifyAPI.playURI('spotify:track:1OAYKfE0YdrN7C1yLWaLJo', (error) => {
             console.log(error);
           })
         }>
@@ -48,7 +49,7 @@ export default class SpotifyTestProj extends Component {
             Play some music!
           </Text>
         </TouchableHighlight>
-        <TouchableHighlight style={styles.button} onPress={() => SpotifyHelper.getMetadata((error, metadataArr) => {
+        <TouchableHighlight style={styles.button} onPress={() => SpotifyAPI.getMetadata((error, metadataArr) => {
             console.log(metadataArr);
           })
         }>
@@ -56,7 +57,7 @@ export default class SpotifyTestProj extends Component {
             Get Song Metadata!
           </Text>
         </TouchableHighlight>
-        <TouchableHighlight style={styles.button} onPress={() => SpotifyHelper.getCurrentSeconds((error, seconds) => {
+        <TouchableHighlight style={styles.button} onPress={() => SpotifyAPI.getCurrentSeconds((error, seconds) => {
             console.log(seconds);
           })
         }>
