@@ -116,8 +116,8 @@ class PlayerScene extends Component {
           <BlurNavigator
             light={true}
             dark={true}
-            onRightButtonPress={this.props.goBack}
-            rightButtonTitle="Close">
+            onLeftButtonPress={this.props.goBack}
+            leftButtonTitle="Close">
             <Text style={{
               color: 'white',
               fontSize: 20,
@@ -189,8 +189,8 @@ class PlayerScene extends Component {
                 </View>
 
                 <View style={{ marginVertical: constants.unit * 2 }}>
-                  <Text style={{ fontSize: 24, fontWeight: '700', color: 'black'}}>Lost in the World</Text>
-                  <Text style={{ fontSize: 24, fontWeight: '500', color: '#808080'}}>Kanye West</Text>
+                  <Text style={{ fontSize: 24, fontWeight: '800', color: 'black', letterSpacing: -1}}>Lost in the World</Text>
+                  <Text style={{ fontSize: 24, fontWeight: '500', color: '#808080', letterSpacing: -1}}>Kanye West</Text>
                 </View>
               </View>
 

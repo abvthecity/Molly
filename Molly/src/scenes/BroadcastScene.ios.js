@@ -13,10 +13,7 @@ import { BlurView, VibrancyView } from 'react-native-blur'
 
 import Card from '../components/Card'
 import NowPlayingCardView from '../components/NowPlayingCardView'
-
-const IMAGE_PREFETCH_URL = 'https://pbs.twimg.com/profile_images/781996435961032705/1cSsL68X.jpg'
-const album_cover = { uri: IMAGE_PREFETCH_URL }
-Image.prefetch(IMAGE_PREFETCH_URL)
+import HeadingWithAction from '../components/HeadingWithAction'
 
 class BroadcastScene extends Component {
 
@@ -77,15 +74,24 @@ class BroadcastScene extends Component {
           <View style={{ padding: constants.unit * 4 }}>{header}</View>
 
           <View style={{ padding: constants.unit * 4, paddingTop: 0 }}>
-            <Card>
+            <Card style={{ marginBottom: constants.unit * 3 }}>
               <NowPlayingCardView nowPlaying={{
-                album_cover: album_cover,
+                album_cover: null,
                 song_title: 'Murder',
                 artist_name: 'Lido',
                 neutral: 'rgb(84, 107, 132)',
                 accent: 'rgb(207, 66, 65)',
                 progress: 0.7
               }} />
+            </Card>
+
+            <Card style={{ marginBottom: constants.unit * 3 }}>
+              <View style={{ padding: constants.unit * 3 }}>
+                <HeadingWithAction
+                  title="Up Next"
+                  buttonTitle="Add song"
+                />
+              </View>
             </Card>
           </View>
 

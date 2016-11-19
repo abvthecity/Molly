@@ -16,8 +16,8 @@ const NowPlayingCardView = props => {
       <View style={styles.playing_details}>
         <View>
           <Text style={[styles.smallText, { color: '#FF2D55' }]}>NOW PLAYING</Text>
-          <Text style={{ fontSize: 18, fontWeight: '700', color: 'black' }}>{props.nowPlaying.song_title}</Text>
-          <Text style={{ fontSize: 18, fontWeight: '500', color: '#808080' }}>{props.nowPlaying.artist_name}</Text>
+          <Text style={{ fontSize: 18, fontWeight: '800', color: 'black', letterSpacing: -0.5 }}>{props.nowPlaying.song_title}</Text>
+          <Text style={{ fontSize: 18, fontWeight: '500', color: '#808080', letterSpacing: -0.5 }}>{props.nowPlaying.artist_name}</Text>
         </View>
         <View style={{ marginTop: -constants.unit * 8 }}>
           <Text style={{ fontSize: 13, fontWeight: '500', color: '#B2B2B2', textAlign: 'right' }}>1:27</Text>

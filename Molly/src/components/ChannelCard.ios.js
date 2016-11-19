@@ -14,6 +14,7 @@ class ChannelCard extends Component {
     title: PropTypes.string.isRequired,
     host: PropTypes.string.isRequired,
     live: PropTypes.bool.isRequired,
+    favorite: PropTypes.bool,
     nowPlaying: PropTypes.shape({
       album_cover: PropTypes.object.isRequired,
       song_title: PropTypes.string.isRequired,
@@ -31,6 +32,19 @@ class ChannelCard extends Component {
   }
 
   render() {
+
+    const favorite = () => {
+      if (this.props.favorite) {
+        return (<Image source={require('../img/icons/heart_filled.png')} style={{
+          tintColor: '#FF2D55',
+          width: 16,
+          height: 16,
+          position: 'absolute',
+          top: constants.unit * 3,
+          right: constants.unit * 3
+        }} />)
+      }
+    }
 
     const upper = () => {
       if (this.props.live) {
@@ -50,6 +64,8 @@ class ChannelCard extends Component {
           zIndex: this.props.live ? 1 : 0,
           backgroundColor: this.props.live ? 'white' : 'rgba(255, 255, 255, 0.65)'
         }, this.props.style]}>
+
+        {favorite()}
 
         {/* UPPER SIDE */}
         {upper()}
@@ -73,7 +89,7 @@ class ChannelCard extends Component {
 const styles = StyleSheet.create({
   separator: {
     height: StyleSheet.hairlineWidth,
-    backgroundColor: '#BFBFBF'
+    backgroundColor: 'rgba(0, 0, 0, 0.25)'
   },
   lower: {
     padding: constants.unit * 3

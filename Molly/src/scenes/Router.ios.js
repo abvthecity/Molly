@@ -10,56 +10,124 @@ import BroadcastScene from './BroadcastScene'
 import FavoritesScene from './FavoritesScene'
 import PlayerScene from './PlayerScene'
 
-class Router extends Component {
-
+class ExploreRoute extends Component {
   state = {
     isLoggedIn: false,
-    showModal: null
+    // showLive: false,
+    showPlayer: false
+  }
+
+  _login = () => {
+    this.setState({ isLoggedIn: true })
+  }
+
+  _logout = () => {
+    this.setState({ isLoggedIn: false })
   }
 
   render() {
-
     return (
-      <View>
-
+      <View {...this.props} style={[{ flex: 1 }, this.props.style]}>
         <ExploreScene
-          openFavorites={() => this.setState({ showModal: "FAVORITES" })}
-          openLive={() => this.setState({ showModal: "LIVE" })}
-          openPlayer={() => this.setState({ showModal: "PLAYER" })}
-        />
+          openFavorites={() => this.props.navigator.push({
+            component: FavoritesRoute,
+            passProps: {
+              goBack: () => {
+                this.props.navigator.pop()
+              }
+            }
+          })}
+          openLive={() => this.props.navigator.push({
+            component: BroadcastScene,
+            passProps: {
+              goBack: () => {
+                this.props.navigator.pop()
+              }
+            }
+          })}
+          // openLive={() => this.setState({ showLive: true })}
+          openPlayer={() => this.setState({ showPlayer: true })} />
 
         {/* LANDING */}
         <Modal transparent={false}
           visible={!this.state.isLoggedIn}
           supportedOrientations={['portrait']}
           animationType={'slide'}>
-          <LandingScene login={() => this.setState({ isLoggedIn: true })} />
-        </Modal>
-
-        {/* FAVORITES */}
-        <Modal transparent={false}
-          visible={this.state.showModal === "FAVORITES"}
-          supportedOrientations={['portrait']}
-          animationType={'slide'}>
-          <FavoritesScene goBack={() => this.setState({ showModal: null })} />
+          <LandingScene login={this._login} />
         </Modal>
 
         {/* GO LIVE */}
-        <Modal transparent={false}
-          visible={this.state.showModal === "LIVE"}
+        {/* <Modal transparent={false}
+          visible={this.state.showLive}
           supportedOrientations={['portrait']}
           animationType={'slide'}>
-          <BroadcastScene goBack={() => this.setState({ showModal: null })} />
-        </Modal>
+          <BroadcastScene goBack={() => this.setState({ showLive: false })} />
+        </Modal> */}
 
         {/* PLAYER */}
         <Modal transparent={false}
-          visible={this.state.showModal === "PLAYER"}
+          visible={this.state.showPlayer}
           supportedOrientations={['portrait']}
           animationType={'slide'}>
-          <PlayerScene goBack={() => this.setState({ showModal: null })} />
+          <PlayerScene goBack={() => this.setState({ showPlayer: false })} />
         </Modal>
       </View>
+    )
+  }
+}
+
+
+
+class FavoritesRoute extends Component {
+  state = {
+    showPlayer: false
+  }
+
+  render() {
+    return (
+      <View {...this.props} style={[{ flex: 1 }, this.props.style]}>
+
+        <FavoritesScene
+          goBack={this.props.goBack}
+          openPlayer={() => this.setState({ showPlayer: true }) }
+        />
+
+        {/* PLAYER */}
+        <Modal transparent={false}
+          visible={this.state.showPlayer}
+          supportedOrientations={['portrait']}
+          animationType={'slide'}>
+          <PlayerScene goBack={() => this.setState({ showPlayer: false })} />
+        </Modal>
+      </View>
+    )
+  }
+}
+
+
+
+const LiveRoute = () => (
+  <View {...this.props} style={[{ flex: 1 }, this.props.style]}>
+    <BroadcastScene goBack={this.props.goBack} />
+  </View>
+)
+
+
+
+class Router extends Component {
+
+  render() {
+
+    return (
+      <NavigatorIOS
+        initialRoute={{
+          title: 'Explore',
+          component: ExploreRoute
+        }}
+        interactivePopGestureEnabled={false}
+        navigationBarHidden={true}
+        style={{ flex: 1 }}
+      />
     )
   }
 }

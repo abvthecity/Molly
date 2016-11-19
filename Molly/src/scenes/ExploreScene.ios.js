@@ -7,80 +7,36 @@ import {
   StyleSheet
 } from 'react-native'
 
-import constants from '../common/constants'
 import LinearGradient from 'react-native-linear-gradient'
+
+import constants from '../common/constants'
+import API from '../common/API'
+
 import BlurStatusBar from '../components/BlurStatusBar'
-
 import ChannelCard from '../components/ChannelCard'
-
-const IMAGE_PREFETCH_URL = 'https://pbs.twimg.com/profile_images/781996435961032705/1cSsL68X.jpg'
-const album_cover = { uri: IMAGE_PREFETCH_URL }
-Image.prefetch(IMAGE_PREFETCH_URL)
+import HeadingWithAction from '../components/HeadingWithAction'
+import Swipeout from '../components/Swipeout'
 
 class ExploreScene extends Component {
 
-  constructor(props) {
-    super(props)
+  state = {
+    browseTitle: 'Explore',
+    cards: []
+  }
 
-    const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+  componentWillMount() {
+    this._getChannels()
 
-    this.state = {
-      browseTitle: 'Explore',
-      cards: ds.cloneWithRows([{
-        title: 'Rachit\'s Bangers',
-        host: 'Rachit Kataria',
-        distance: '400 FT',
-        live: true,
-        nowPlaying: {
-          album_cover: album_cover,
-          song_title: 'Murder',
-          artist_name: 'Lido',
-          neutral: 'rgb(84, 107, 132)',
-          accent: 'rgb(207, 66, 65)',
-          progress: 0.7
-        }
-      },{
-        title: 'Rachit\'s Bangers',
-        host: 'Rachit Kataria',
-        distance: '400 FT',
-        live: true,
-        nowPlaying: {
-          album_cover: album_cover,
-          song_title: 'Murder',
-          artist_name: 'Lido',
-          neutral: 'rgb(84, 107, 132)',
-          accent: 'rgb(207, 66, 65)',
-          progress: 0.7
-        }
-      },{
-        title: 'Rachit\'s Bangers',
-        host: 'Rachit Kataria',
-        distance: '400 FT',
-        live: false,
-        nowPlaying: {
-          album_cover: album_cover,
-          song_title: 'Murder',
-          artist_name: 'Lido',
-          neutral: 'rgb(84, 107, 132)',
-          accent: 'rgb(207, 66, 65)',
-          progress: 0.7
-        }
-      },{
-        title: 'Rachit\'s Bangers',
-        host: 'Rachit Kataria',
-        distance: '400 FT',
-        live: false,
-        nowPlaying: {
-          album_cover: album_cover,
-          song_title: 'Murder',
-          artist_name: 'Lido',
-          neutral: 'rgb(84, 107, 132)',
-          accent: 'rgb(207, 66, 65)',
-          progress: 0.7
-        }
-      }])
-    }
+    // establish a socket here!
+  }
 
+  _getChannels() {
+    let _this = this;
+    API.getChannels().then(data => {
+      _this.setState({
+        cards: data
+      })
+    }).catch(e => console.error(e))
   }
 
   render() {
@@ -98,17 +54,35 @@ class ExploreScene extends Component {
       colors={['#FFA832', '#FF5F33']} style={styles.colorBlock}>
       <Text style={{ color: 'white', fontSize: 26 }}>My</Text>
       <Text style={{ color: 'white', fontSize: 26, fontWeight: '900' }}>Favorites</Text>
+      <Image source={require('../img/icons/heart.png')} style={{
+        tintColor: 'white',
+        width: 24,
+        height: 24,
+        position: 'absolute',
+        opacity: 0.5,
+        bottom: constants.unit * 3,
+        left: constants.unit * 3
+      }} />
     </LinearGradient>)
 
     const liveBlock = (<LinearGradient
       colors={['#FF6E88', '#BF2993']} style={styles.colorBlock}>
       <Text style={{ color: 'white', fontSize: 26 }}>Go <Text style={{ fontWeight: '900' }}>LIVE</Text></Text>
+      <Image source={require('../img/icons/radio.png')} style={{
+        tintColor: 'white',
+        width: 24,
+        height: 24,
+        position: 'absolute',
+        opacity: 0.5,
+        bottom: constants.unit * 3,
+        left: constants.unit * 3
+      }} />
     </LinearGradient>)
 
     return (
       <View {...this.props}>
         <BlurStatusBar light={false} />
-        <ScrollView style={{ paddingTop: 20 }}>
+        <ScrollView style={{ paddingTop: 0 }}>
 
           {/* SECTION 1 */}
           <LinearGradient colors={['white', '#F0F0F0']} style={{ backgroundColor: 'transparent', padding: constants.unit * 4 }}>
@@ -121,10 +95,12 @@ class ExploreScene extends Component {
 
           {/* SECTION 2 */}
           <View style={{ padding: constants.unit * 4 }}>
-            <Text style={styles.heading1}>{this.state.browseTitle}</Text>
+            <HeadingWithAction title={this.state.browseTitle} style={{ marginBottom: constants.unit * 2 }} />
+          </View>
 
-            <ListView
+            {/* <ListView
               style={{ overflow: 'visible' }}
+              enableEmptySections={true}
               dataSource={this.state.cards}
               renderRow={(card) => (
                 <TouchableWithoutFeedback
@@ -141,9 +117,69 @@ class ExploreScene extends Component {
                   />
                 </TouchableWithoutFeedback>
               )}
-            />
+            /> */}
 
-          </View>
+            {this.state.cards.map((card, i) => {
+
+              let press = () => {
+                this.props.openPlayer()
+              }
+
+              let swipeButtonComponent = (
+                <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'center' }}>
+                  <TouchableOpacity
+                    hitSlop={{ left: 16, top: 16, bottom: 16, right: 16 }}
+                    style={{
+                      // borderRadius: constants.borderRadiusSm,
+                      // backgroundColor: 'rgba(0, 0, 0, 0.1)',
+                      padding: constants.unit,
+                      marginLeft: constants.unit,
+                    }}>
+                    <Text style={{
+                      textAlign: 'center',
+                      color: '#007AFF'
+                    }}>Save</Text>
+                  </TouchableOpacity>
+                </View>
+              )
+
+              let swipeButtons = [
+                {
+                  text: 'Save',
+                  backgroundColor: 'transparent',
+                  color: '#007AFF',
+                  component: swipeButtonComponent
+                }
+              ]
+
+              return (
+                <View key={i}
+                  style={{
+                    marginBottom: constants.unit * 3,
+                    paddingHorizontal: constants.unit * 4
+                  }}>
+                  <Swipeout
+                    right={swipeButtons}
+                    style={{ overflow: 'visible' }}
+                    backgroundColor="transparent">
+                    <TouchableOpacity
+                      key={i}
+                      activeOpacity={0.7}
+                      onPress={press}
+                      style={{ overflow: 'visible' }}
+                      disabled={!card.live}>
+                      <ChannelCard
+                        title={card.title}
+                        host={card.host}
+                        distance={card.distance}
+                        live={card.live}
+                        nowPlaying={card.nowPlaying}
+                      />
+                    </TouchableOpacity>
+                  </Swipeout>
+                </View>
+              )
+            })}
 
         </ScrollView>
       </View>
@@ -180,11 +216,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginTop: constants.unit * 2,
     marginBottom: constants.unit * 2
-  },
-  heading1: {
-    fontSize: 24,
-    fontWeight: '700',
-    marginBottom: constants.unit * 4
   }
 })
 

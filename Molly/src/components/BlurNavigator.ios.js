@@ -17,13 +17,17 @@ const BlurNavigator = props => {
   const leftButton = () => {
     if (props.leftButtonTitle !== null) {
       return (
-        <TouchableOpacity onPress={props.onLeftButtonPress} style={{ flex: 1 }} disabled={props.leftButtonDisabled}>
-          <View style={[styles.button_wrap, { justifyContent: 'flex-start' }]}>
+        <View style={[styles.button_wrap, { justifyContent: 'flex-start' }]}>
+          <TouchableOpacity
+            hitSlop={{top: 16, left: 16, bottom: 16, right: 16}}
+            onPress={props.onLeftButtonPress}
+            style={{ flex: 1 }}
+            disabled={props.leftButtonDisabled}>
             {/* <Image source={require('../img/icons/arrow-back.png')}
               style={{ width: 12.68, height: 21.12, tintColor: tintColor }} /> */}
             <Text style={[styles.button, { color: tintColor }, { opacity: !props.leftButtonDisabled ? 1 : 0.5}]}>{props.leftButtonTitle}</Text>
-          </View>
-        </TouchableOpacity>
+          </TouchableOpacity>
+        </View>
       )
     }
   }
@@ -39,11 +43,15 @@ const BlurNavigator = props => {
 
     if (props.rightButtonTitle !== null) {
       return (
-        <TouchableOpacity onPress={props.onRightButtonPress} style={{ flex: 1 }} disabled={props.rightButtonDisabled}>
-          <View style={[styles.button_wrap, { justifyContent: 'flex-end' }]}>
+        <View style={[styles.button_wrap, { justifyContent: 'flex-end' }]}>
+          <TouchableOpacity
+            hitSlop={{top: 16, left: 16, bottom: 16, right: 16}}
+            onPress={props.onRightButtonPress}
+            style={{ flex: 1 }}
+            disabled={props.rightButtonDisabled}>
             <Text style={[styles.button, { color: tintColor }, { opacity: !props.leftButtonDisabled ? 1 : 0.5}]}>{props.rightButtonTitle}</Text>
-          </View>
-        </TouchableOpacity>
+          </TouchableOpacity>
+        </View>
       )
     }
   }
