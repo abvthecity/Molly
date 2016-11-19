@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import classes.User;
+import sql.UserDataManager;
 
 /**
  * Servlet implementation class UserServlet
