@@ -26,7 +26,7 @@ public  class UserDataManager {
 		User  user = null;
 		Connection conn = null;
 		PreparedStatement ps = null;
-		 String bm="", tags="";
+		String bm="", tags="";
 		try {
 		
 //		 bout = new ByteArrayOutputStream();
