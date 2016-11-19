@@ -180,21 +180,23 @@ class SpotifyAPI: RCTEventEmitter, SPTAudioStreamingDelegate {
   // Get Metadata Given URI (REQUIRES PLAY URI BEFORE CALLS)
   @objc(getMetadata:)
   func getMetadata(callback: @escaping RCTResponseSenderBlock) {
-    var metadataArr: [String] = []
     
-    let trackName = self.player.metadata.currentTrack?.name
-    let artistName = self.player.metadata.currentTrack?.artistName
-    let albumName = self.player.metadata.currentTrack?.albumName
-    let albumArt = self.player.metadata.currentTrack?.albumCoverArtURL
-    let uri = self.player.metadata.currentTrack?.uri
+    let currentTrack = self.player.metadata.currentTrack!
     
-    metadataArr.append(trackName!)
-    metadataArr.append(artistName!)
-    metadataArr.append(albumName!)
-    metadataArr.append(albumArt!)
-    metadataArr.append(uri!)
+    let metadata: [String:Any] = [
+      "uri": currentTrack.uri as String,
+      "playbackSourceUri": currentTrack.playbackSourceUri as String,
+      "playbackSourceName": currentTrack.playbackSourceName as String,
+      "artistName": currentTrack.artistName as String,
+      "artistUri": currentTrack.artistUri as String,
+      "albumName": currentTrack.albumName as String,
+      "albumUri": currentTrack.albumUri as String,
+      "albumCoverArtURL": currentTrack.albumCoverArtURL! as String,
+      "duration": currentTrack.duration as TimeInterval,
+      "indexInContext": currentTrack.indexInContext as UInt
+    ]
     
-    callback([NSNull(), metadataArr])
+    callback([NSNull(), metadata])
   }
   
   // Get current track's seconds
