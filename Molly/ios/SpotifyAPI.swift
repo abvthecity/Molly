@@ -34,14 +34,17 @@ class SpotifyAPI: RCTEventEmitter, SPTAudioStreamingDelegate {
     SPTAuth.defaultInstance().requestedScopes = [SPTAuthStreamingScope]
     
     // set notification name
+    if firstAppLaunch == true {
       NotificationCenter.default.addObserver(self, selector: #selector(SpotifyAPI.afterAuthentication(notification:)), name: NSNotification.Name(rawValue: self.closeUserAuthVC), object: nil)
+      firstAppLaunch = false
+    }
     
     // become controller's delegate
     SPTAudioStreamingController.sharedInstance().delegate = self
     
     // start streaming controller
     do {
-      if SPTAudioStreamingController.sharedInstance().initialized {
+      if SPTAudioStreamingController.sharedInstance().initialized == false {
         try SPTAudioStreamingController.sharedInstance().start(withClientId: clientID)
       }
     } catch {
