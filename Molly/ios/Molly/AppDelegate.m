@@ -40,12 +40,12 @@
 {
   if ([[SPTAuth defaultInstance] canHandleURL:url]) {
     [[SPTAuth defaultInstance] handleAuthCallbackWithTriggeredAuthURL:url callback:^(NSError *error, SPTSession *session) {
-      if (session != NULL) {
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"closeUserAuthVC" object:session];
-        [[SPTAudioStreamingController sharedInstance] loginWithAccessToken:[[[SPTAuth defaultInstance] session] accessToken]];
-      } else {
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"closeUserAuthVC" object:NULL];
-      }
+//      if (session != NULL) {
+//        [[NSNotificationCenter defaultCenter] postNotificationName:@"closeUserAuthVC" object:session];
+//        [[SPTAudioStreamingController sharedInstance] loginWithAccessToken:[[[SPTAuth defaultInstance] session] accessToken]];
+//      } else {
+//        [[NSNotificationCenter defaultCenter] postNotificationName:@"closeUserAuthVC" object:NULL];
+//      }
     }];
     return YES;
   }
