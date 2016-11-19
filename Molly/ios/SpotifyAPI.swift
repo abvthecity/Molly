@@ -137,7 +137,7 @@ class SpotifyHelper: RCTEventEmitter, SPTAudioStreamingDelegate {
       if error == nil {
         callback([NSNull()])
       } else {
-        callback([error])
+        callback([error!])
       }
     })
   }
@@ -150,7 +150,7 @@ class SpotifyHelper: RCTEventEmitter, SPTAudioStreamingDelegate {
       if error == nil {
         callback([NSNull()])
       } else {
-        callback([error])
+        callback([error!])
       }
     }
   }
@@ -164,14 +164,14 @@ class SpotifyHelper: RCTEventEmitter, SPTAudioStreamingDelegate {
       if error == nil {
         callback([NSNull()])
       } else {
-        callback([error])
+        callback([error!])
       }
     })
   }
   
   // Get Metadata Given URI (REQUIRES PLAY URI BEFORE CALLS)
-  @objc(getMetadata:callback:)
-  func getMetadata(songURI: String!, callback: @escaping RCTResponseSenderBlock) {
+  @objc(getMetadata:)
+  func getMetadata(callback: @escaping RCTResponseSenderBlock) {
     var metadataArr: [String] = []
     
     let trackName = self.player.metadata.currentTrack?.name
@@ -219,7 +219,7 @@ class SpotifyHelper: RCTEventEmitter, SPTAudioStreamingDelegate {
         if error == nil {
           callback([NSNull(), nextSongURI])
         } else {
-          callback([error, nextSongURI])
+          callback([error!, nextSongURI])
         }
       })
     }
@@ -263,7 +263,7 @@ class SpotifyHelper: RCTEventEmitter, SPTAudioStreamingDelegate {
           var trackArtists: [String]! = []
           for i in 0 ..< partialTrack.artists.count {
             let indivArtist: SPTPartialArtist! = partialTrack.artists[i] as! SPTPartialArtist
-            trackArtists.append(indivArtist.name as! String)
+            trackArtists.append(indivArtist.name as String)
           }
           let trackAlbum: String! = partialTrack.album.name
           
@@ -282,7 +282,7 @@ class SpotifyHelper: RCTEventEmitter, SPTAudioStreamingDelegate {
         callback([NSNull(), response])
       } else {
         // send callback with error and no response
-        callback([error, NSNull()])
+        callback([error!, NSNull()])
       }
     })
   }

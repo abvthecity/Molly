@@ -1,35 +1,106 @@
-import React, { Component } from 'react'
+/**
+ * Sample React Native App
+ * https://github.com/facebook/react-native
+ * @flow
+ */
+
+import React, { Component } from 'react';
 import {
-  AppRegistry
-} from 'react-native'
+  AppRegistry,
+  Image,
+  StyleSheet,
+  NativeModules,
+  NativeEventEmitter,
+  NavigatorIOS,
+  Text,
+  TouchableHighlight,
+  View
+} from 'react-native';
 
-import Router from './src/scenes/Router'
+var SpotifyHelper = NativeModules.SpotifyHelper;
+this.eventEmitter = new NativeEventEmitter(NativeModules.SpotifyHelper);
+this.eventEmitter.addListener('Login', (res) => {
+  if (res.success == true) {
+    console.log("Client ID: " + res.userSpotifyID);
+  } else {
+    console.log("failed to login");
+  }
+});
 
-class Molly extends Component {
+export default class SpotifyTestProj extends Component {
   render() {
-    return <Router />
+    return (
+      <View style={styles.container}>
+        <Text style={styles.normalText}>
+          React Native Spotify Module Basic Example!
+        </Text>
+        <TouchableHighlight style={styles.button} onPress={() => SpotifyHelper.authenticate('b9aa2793ac1a476ea7ed07175f38a6dd', 'molly://callback')}>
+          <Image resizeMode ={'contain'}
+           style={styles.image}
+           source={require('./assets/login-button-mobile.png')}
+          />
+        </TouchableHighlight>
+        <TouchableHighlight style={styles.button} onPress={() => SpotifyHelper.playURI('spotify:track:1OAYKfE0YdrN7C1yLWaLJo', (error) => {
+            console.log(error);
+          })
+        }>
+          <Text style={styles.normalText}>
+            Play some music!
+          </Text>
+        </TouchableHighlight>
+        <TouchableHighlight style={styles.button} onPress={() => SpotifyHelper.getMetadata((error, metadataArr) => {
+            console.log(metadataArr);
+          })
+        }>
+          <Text style={styles.normalText}>
+            Get Song Metadata!
+          </Text>
+        </TouchableHighlight>
+        <TouchableHighlight style={styles.button} onPress={() => SpotifyHelper.getCurrentSeconds((error, seconds) => {
+            console.log(seconds);
+          })
+        }>
+          <Text style={styles.normalText}>
+            Current time of song!
+          </Text>
+        </TouchableHighlight>
+      </View>
+    );
   }
 }
 
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     justifyContent: 'center',
-//     alignItems: 'center',
-//     backgroundColor: '#F5FCFF',
-//   },
-//   welcome: {
-//     fontSize: 20,
-//     textAlign: 'center',
-//     margin: 10,
-//   },
-//   instructions: {
-//     textAlign: 'center',
-//     color: '#333333',
-//     marginBottom: 5,
-//   },
-// });
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'black',
+  },
+  button: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 250,
+    height: 45,
+    borderRadius: 64
+  },
+  image: {
+    width: 250,
+    height: 50
+  },
+  normalText: {
+    fontSize: 20,
+    textAlign: 'center',
+    margin: 10,
+    color: 'white'
+  },
+  btnText: {
+    fontSize: 25,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    margin: 10,
+    color: 'white'
+  },
 
-export default Molly
+});
 
-AppRegistry.registerComponent('Molly', () => Molly)
+AppRegistry.registerComponent('SpotifyTestProj', () => SpotifyTestProj);
