@@ -20,13 +20,13 @@ public  class UserDataManager {
 //	static ByteArrayInputStream bin;
 //    static DataInputStream din;
 //    static BufferedReader br;
-   
+	static User  user = null;
     
 	public  static void CreateUser(String clientId, String[] clientTags, boolean isClienDJ, String[] bookmarks ){
-		User  user = null;
+		
 		Connection conn = null;
 		PreparedStatement ps = null;
-		String bm="", tags="";
+		 String bm="", tags="";
 		try {
 		
 //		 bout = new ByteArrayOutputStream();
@@ -117,6 +117,45 @@ public  class UserDataManager {
 			e.getStackTrace();
 		}
 		return user;
+	}
+	
+	
+	public static void makeDJ(String clientID){
+		
+		//System.out.println("UserDataManager.createUser| " );
+				
+		if (user != null ) {
+			
+			user.setClientIsDJ(true);
+			//System.out.println("UserDataManager : "+user.getIfCLientIsDJ());
+			Connection conn = null;
+			PreparedStatement ps = null;
+			try {
+				Class.forName(JDBC_DRIVER);
+				conn = DriverManager.getConnection(DB_URL);
+				ps = conn.prepareStatement("UPDATE Users SET clientDJ=true WHERE clientID=?");
+				ps.setString(1, clientID);
+				int result = ps.executeUpdate();
+				if (result == 0) {
+					System.out.println("UserDataManager.createUser|user: clientID " 
+							+ clientID + " not in database, couldn't set as dj.");
+				}
+				
+			} catch (SQLException sqle) {
+				System.out.println ("UserDataManager SQLException: " + sqle.getMessage());
+			} catch (ClassNotFoundException cnfe) {
+				System.out.println ("UserDataManager ClassNotFoundException: " + cnfe.getMessage());
+			} finally {
+				try {
+					ps.close();
+				} catch (SQLException e) { /* Do nothing */ }
+				try {
+					conn.close();
+				} catch (SQLException e) { /* Do nothing */ }
+			}
+		}
+
+		
 	}
 
 }
