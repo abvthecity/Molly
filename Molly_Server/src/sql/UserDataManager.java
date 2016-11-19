@@ -22,12 +22,8 @@ public  class UserDataManager {
 //    static BufferedReader br;
 	static User  user = null;
     
-
-	public  static void createUser(String clientId, String[] clientTags, boolean isClienDJ, String[] bookmarks ){
-		User  user = null;
-
-
-
+	public  static void CreateUser(String clientId, String[] clientTags, boolean isClienDJ, String[] bookmarks ){
+		
 		Connection conn = null;
 		PreparedStatement ps = null;
 		 String bm="", tags="";
@@ -121,6 +117,39 @@ public  class UserDataManager {
 			e.getStackTrace();
 		}
 		return user;
+	}
+	
+	public static String[] getClientBookmarks(String clientID){
+		
+		User user = null;
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+
+		String[] bm = new String[50];;
+		
+		try {
+			
+			Class.forName(JDBC_DRIVER);
+			conn = DriverManager.getConnection(DB_URL);
+			ps = conn.prepareStatement("SELECT clientBookmarks FROM Users WHERE clientID=?");
+			
+	        
+	    	ps.setString(1, clientID);
+			rs = ps.executeQuery();
+			if (rs.next()) {
+				bm = rs.getString("clientBookmarks").split(":");
+	
+			}
+		}catch (ClassNotFoundException e){
+			e.getStackTrace();
+	
+		}
+		catch (SQLException e){
+			e.getStackTrace();
+		}
+		return bm;
+		
 	}
 	
 	
