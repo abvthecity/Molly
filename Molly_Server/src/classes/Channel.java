@@ -1,13 +1,16 @@
 package classes;
 
+import java.util.ArrayList;
+import java.util.Queue;
 
-public class Channel {
+public class Channel extends Thread{
 
 	//public int channelID;
 	public String clientID;
 	public String[] channelTags;
 	public int numChannelSubscribers;
 	public int numChannelLikes; 
+	public ArrayList<String> songURIPlaylist;
 	
 	
 	public Channel( String clientId, String[] channelTags, int numSubscribers, int numlikes ){
@@ -16,7 +19,7 @@ public class Channel {
 		this.channelTags = channelTags;
 		this.numChannelSubscribers = numSubscribers;
 		this.numChannelLikes = numlikes;
-		
+		this.songURIPlaylist = new ArrayList<String>();
 	}
 	
 //	public int getChannelID(){
@@ -59,5 +62,13 @@ public class Channel {
 	public void setNumChannelLikes(int numLikes){
 		 this.numChannelLikes = numLikes;
 		
+	}
+	
+	public void addSongToPlaylist(String songURI){
+		songURIPlaylist.add(songURI);
+	}
+	
+	public ArrayList<String> getSongURIPlaylist(){
+		return songURIPlaylist;
 	}
 }
