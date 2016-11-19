@@ -17,17 +17,29 @@ import {
   View
 } from 'react-native';
 
-var SpotifyAPI = NativeModules.SpotifyAPI;
-this.eventEmitter = new NativeEventEmitter(NativeModules.SpotifyAPI);
-this.eventEmitter.addListener('Login', (res) => {
-  if (res.success == true) {
-    console.log("Client ID: " + res.userSpotifyID);
-  } else {
-    console.log("failed to login");
-  }
-});
+const SpotifyAPI = NativeModules.SpotifyAPI;
+const SpotifyAPIEventEmitter = new NativeEventEmitter(SpotifyAPI);
 
-export default class SpotifyTestProj extends Component {
+class Molly extends Component {
+
+  constructor(props) {
+    super(props)
+  }
+
+  componentDidMount() {
+    this.LoginSubscriber = SpotifyAPIEventEmitter.addListener('Login', res => {
+      if (res.success === true) {
+        console.log("Client ID:", res.userSpotifyID)
+      } else {
+        console.log("failed to login")
+      }
+    })
+  }
+
+  componentWillUnmount() {
+    this.LoginSubscriber.remove()
+  }
+
   render() {
     return (
       <View style={styles.container}>
@@ -104,4 +116,6 @@ const styles = StyleSheet.create({
 
 });
 
-AppRegistry.registerComponent('SpotifyTestProj', () => SpotifyTestProj);
+AppRegistry.registerComponent('Molly', () => Molly);
+
+export default Molly
