@@ -1,102 +1,289 @@
 //
-//  SpotifyAPI.swift
-//  SpotifyFramework
+//  SpotifyHelper.swift
+//  SpotifyTestProj
 //
-//  Created by Rachit K on 11/15/16.
-//  Copyright © 2016 Rachit Kataria. All rights reserved.
+//  Created by Aniruddh Bharadwaj on 11/17/16.
+//  Copyright © 2016 Facebook. All rights reserved.
 //
 
-import UIKit
 import SafariServices
+import NotificationCenter
 
-@available(iOS 9.0, *)
-@objc(SpotifyAPI)
-class SpotifyAPI: NSObject, SPTAudioStreamingDelegate {
-  
-  var player: SPTAudioStreamingController!
+@objc(SpotifyHelper)
+class SpotifyHelper: RCTEventEmitter, SPTAudioStreamingDelegate {
   
   /* SPOTIFY AUTH SECTION */
   var auth: SPTAuth!
-  var authVC: SFSafariViewController!
+  var session: SPTSession!
+  var player: SPTAudioStreamingController!
+  var authVC: UIViewController!
   
-  @objc(clientID:redirectURL:callback:)
-  func authenticate(clientID: String!, redirectURL: String!, callback: RCTResponseSenderBlock) {
-    // set auth and player
-    self.auth = SPTAuth.defaultInstance();
-    self.player = SPTAudioStreamingController.sharedInstance();
+  // Notification Name
+  let closeUserAuthVC: String! = "closeUserAuthVC"
+  
+  // Authenticate User With Spotify
+  @objc(authenticate:redirectURL:)
+  func authenticate(clientID: String!, redirectURL: String) {
+    // setup login with params
+    SPTAuth.defaultInstance().clientID = clientID
+    SPTAuth.defaultInstance().redirectURL = URL(string: redirectURL)
+    SPTAuth.defaultInstance().sessionUserDefaultsKey = "current session"
+    SPTAuth.defaultInstance().requestedScopes = [SPTAuthStreamingScope]
     
-    // set clientID and redirectURL
-    self.auth.clientID = clientID;
-    self.auth.redirectURL = URL(string: redirectURL);
-    self.auth.requestedScopes = [SPTAuthStreamingScope];
+    // set notification name
+    NotificationCenter.default.addObserver(self, selector: #selector(SpotifyHelper.afterAuthentication(notification:)), name: NSNotification.Name(rawValue: self.closeUserAuthVC), object: nil)
     
-    // become the delegate to the streaming controller
-    self.player.delegate = self
+    // become controller's delegate
+    SPTAudioStreamingController.sharedInstance().delegate = self
     
-    // start player
+    // start streaming controller
     do {
-      try self.player.start(withClientId: self.auth.clientID)
+      try SPTAudioStreamingController.sharedInstance().start(withClientId: clientID)
     } catch {
-      // do nothing!
+      // something went wrong! figure out what to put here later!
     }
     
-    // start auth on main thread
+    // async auth call
     DispatchQueue.main.async {
-      self.startUserAuth()
+      self.startAuthenticationFlow()
     }
   }
   
-  // auth helper
-  func startUserAuth() {
-    // if sesh is valid, login with existing token
-    if (self.auth.session.isValid()) {
-      self.player.login(withAccessToken: self.auth.session.accessToken)
+  // Authentication Helper for User Auth Flow
+  func startAuthenticationFlow() {
+    let urlToDisplay = SPTAuth.defaultInstance().spotifyWebAuthenticationURL()
+    if #available(iOS 9.0, *) {
+      self.authVC = SFSafariViewController.init(url: urlToDisplay!)
     } else {
-      // construct login url and open in sfvc
-      var loginURL: URL = self.auth.spotifyWebAuthenticationURL()
-      self.authVC = SFSafariViewController.init(url: loginURL)
-      let delegate = UIApplication.shared.delegate as! AppDelegate
-      delegate.window.rootViewController?.present(self.authVC, animated: true, completion: nil);
+      // Fallback on earlier versions
+    }
+    
+    // display with help of appdelegate
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    appDelegate.window?.rootViewController?.present(self.authVC, animated: true, completion: nil)
+  }
+  
+  // Authentication Helper for Post User Auth
+  func afterAuthentication(notification: NSNotification) {
+    if (notification.object as? SPTSession) != nil {
+      // remove authVC with help of appdelegate
+      let appDelegate = UIApplication.shared.delegate as! AppDelegate
+      appDelegate.window?.rootViewController?.dismiss(animated: true, completion: nil)
+      
+      // get session from notification
+      self.session = notification.object as? SPTSession
+      
+      // get auth and player from default and shared instances of respective classes
+      self.auth = SPTAuth.defaultInstance()
+      self.player = SPTAudioStreamingController.sharedInstance()
+      
+      // emit login success
+      self.sendEvent(withName: "Login", body: ["success": true, "userSpotifyID": self.auth.session.canonicalUsername])
+    } else {
+      // remove authVC with help of appdelegate
+      let appDelegate = UIApplication.shared.delegate as! AppDelegate
+      appDelegate.window?.rootViewController?.dismiss(animated: true, completion: nil)
+      
+      // emit login failure
+      self.sendEvent(withName: "Login", body: ["success": false, "userSpotifyID": "authFailure"])
     }
   }
   
-  @objc(playing:callback:)
-  func setIsPlaying(playing:Bool, callback:@escaping RCTResponseSenderBlock) {
-    self.player.setIsPlaying(playing) { (error) -> Void in
-      
+  // Supported RCTEmitter Events
+  override func supportedEvents() -> [String]! {
+    return ["Login"]
+  }
+  
+  /* SPOTIFY MUSIC PLAYBACK SECTION */
+  
+  // Song URI Queue
+  var songURIQueue: [String]! = []
+  
+  // Get Music Categories (Tags)
+  @objc(getTags:)
+  func getTags(callback: @escaping RCTResponseSenderBlock) {
+    // define Spotify categories (workaround around HTTP requests)
+    let categories: [String]! = [
+      "Mood", "Party", "Pop", "Rock",
+      "Indie", "EDM/Dance", "Chill", "Sleep",
+      "Hip Hop", "Workout", "RnB", "Country",
+      "Metal", "Soul", "Jazz", "Blues"
+    ]
+    
+    // return as part of callback
+    callback([NSNull(), categories])
+  }
+  
+  // Is Audio Currently Being Played?
+  @objc(isPlaying:)
+  func isPlaying(callback: @escaping RCTResponseSenderBlock) {
+    // return play-state of streaming controller
+    callback([NSNull(), self.player.playbackState.isPlaying])
+  }
+  
+  // Length of Current Track
+  @objc(lenCurrentTrack:)
+  func lenCurrentTrack(callback: @escaping RCTResponseSenderBlock) {
+    // return length of current track
+    callback([NSNull(), self.player.playbackState.position])
+  }
+  
+  // Play / Pause the Current Track
+  @objc(setIsPlaying:callback:)
+  func setIsPlaying(playState: Bool, callback: @escaping RCTResponseSenderBlock) {
+    // set state of player
+    self.player.setIsPlaying(playState, callback: { (error) in
+      // handle error
       if error == nil {
-        // Pause
-        callback([NSNull(), NSNull()])
-        
+        callback([NSNull()])
       } else {
-        print("Failed to stop spotify player: " + (error?.localizedDescription)!)
-        callback([error!, NSNull()])
-        
-        self.checkSession()
+        callback([error])
+      }
+    })
+  }
+  
+  // Skip Current Track
+  @objc(skipTrack:)
+  func skipTrack(callback: @escaping RCTResponseSenderBlock) {
+    // skip current track through streaming controller
+    self.player.skipNext { (error) in
+      if error == nil {
+        callback([NSNull()])
+      } else {
+        callback([error])
       }
     }
   }
   
-  @objc(callback:)
-  func getCurrentSeconds(callback:RCTResponseSenderBlock) {
-     callback([NSNull(), self.player.playbackState.position])
+  // Play Music Given URI
+  @objc(playURI:callback:)
+  func playURI(songURI: String!, callback: @escaping RCTResponseSenderBlock) {
+    // play music through streaming controller
+    self.player.playSpotifyURI(songURI, startingWith: 0, startingWithPosition: 0, callback: { (error) in
+      // handle error
+      if error == nil {
+        callback([NSNull()])
+      } else {
+        callback([error])
+      }
+    })
   }
   
-  //Check if session is valid and renew it if not
-  func checkSession() {
-    if(self.auth.session.isValid()) {
-      self.auth.renewSession(auth.session, callback: { (error, session) in
-        if(error != nil) {
-          print(error!)
-//          [sharedManager startAuth:sharedManager.clientID setRedirectURL:sharedManager.myScheme setRequestedScopes:sharedManager.requestedScopes];
-//        } else {
-//          [sharedManager setSession:session];
-//          [[sharedManager player] loginWithAccessToken:session.accessToken];
-//        }
-//      }];
-
+  // Get Metadata Given URI (REQUIRES PLAY URI BEFORE CALLS)
+  @objc(getMetadata:callback:)
+  func getMetadata(songURI: String!, callback: @escaping RCTResponseSenderBlock) {
+    var metadataArr: [String] = []
+    
+    let trackName = self.player.metadata.currentTrack?.name
+    let artistName = self.player.metadata.currentTrack?.artistName
+    let albumName = self.player.metadata.currentTrack?.albumName
+    let albumArt = self.player.metadata.currentTrack?.albumCoverArtURL
+    let uri = self.player.metadata.currentTrack?.uri
+    
+    metadataArr.append(trackName!)
+    metadataArr.append(artistName!)
+    metadataArr.append(albumName!)
+    metadataArr.append(albumArt!)
+    metadataArr.append(uri!)
+    
+    callback([NSNull(), metadataArr])
+  }
+  
+  // Get current track's seconds
+  @objc(getCurrentSeconds:)
+  func getCurrentSeconds(callback: @escaping RCTResponseSenderBlock) {
+    callback([NSNull(), self.player.playbackState.position])
+  }
+  
+  // Queue Music Given URI
+  @objc(queueURI:)
+  func queueURI(songURI: String!) {
+    // add URI to end of songURIQueue
+    songURIQueue.append(songURI)
+  }
+  
+  // Get Next Song URI
+  @objc(nextSongURI:)
+  func nextSongURI(callback: @escaping RCTResponseSenderBlock) {
+    // handle next song in queue (if it exists)
+    if songURIQueue.count == 0 {
+      // send targeted callback that queue is empty
+      callback([NSNull(), "NoSongsInQueue"])
+    } else {
+      // remove and get first song from queue
+      let nextSongURI: String! = songURIQueue.removeFirst()
+      
+      self.player.playSpotifyURI(nextSongURI, startingWith: 0, startingWithPosition: 0, callback: { (error) in
+        
+        // handle error
+        if error == nil {
+          callback([NSNull(), nextSongURI])
+        } else {
+          callback([error, nextSongURI])
         }
       })
     }
+  }
+  
+  // Search for Music
+  @objc(searchForMusic:queryType:callback:)
+  func searchForMusic(searchQuery: String!, queryType: String!, callback: @escaping RCTResponseSenderBlock) {
+    // classify this request by queryType
+    var searchType: SPTSearchQueryType!
+    if queryType == "track" {
+      searchType = SPTSearchQueryType.queryTypeTrack
+    } else if queryType == "artist" {
+      searchType = SPTSearchQueryType.queryTypeArtist
+    } else if queryType == "album" {
+      searchType = SPTSearchQueryType.queryTypeAlbum
+    } else if queryType == "playlist" {
+      searchType = SPTSearchQueryType.queryTypePlaylist
+    }
+    
+    // execute request
+    SPTSearch.perform(withQuery: searchQuery, queryType: searchType, accessToken: self.auth.session.accessToken, callback: { (error, data) in
+      if error == nil {
+        // downcast data to sptlistpage
+        let results: [SPTPartialTrack]! = (data as! SPTListPage).items as! [SPTPartialTrack]!
+        
+        // calc max # of elements to return
+        let numTracksToReturn: Int = (results.count < 5) ? results.count : 5
+        
+        // keep array of results (JSON) to send as response
+        var response: [Dictionary<String, AnyObject>]! = [[:]]
+        
+        // iterate through results
+        for i in 0 ..< numTracksToReturn {
+          // get current sptpartialtrack
+          let partialTrack: SPTPartialTrack! = results[i]
+          
+          // get info about this song (name, artist, album, uri)
+          let trackName: String! = partialTrack.name
+          let trackURI: String! = partialTrack.playableUri.absoluteString
+          var trackArtists: [String]! = []
+          for i in 0 ..< partialTrack.artists.count {
+            let indivArtist: SPTPartialArtist! = partialTrack.artists[i] as! SPTPartialArtist
+            trackArtists.append(indivArtist.name as! String)
+          }
+          let trackAlbum: String! = partialTrack.album.name
+          
+          // construct dictionary
+          var trackDictionary: Dictionary<String, AnyObject>! = [:]
+          trackDictionary["name"] = trackName as AnyObject?
+          trackDictionary["uri"] = trackURI as AnyObject?
+          trackDictionary["artists"] = (trackArtists as NSArray?)?[0] as AnyObject?
+          trackDictionary["album"] = trackAlbum as AnyObject?
+          
+          // append to response
+          response.append(trackDictionary)
+        }
+        
+        // send callback with no error and response
+        callback([NSNull(), response])
+      } else {
+        // send callback with error and no response
+        callback([error, NSNull()])
+      }
+    })
   }
 }
