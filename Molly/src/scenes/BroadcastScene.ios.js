@@ -3,7 +3,7 @@ import {
   View, ScrollView,
   Image, Text, Switch,
   TouchableOpacity, TouchableHighlight,
-  StyleSheet
+  StyleSheet, AlertIOS
 } from 'react-native'
 
 import constants from '../common/constants'
@@ -14,6 +14,7 @@ import { BlurView, VibrancyView } from 'react-native-blur'
 import Card from '../components/Card'
 import NowPlayingCardView from '../components/NowPlayingCardView'
 import HeadingWithAction from '../components/HeadingWithAction'
+import Button from '../components/Button'
 
 class BroadcastScene extends Component {
 
@@ -29,13 +30,22 @@ class BroadcastScene extends Component {
   }
 
   state = {
-    live: false
+    live: false,
+    width: 375
   }
 
   _renderSwitch() {
     return (
       <Switch
-        onValueChange={value => this.setState({ live: value })}
+        onValueChange={value => {
+          if (value) {
+            this.setState({ live: value })
+          } else {
+            AlertIOS.alert('End broadcast?', 'Ending this session will kick listeners off. Are you sure?', () => {
+              this.setState({ live: value })
+            })
+          }
+        }}
         value={this.state.live}
         tintColor="rgba(255, 255, 255, 0.35)"
       />
@@ -43,13 +53,13 @@ class BroadcastScene extends Component {
   }
 
   _renderHeader() {
-    let content = <Text style={{ color: 'white', textAlign: 'center', fontWeight: '500', opacity: 0.7}}>OFFLINE</Text>
-    if (this.state.live) content = <Text style={{ color: 'white', textAlign: 'center', fontWeight: '800'}}>ONLINE</Text>
+    let content = <Text style={{ color: 'white', textAlign: 'center', fontWeight: '500', opacity: 0.7, letterSpacing: -0.2}}>OFFLINE</Text>
+    if (this.state.live) content = <Text style={{ color: 'white', textAlign: 'center', fontWeight: '800', letterSpacing: -0.2}}>BROADCASTING</Text>
 
     return (
       <BlurNavigator light={true}
         onLeftButtonPress={this.props.goBack}
-        leftButtonTitle="Cancel"
+        leftButtonTitle="Exit"
         leftButtonDisabled={this.state.live}
         rightContent={this._renderSwitch}
       >{content}</BlurNavigator>
@@ -60,21 +70,38 @@ class BroadcastScene extends Component {
 
     const header = (
       <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-        <Text style={{ color: 'white', fontSize: 40, fontWeight: '300' }}>{this.state.live ? '' : 'Go '}<Text style={{fontWeight: '900'}}>LIVE</Text></Text>
-        {/* <TouchableOpacity onPress={() => {}}>
-          <Text style={[styles.button, { color: 'white' }]}>Add Song</Text>
-        </TouchableOpacity> */}
+        <View>
+          <Text style={{ color: 'white', fontSize: 24, fontWeight: '900' }}>Rachit's Bangers</Text>
+          <Text style={{ color: 'white', fontSize: 18, fontWeight: '500' }}>Rachit Kataria</Text>
+        </View>
+        <Button tintColor="white">Edit</Button>
       </View>
     )
 
     return (
       <LinearGradient colors={['#FF6E88', '#BF2993']} {...this.props} style={[{ flex: 1 }, this.props.style]}>
         {this._renderHeader()}
-        <ScrollView style={{ backgroundColor: 'transparent', flex: 1, paddingTop: constants.navpad + 20 }}>
+        <ScrollView style={{
+          backgroundColor: 'transparent',
+          paddingTop: constants.navpad + 0
+        }}
+          onLayout={event => {
+            let { x, y, width, height } = event.nativeEvent.layout;
+            this.setState({ width })
+          }}>
           <View style={{ padding: constants.unit * 4 }}>{header}</View>
 
-          <View style={{ padding: constants.unit * 4, paddingTop: 0 }}>
-            <Card style={{ marginBottom: constants.unit * 3 }}>
+          <ScrollView
+            horizontal={true}
+            snapToAlignment={'start'}
+            snapToInterval={this.state.width - constants.unit * 6}
+            style={{
+              paddingHorizontal: constants.unit * 4,
+              overflow: 'visible',
+              marginBottom: constants.unit * 3,
+            }}>
+
+            <Card style={{ marginRight: constants.unit * 2, width: this.state.width - (constants.unit * 4 * 2) }} shadow={false}>
               <NowPlayingCardView nowPlaying={{
                 album_cover: null,
                 song_title: 'Murder',
@@ -85,7 +112,43 @@ class BroadcastScene extends Component {
               }} />
             </Card>
 
-            <Card style={{ marginBottom: constants.unit * 3 }}>
+            <Card style={{ marginRight: constants.unit * 2, width: this.state.width - (constants.unit * 4 * 2) }} shadow={false}>
+              <NowPlayingCardView nowPlaying={{
+                album_cover: null,
+                song_title: 'Murder',
+                artist_name: 'Lido',
+                neutral: 'rgb(84, 107, 132)',
+                accent: 'rgb(207, 66, 65)',
+                progress: 0.7
+              }} />
+            </Card>
+
+            <Card style={{ marginRight: constants.unit * 2, width: this.state.width - (constants.unit * 4 * 2) }} shadow={false}>
+              <NowPlayingCardView nowPlaying={{
+                album_cover: null,
+                song_title: 'Murder',
+                artist_name: 'Lido',
+                neutral: 'rgb(84, 107, 132)',
+                accent: 'rgb(207, 66, 65)',
+                progress: 0.7
+              }} />
+            </Card>
+
+            <Card style={{ marginRight: constants.unit * 4, width: this.state.width - (constants.unit * 4 * 2) }} shadow={false}>
+              <NowPlayingCardView nowPlaying={{
+                album_cover: null,
+                song_title: 'Murder',
+                artist_name: 'Lido',
+                neutral: 'rgb(84, 107, 132)',
+                accent: 'rgb(207, 66, 65)',
+                progress: 0.7
+              }} />
+            </Card>
+
+          </ScrollView>
+
+          <View style={{ paddingHorizontal: constants.unit * 4 }}>
+            <Card style={{ marginBottom: constants.unit * 3 }} shadow={false}>
               <View style={{ padding: constants.unit * 3 }}>
                 <HeadingWithAction
                   title="Up Next"

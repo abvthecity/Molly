@@ -5,6 +5,7 @@ import {
 } from 'react-native'
 
 import BlurStatusBar from './BlurStatusBar'
+import Button from './Button'
 
 const BlurNavigator = props => {
 
@@ -18,15 +19,14 @@ const BlurNavigator = props => {
     if (props.leftButtonTitle !== null) {
       return (
         <View style={[styles.button_wrap, { justifyContent: 'flex-start' }]}>
-          <TouchableOpacity
-            hitSlop={{top: 16, left: 16, bottom: 16, right: 16}}
+          <Button
             onPress={props.onLeftButtonPress}
-            style={{ flex: 1 }}
+            style={{ flex: 1}}
+            tintColor={tintColor}
+            textStyle={{ textAlign: 'left' }}
             disabled={props.leftButtonDisabled}>
-            {/* <Image source={require('../img/icons/arrow-back.png')}
-              style={{ width: 12.68, height: 21.12, tintColor: tintColor }} /> */}
-            <Text style={[styles.button, { color: tintColor }, { opacity: !props.leftButtonDisabled ? 1 : 0.5}]}>{props.leftButtonTitle}</Text>
-          </TouchableOpacity>
+            {props.leftButtonTitle}
+          </Button>
         </View>
       )
     }
@@ -44,13 +44,14 @@ const BlurNavigator = props => {
     if (props.rightButtonTitle !== null) {
       return (
         <View style={[styles.button_wrap, { justifyContent: 'flex-end' }]}>
-          <TouchableOpacity
-            hitSlop={{top: 16, left: 16, bottom: 16, right: 16}}
+          <Button
             onPress={props.onRightButtonPress}
-            style={{ flex: 1 }}
+            style={{ flex: 1}}
+            tintColor={tintColor}
+            textStyle={{ textAlign: 'right' }}
             disabled={props.rightButtonDisabled}>
-            <Text style={[styles.button, { color: tintColor }, { opacity: !props.leftButtonDisabled ? 1 : 0.5}]}>{props.rightButtonTitle}</Text>
-          </TouchableOpacity>
+            {props.rightButtonTitle}
+          </Button>
         </View>
       )
     }
@@ -113,13 +114,6 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center'
-  },
-  button: {
-    fontSize: 17,
-    fontWeight: '600',
-    letterSpacing: -0.24,
-    marginHorizontal: 6,
-    textAlign: 'left'
   }
 })
 

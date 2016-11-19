@@ -5,6 +5,7 @@ import {
 } from 'react-native'
 
 import constants from '../common/constants'
+import Button from './Button'
 
 const HeadingWithAction = props => (
   <View {...props} style={[styles.wrap, props.style]}>
@@ -13,9 +14,7 @@ const HeadingWithAction = props => (
 
     {(() => {
       if (props.buttonTitle !== null) {
-        return (<TouchableOpacity onPress={props.onButtonPress}>
-          <Text style={styles.button}>{props.buttonTitle}</Text>
-        </TouchableOpacity>)
+        return <Button onPress={props.onButtonPress} textStyle={{ textAlign: 'right' }}>{props.buttonTitle}</Button>
       }
     })()}
 
@@ -39,14 +38,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-end'
-  },
-  button: {
-    color: '#007AFF',
-    fontSize: 17,
-    letterSpacing: -0.23,
-    fontWeight: '600',
-    padding: constants.unit,
-    marginRight: -constants.unit
   }
 })
 

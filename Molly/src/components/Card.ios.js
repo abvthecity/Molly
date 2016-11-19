@@ -10,41 +10,41 @@ import constants from '../common/constants'
 
 const Card = props => {
 
-  if (props.shadow === false) {
+  // define style array
+  let style = [styles.card]
+  if (props.shadow) style.push(styles.cardShadow)
+  if (props.border) style.push(styles.cardBorder)
+  style.push(props.style)
 
-    return (
-      <View {...props} style={[styles.card, styles.cardOffline, props.style]}>
-        <View style={styles.card_wrap}>
+  return (
+    <View {...props} style={style}>
+      <LinearGradient
+        colors={['white', '#F3F3F3']}
+        style={styles.card_wrap}>
           {props.children}
-        </View>
-      </View>
-    )
-
-  } else {
-
-    return (
-      <View {...props} style={[styles.card, styles.cardShadow, props.style]}>
-        <LinearGradient
-          colors={['white', '#F3F3F3']}
-          style={styles.card_wrap}>
-            {props.children}
-        </LinearGradient>
-      </View>
-    )
-
-  }
+      </LinearGradient>
+    </View>
+  )
 }
 
 Card.propTypes = {
-  shadow: PropTypes.bool
+  shadow: PropTypes.bool,
+  border: PropTypes.bool
+}
+
+Card.defaultProps = {
+  shadow: true,
+  border: false
 }
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: constants.borderRadiusLg,
-    // borderWidth: StyleSheet.hairlineWidth,
-    // borderColor: '#BFBFBF',
+    borderColor: '#BFBFBF',
     backgroundColor: 'white',
+    borderRadius: constants.borderRadiusLg,
+  },
+  cardBorder: {
+    borderWidth: StyleSheet.hairlineWidth,
   },
   cardShadow: {
     shadowColor: 'black',
@@ -55,11 +55,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 30,
     overflow: 'visible'
-  },
-  cardOffline: {
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: '#BFBFBF',
-    backgroundColor: 'transparent'
   },
   card_wrap: {
     borderRadius: constants.borderRadiusLg,

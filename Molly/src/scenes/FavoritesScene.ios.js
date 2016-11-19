@@ -16,6 +16,7 @@ import API from '../common/API'
 import BlurNavigator from '../components/BlurNavigator'
 import ChannelCard from '../components/ChannelCard'
 import Swipeout from '../components/Swipeout'
+import Button from '../components/Button'
 
 class FavoritesScene extends Component {
 
@@ -57,33 +58,21 @@ class FavoritesScene extends Component {
 
           {this.state.cards.map((card, i) => {
 
-            let press = () => {
+            let press = e => {
               this.props.openPlayer()
             }
 
             let swipeButtonComponent = (
               <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'center' }}>
-                <TouchableOpacity
-                  hitSlop={{ left: 16, top: 16, bottom: 16, right: 16 }}
-                  style={{
-                    // borderRadius: constants.borderRadiusSm,
-                    // backgroundColor: 'rgba(0, 0, 0, 0.1)',
-                    padding: constants.unit,
-                    marginLeft: constants.unit,
-                  }}>
-                  <Text style={{
-                    textAlign: 'center',
-                    color: 'white'
-                  }}>Unsave</Text>
-                </TouchableOpacity>
+                <Button>Save</Button>
               </View>
             )
 
             let swipeButtons = [
               {
-                text: 'Unsave',
+                text: 'Save',
                 backgroundColor: 'transparent',
-                color: 'white',
+                color: '#007AFF',
                 component: swipeButtonComponent
               }
             ]
@@ -99,11 +88,9 @@ class FavoritesScene extends Component {
                   style={{ overflow: 'visible' }}
                   backgroundColor="transparent">
                   <TouchableOpacity
-                    key={i}
                     activeOpacity={0.7}
                     onPress={press}
-                    style={{ overflow: 'visible' }}
-                    disabled={!card.live}>
+                    style={{ overflow: 'visible' }} >
                     <ChannelCard
                       title={card.title}
                       host={card.host}

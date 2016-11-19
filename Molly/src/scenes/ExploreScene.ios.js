@@ -16,6 +16,7 @@ import BlurStatusBar from '../components/BlurStatusBar'
 import ChannelCard from '../components/ChannelCard'
 import HeadingWithAction from '../components/HeadingWithAction'
 import Swipeout from '../components/Swipeout'
+import Button from '../components/Button'
 
 class ExploreScene extends Component {
 
@@ -82,7 +83,9 @@ class ExploreScene extends Component {
     return (
       <View {...this.props}>
         <BlurStatusBar light={false} />
-        <ScrollView style={{ paddingTop: 0 }}>
+        <ScrollView
+          style={{ paddingTop: 0 }}
+          canCancelContentTouches={true}>
 
           {/* SECTION 1 */}
           <LinearGradient colors={['white', '#F0F0F0']} style={{ backgroundColor: 'transparent', padding: constants.unit * 4 }}>
@@ -121,25 +124,13 @@ class ExploreScene extends Component {
 
             {this.state.cards.map((card, i) => {
 
-              let press = () => {
+              let press = e => {
                 this.props.openPlayer()
               }
 
               let swipeButtonComponent = (
                 <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'center' }}>
-                  <TouchableOpacity
-                    hitSlop={{ left: 16, top: 16, bottom: 16, right: 16 }}
-                    style={{
-                      // borderRadius: constants.borderRadiusSm,
-                      // backgroundColor: 'rgba(0, 0, 0, 0.1)',
-                      padding: constants.unit,
-                      marginLeft: constants.unit,
-                    }}>
-                    <Text style={{
-                      textAlign: 'center',
-                      color: '#007AFF'
-                    }}>Save</Text>
-                  </TouchableOpacity>
+                  <Button>Save</Button>
                 </View>
               )
 
@@ -163,17 +154,16 @@ class ExploreScene extends Component {
                     style={{ overflow: 'visible' }}
                     backgroundColor="transparent">
                     <TouchableOpacity
-                      key={i}
                       activeOpacity={0.7}
                       onPress={press}
-                      style={{ overflow: 'visible' }}
-                      disabled={!card.live}>
+                      style={{ overflow: 'visible' }} >
                       <ChannelCard
                         title={card.title}
                         host={card.host}
                         distance={card.distance}
                         live={card.live}
                         nowPlaying={card.nowPlaying}
+                        border={true}
                       />
                     </TouchableOpacity>
                   </Swipeout>

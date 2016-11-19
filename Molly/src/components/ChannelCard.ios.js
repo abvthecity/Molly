@@ -13,8 +13,9 @@ class ChannelCard extends Component {
   static propTypes = {
     title: PropTypes.string.isRequired,
     host: PropTypes.string.isRequired,
-    live: PropTypes.bool.isRequired,
     favorite: PropTypes.bool,
+    shadow: PropTypes.bool,
+    border: PropTypes.bool,
     nowPlaying: PropTypes.shape({
       album_cover: PropTypes.object.isRequired,
       song_title: PropTypes.string.isRequired,
@@ -23,6 +24,12 @@ class ChannelCard extends Component {
       accent: PropTypes.string.isRequired,
       progress: PropTypes.number.isRequired
     })
+  }
+
+  static defaultProps = {
+    favorite: false,
+    shadow: true,
+    border: false
   }
 
   setNativeProps(nativeProps) {
@@ -46,30 +53,15 @@ class ChannelCard extends Component {
       }
     }
 
-    const upper = () => {
-      if (this.props.live) {
-        return <NowPlayingCardView nowPlaying={this.props.nowPlaying} />
-      }
-    }
-
-    const separatorIfUpper = () => {
-      if (this.props.live) {
-        return <View style={styles.separator} />
-      }
-    }
-
     return (
       <Card ref={component => this._root = component} {...this.props}
-        shadow={this.props.live} style={[{
-          zIndex: this.props.live ? 1 : 0,
-          backgroundColor: this.props.live ? 'white' : 'rgba(255, 255, 255, 0.65)'
-        }, this.props.style]}>
+        shadow={this.props.shadow} border={this.props.border} style={[this.props.style]}>
 
         {favorite()}
 
         {/* UPPER SIDE */}
-        {upper()}
-        {separatorIfUpper()}
+        <NowPlayingCardView nowPlaying={this.props.nowPlaying} />
+        <View style={styles.separator} />
 
         {/* LOWER SIDE */}
         <View style={styles.lower}>

@@ -11,8 +11,6 @@ Image.prefetch(IMAGE_PREFETCH_URL)
 const data = [{
   title: 'Rachit\'s Bangers',
   host: 'Rachit Kataria',
-  distance: '400 FT',
-  live: true,
   nowPlaying: {
     album_cover: album_cover,
     song_title: 'Murder',
@@ -24,8 +22,6 @@ const data = [{
 },{
   title: 'Rachit\'s Bangers',
   host: 'Rachit Kataria',
-  distance: '400 FT',
-  live: true,
   nowPlaying: {
     album_cover: album_cover,
     song_title: 'Murder',
@@ -37,8 +33,6 @@ const data = [{
 },{
   title: 'Rachit\'s Bangers',
   host: 'Rachit Kataria',
-  distance: '400 FT',
-  live: false,
   nowPlaying: {
     album_cover: album_cover,
     song_title: 'Murder',
@@ -50,8 +44,6 @@ const data = [{
 },{
   title: 'Rachit\'s Bangers',
   host: 'Rachit Kataria',
-  distance: '400 FT',
-  live: false,
   nowPlaying: {
     album_cover: album_cover,
     song_title: 'Murder',
