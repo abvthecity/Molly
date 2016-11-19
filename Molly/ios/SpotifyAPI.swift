@@ -164,10 +164,10 @@ class SpotifyAPI: RCTEventEmitter, SPTAudioStreamingDelegate {
   }
   
   // Play Music Given URI
-  @objc(playURI:callback:)
-  func playURI(songURI: String!, callback: @escaping RCTResponseSenderBlock) {
+  @objc(playURI:timeToStart:callback:)
+  func playURI(songURI: String!, timeToStart: NSNumber!, callback: @escaping RCTResponseSenderBlock) {
     // play music through streaming controller
-    self.player.playSpotifyURI(songURI, startingWith: 0, startingWithPosition: 0, callback: { (error) in
+    self.player.playSpotifyURI(songURI, startingWith: 0, startingWithPosition: timeToStart as TimeInterval, callback: { (error) in
       // handle error
       if error == nil {
         callback([NSNull()])
@@ -249,7 +249,7 @@ class SpotifyAPI: RCTEventEmitter, SPTAudioStreamingDelegate {
     } else if queryType == "playlist" {
       searchType = SPTSearchQueryType.queryTypePlaylist
     }
-    
+
     // execute request
     SPTSearch.perform(withQuery: searchQuery, queryType: searchType, accessToken: self.auth.session.accessToken, callback: { (error, data) in
       if error == nil {
