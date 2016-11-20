@@ -1,4 +1,4 @@
-Drop Database SpotifyDJ;
+Drop Database IF exists SpotifyDJ;
 CREATE DATABASE SpotifyDJ;
 use SpotifyDJ;
 
