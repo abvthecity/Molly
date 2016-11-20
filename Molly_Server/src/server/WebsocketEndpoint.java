@@ -16,7 +16,13 @@ import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 import encoders.SongChangedMessageEncoder;
 import messages.AddSongToPlaylistMessage;
+import messages.ChangeSongMessage;
+import messages.GoLiveMessage;
+import messages.GoOfflineMessage;
+import messages.JoinChannelMessage;
 import messages.Message;
+import messages.SongChangedMessage;
+import messages.UpdatePlaylistMessage;
 
 @ServerEndpoint(value = "/websocketEndpoint", decoders = { MessageDecoder.class }, encoders = {
 		SongChangedMessageEncoder.class })
@@ -38,8 +44,24 @@ public class WebsocketEndpoint {
 			AddSongToPlaylistMessage addSongToPlaylistMessage = (AddSongToPlaylistMessage) msg;
 			//channelIDToChannelMap.get(addSongToPlaylistMessage.getClientID()).addSongToPlaylist(addSongToPlaylistMessage.getSongURI());
 			//sendAll(); send update playlist message to everyone
-		} else {
+		}else if(msg instanceof ChangeSongMessage){
+			ChangeSongMessage changeSongMessage = (ChangeSongMessage) msg;
 
+		}else if(msg instanceof GoLiveMessage){
+			GoLiveMessage goLiveMessage = (GoLiveMessage) msg;
+
+		}else if(msg instanceof GoOfflineMessage){
+			GoOfflineMessage goOfflineMessage = (GoOfflineMessage) msg;
+
+		}else if(msg instanceof JoinChannelMessage){
+			JoinChannelMessage joinChannelMessage = (JoinChannelMessage) msg;
+
+		}else if(msg instanceof SongChangedMessage){
+			SongChangedMessage songChangedMessage = (SongChangedMessage) msg;
+
+		}else if(msg instanceof UpdatePlaylistMessage){
+			UpdatePlaylistMessage updatePlaylistMessage = (UpdatePlaylistMessage) msg;
+			
 		}
 	}
 
