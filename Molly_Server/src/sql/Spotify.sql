@@ -17,7 +17,7 @@ CREATE TABLE `SpotifyDJ`.`Users` (
   
 CREATE TABLE `SpotifyDJ`.`channelTags` (
   `channelTag` VARCHAR(100) NOT NULL,
-  `channelTagcol` VARCHAR(1000) NULL,
+  `channelClientID` VARCHAR(1000) NULL,
   PRIMARY KEY (`channelTag`));
 
 
