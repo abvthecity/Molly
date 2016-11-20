@@ -13,6 +13,7 @@
 #import "RCTBridgeModule.h"
 #import "RCTBridge.h"
 #import "RCTEventEmitter.h"
+#import "RCTConvert.h"
 
 // App Specific Headers
 #import "AppDelegate.h"

@@ -13,6 +13,7 @@ import { BlurView, VibrancyView } from 'react-native-blur'
 import constants from '../common/constants'
 import API from '../common/API'
 
+// import BlurStatusBar from '../components/BlurStatusBar'
 import BlurNavigator from '../components/BlurNavigator'
 import ChannelCard from '../components/ChannelCard'
 import Swipeout from '../components/Swipeout'
@@ -52,7 +53,8 @@ class FavoritesScene extends Component {
 
     return (
       <LinearGradient colors={['#FFA832', '#FF5F33']} {...this.props} style={[{ flex: 1 }, this.props.style]}>
-        <BlurNavigator light={true} onLeftButtonPress={this.props.goBack} leftButtonTitle="Explore"/>
+        {/* <BlurNavigator light={true} onLeftButtonPress={this.props.goBack} leftButtonTitle="Explore"/> */}
+
         <ScrollView style={{ backgroundColor: 'transparent', flex: 1, paddingTop: constants.navpad + 0 }}>
           <View style={{ padding: constants.unit * 4 }}>{header}</View>
 

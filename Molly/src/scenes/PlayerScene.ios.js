@@ -2,8 +2,12 @@ import React, { Component } from 'react'
 import {
   View, ScrollView, Text, TouchableHighlight, TouchableWithoutFeedback,
   ProgressViewIOS, ListView, Image,
-  StyleSheet, Modal, Animated, Easing
+  StyleSheet, Modal, Animated, Easing,
+  NativeModules, NativeEventEmitter
 } from 'react-native'
+
+const SpotifyAPI = NativeModules.SpotifyAPI;
+const SpotifyAPIEventEmitter = new NativeEventEmitter(SpotifyAPI);
 
 import LinearGradient from 'react-native-linear-gradient'
 
@@ -11,12 +15,6 @@ import constants from '../common/constants'
 import Card from '../components/Card'
 import BlurNavigator from '../components/BlurNavigator'
 import BlurStatusBar from '../components/BlurStatusBar'
-
-
-const IMAGE_PREFETCH_URL = 'https://pbs.twimg.com/profile_images/781996435961032705/1cSsL68X.jpg'
-const album_cover = { uri: IMAGE_PREFETCH_URL }
-Image.prefetch(IMAGE_PREFETCH_URL)
-
 
 class ListViewObj extends Component {
   constructor() {
@@ -61,35 +59,77 @@ class PlayerScene extends Component {
 
     this.state = {
       muted: false,
-      animatedValue: new Animated.Value(1)
+      animatedValue: new Animated.Value(1),
+      uri: 'spotify:track:2Im64pIz6m0EJKdUe6eZ8r',
+      title: 'Rachit\'s Bangers',
+      host: 'Rachit Kataria',
+      nowPlaying: {
+        album_cover: null,
+        song_title: null,
+        artist_name: null,
+        progress: 0
+      }
     }
 
     this.toggleMute = this.toggleMute.bind(this)
   }
 
+  componentDidMount() {
+    // SpotifyAPI.getMetadata(this.state.uri, (error, data) => {
+    //   console.log(data);
+    // })
+
+    let _this = this
+
+    fetch('https://api.spotify.com/v1/tracks/' + _this.state.uri.split(':')[2])
+      .then(res => res.json())
+      .then(res => {
+
+        Image.prefetch(res.album.images[0].url)
+
+        let nowPlaying = {
+          album_cover: { uri: res.album.images[0].url } || null,
+          song_title: res.name || null,
+          artist_name: res.artists.map(d => d.name).join(', ') || null,
+          progress: 0
+        }
+
+        _this.setState({ nowPlaying }, () => {
+          SpotifyAPI.playURI(res.uri, 0, error => {
+            if (error === null) _this._setPlaying()
+            else console.error(error)
+          })
+        })
+
+      }).catch(console.error)
+
+  }
+
+  componentWillUnmount() {
+    SpotifyAPI.setIsPlaying(false, error => {
+      if (error != null) console.error(error)
+    })
+  }
+
+  _setPlaying() {
+    SpotifyAPI.setIsPlaying(!this.state.muted, error => {
+      if (error !== null) console.error(error)
+    })
+  }
+
   toggleMute() {
     this.setState({ muted: !this.state.muted}, () => {
-
       if (this.state.muted) {
-        Animated.timing(
-          this.state.animatedValue,
-          {
-            toValue: 0,
-            easing: Easing.elastic(0)
-          }
-        ).start();
+        Animated.timing(this.state.animatedValue,
+          { toValue: 0, easing: Easing.elastic(0) }
+        ).start()
       } else {
-        Animated.spring(
-          this.state.animatedValue,
-          {
-            toValue: 1,
-            velocity: 3,
-            tension: 20,
-            friction: 5
-          }
-        ).start();
+        Animated.spring(this.state.animatedValue,
+          { toValue: 1, velocity: 3, tension: 20, friction: 5 }
+        ).start()
       }
 
+      this._setPlaying()
     })
 
   }
@@ -97,16 +137,13 @@ class PlayerScene extends Component {
   render () {
 
     const scale = this.state.animatedValue.interpolate({
-      inputRange: [0, 1],
-      outputRange: [0.7, 1]
+      inputRange: [0, 1], outputRange: [0.7, 1]
     })
     const shadowOpacity = this.state.animatedValue.interpolate({
-      inputRange: [0, 1],
-      outputRange: [0, 0.5]
+      inputRange: [0, 1], outputRange: [0, 0.5]
     })
     const shadowRadius = this.state.animatedValue.interpolate({
-      inputRange: [0, 1],
-      outputRange: [0, 24]
+      inputRange: [0, 1], outputRange: [0, 24]
     })
 
     return (
@@ -135,27 +172,12 @@ class PlayerScene extends Component {
             <Card shadow={true} style={[{ zIndex: 2}, { flex: 1 }]}>
 
               <View style={styles.card_object_inner}>
-                <View style={{
-                  position: 'absolute',
-                  top: 2,
-                  left: 0,
-                  right: 0
-                }}>
-                  <Text style={{
-                    flex: 1,
-                    fontSize: 11,
-                    fontWeight: '500',
-                    color: '#FF2D55',
-                    textAlign: 'center'
-                  }}>LIVE</Text>
+                <View style={{ position: 'absolute', top: 2, left: 0, right: 0 }}>
+                  <Text style={{ flex: 1, fontSize: 11, fontWeight: '500', color: '#FF2D55', textAlign: 'center' }}>LIVE</Text>
                 </View>
 
                 <TouchableWithoutFeedback onPress={this.toggleMute}>
-                  <View style={{
-                    width: 343,
-                    height: 343,
-                    flex: 1
-                  }}>
+                  <View style={{ width: 343, height: 343, flex: 1 }}>
                     <Animated.View style={{
                       flex: 1,
                       borderRadius: constants.borderRadiusMd,
@@ -170,7 +192,7 @@ class PlayerScene extends Component {
                       shadowRadius: shadowRadius,
                       backgroundColor: 'white'
                     }}>
-                      <Image source={album_cover} style={{ flex: 1, resizeMode: 'cover', borderRadius: constants.borderRadiusMd, overflow: 'hidden'}} />
+                      <Image source={this.state.nowPlaying.album_cover} style={{ flex: 1, resizeMode: 'cover', borderRadius: constants.borderRadiusMd, overflow: 'hidden'}} />
                     </Animated.View>
                   </View>
                 </TouchableWithoutFeedback>

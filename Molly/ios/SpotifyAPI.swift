@@ -49,7 +49,7 @@ class SpotifyAPI: RCTEventEmitter, SPTAudioStreamingDelegate {
         try SPTAudioStreamingController.sharedInstance().start(withClientId: clientID)
       }
     } catch {
-      // something went wrong! figure out what to put here later!
+      // something went wrong! figure out what to put here later! (lel)
     }
     
     // async auth call
@@ -103,6 +103,8 @@ class SpotifyAPI: RCTEventEmitter, SPTAudioStreamingDelegate {
     return ["Login"]
   }
   
+  
+  
   /* SPOTIFY MUSIC PLAYBACK SECTION */
   
   // Song URI Queue
@@ -123,6 +125,7 @@ class SpotifyAPI: RCTEventEmitter, SPTAudioStreamingDelegate {
     callback([NSNull(), categories])
   }
   
+  // Is user currently logged in?
   @objc(isLoggedIn:)
   func isLoggedIn(callback: @escaping RCTResponseSenderBlock) {
     callback([NSNull(), (self.player != nil)])
@@ -188,8 +191,8 @@ class SpotifyAPI: RCTEventEmitter, SPTAudioStreamingDelegate {
       
     }
   }
-  
-  // Get Metadata Given URI (REQUIRES PLAY URI BEFORE CALLS)
+
+  // Get Metadata of current track (REQUIRES PLAY URI BEFORE CALLS)
   @objc(getMetadata:)
   func getMetadata(callback: @escaping RCTResponseSenderBlock) {
     
