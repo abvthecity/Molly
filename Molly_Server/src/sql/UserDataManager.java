@@ -172,7 +172,7 @@ public  class UserDataManager {
 	
 	
 	//add bookmarks
-	public static void addClientBookmarks(String clientID, String channelTags){
+	public static void addClientBookmark(String clientID, String channelClientID){
 		
 		Connection conn = null;
 		PreparedStatement ps = null;
@@ -193,7 +193,7 @@ public  class UserDataManager {
 				bm = rs.getString("clientBookmarks");
 	
 			}
-			bm+=channelTags;
+			bm+=channelClientID;
 		}catch (ClassNotFoundException e){
 			e.getStackTrace();
 	
