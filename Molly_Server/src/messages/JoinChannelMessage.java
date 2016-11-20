@@ -5,14 +5,14 @@ public class JoinChannelMessage extends Message {
 	 * 
 	 */
 	private static final long serialVersionUID = -1375336583938391483L;
-	private String channelID;
+	private String DJIWishToJoin;
 	
-	public String getChannelID() {
-		return channelID;
+	public String getDJIWishToJoin() {
+		return DJIWishToJoin;
 	}
 
-	public void setChannelID(String channelID) {
-		this.channelID = channelID;
+	public void setDJIWishToJoin(String channelID) {
+		this.DJIWishToJoin = channelID;
 	}
 
 	public JoinChannelMessage(String clientID, String isDJ, String isLive, String currDJ, String channelID) {
@@ -21,6 +21,6 @@ public class JoinChannelMessage extends Message {
 		this.isDJ = isDJ;
 		this.isLive = isLive;
 		this.currDJ = currDJ;
-		this.channelID = channelID;
+		this.DJIWishToJoin = channelID;
 	}
 }
