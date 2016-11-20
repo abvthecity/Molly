@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import classes.Channel;
+import sql.ChannelDataManager;
+import sql.UserDataManager;
 
 /**
  * Servlet implementation class ChannelServlet

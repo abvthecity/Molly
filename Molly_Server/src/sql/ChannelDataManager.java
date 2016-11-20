@@ -18,7 +18,7 @@ public class ChannelDataManager {
 	static final String DB_URL = "jdbc:mysql://localhost/SpotifyDJ?user=root&password=lertom30&useSSL = false";
 	static Channel channel;
 	
-	public  static void CreateChannel(String clientId, String[] channelTags, int channelsSubscriberNum, int channelLikesNum ){
+	public  static void createChannel(String clientId, String[] channelTags, int channelsSubscriberNum, int channelLikesNum ){
 		channel = new Channel(clientId, channelTags, channelsSubscriberNum, channelLikesNum);
 		Connection conn = null;
 		PreparedStatement ps = null;

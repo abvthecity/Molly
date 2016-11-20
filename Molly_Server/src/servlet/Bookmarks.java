@@ -34,7 +34,7 @@ public class Bookmarks extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		String clientID = request.getParameter("clientID");
-		String[] bookmarks = UserDataManager.getClientBookmarks();//search in sql
+		String[] bookmarks = UserDataManager.getClientBookmarks(clientID);//search in sql
 		response.setContentType("application/json");
 		PrintWriter out = response.getWriter();      
 		
