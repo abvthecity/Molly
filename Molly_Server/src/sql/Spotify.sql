@@ -10,10 +10,11 @@ CREATE TABLE `SpotifyDJ`.`Users` (
   PRIMARY KEY (`clientID`));
   
   CREATE TABLE `SpotifyDJ`.`Channel` (
-  `clientID` VARCHAR(20) NULL,
+  `clientID` VARCHAR(20) NOT NULL,
   `channelTags` Varchar(1000) Null,
   `subscribersNum` int NULL,
-  `likesNum` int NULL);
+  `likesNum` int NULL,
+  PRIMARY KEY (`clientID`));
   
 CREATE TABLE `SpotifyDJ`.`channelTags` (
   `channelTag` VARCHAR(100) NOT NULL,

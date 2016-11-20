@@ -50,7 +50,7 @@ public  class UserDataManager {
 			for(int i=0; i<clientTags.length; i++){
 				tags +=clientTags[i]+":";
 			}
-			if(bookmarks != null){
+			if(bookmarks.equals("null")){
 				for(int i=0; i<bookmarks.length; i++){
 					bm +=bookmarks[i]+":";
 				}
@@ -156,13 +156,13 @@ public  class UserDataManager {
 			e.getStackTrace();
 		}
 		finally {
-		try {
-			ps.close();
-		} catch (SQLException e) { /* Do nothing */ }
-
-		try {
-			conn.close();
-		} catch (SQLException e) { /* Do nothing */ }
+			try {
+				ps.close();
+			} catch (SQLException e) { /* Do nothing */ }
+	
+			try {
+				conn.close();
+			} catch (SQLException e) { /* Do nothing */ }
 	}
 
 		return tags;
@@ -193,7 +193,8 @@ public  class UserDataManager {
 				bm = rs.getString("clientBookmarks");
 	
 			}
-			bm+=channelClientID;
+			
+			bm+=channelClientID+":";
 		}catch (ClassNotFoundException e){
 			e.getStackTrace();
 	
