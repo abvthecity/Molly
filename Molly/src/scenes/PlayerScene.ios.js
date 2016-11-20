@@ -13,44 +13,9 @@ import LinearGradient from 'react-native-linear-gradient'
 
 import constants from '../common/constants'
 import Card from '../components/Card'
+import Listitem from '../components/Listitem'
 import BlurNavigator from '../components/BlurNavigator'
 import BlurStatusBar from '../components/BlurStatusBar'
-
-class ListViewObj extends Component {
-  constructor() {
-    super();
-    const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
-    this.state = {
-      dataSource: ds.cloneWithRows(['SONG TITLE 1', 'SONG TITLE 2'])
-    }
-  }
-
-  _renderRow(title: string, onPress: Function = () => {}) {
-    return (
-      <View>
-        <View style={styles.separator} />
-        <View style={styles.row}>
-          <Text style={styles.rowText}>
-            {title}
-          </Text>
-        </View>
-        {/* <View style={styles.separator} /> */}
-      </View>
-    )
-  }
-
-  render() {
-    return (
-      <View>
-        {/* <View style={styles.separator} /> */}
-        <ListView
-          dataSource={this.state.dataSource}
-          renderRow={(rowData) => this._renderRow(rowData)}
-        />
-      </View>
-    );
-  }
-}
 
 class PlayerScene extends Component {
 
@@ -60,13 +25,13 @@ class PlayerScene extends Component {
     this.state = {
       muted: false,
       animatedValue: new Animated.Value(1),
-      uri: 'spotify:track:2Im64pIz6m0EJKdUe6eZ8r',
       title: 'Rachit\'s Bangers',
       host: 'Rachit Kataria',
       nowPlaying: {
         album_cover: null,
         song_title: null,
         artist_name: null,
+        uri: null,
         progress: 0
       }
     }
@@ -74,34 +39,33 @@ class PlayerScene extends Component {
     this.toggleMute = this.toggleMute.bind(this)
   }
 
-  componentDidMount() {
-    // SpotifyAPI.getMetadata(this.state.uri, (error, data) => {
-    //   console.log(data);
-    // })
-
+  componentWillMount() {
     let _this = this
 
-    fetch('https://api.spotify.com/v1/tracks/' + _this.state.uri.split(':')[2])
+    let trackId = '2Im64pIz6m0EJKdUe6eZ8r'
+
+
+    fetch('https://api.spotify.com/v1/tracks/' + trackId)
       .then(res => res.json())
       .then(res => {
-
         Image.prefetch(res.album.images[0].url)
-
-        let nowPlaying = {
+        return {
           album_cover: { uri: res.album.images[0].url } || null,
           song_title: res.name || null,
           artist_name: res.artists.map(d => d.name).join(', ') || null,
-          progress: 0
+          uri: res.uri,
+          progress: 0,
         }
-
+      })
+      .then(nowPlaying => {
         _this.setState({ nowPlaying }, () => {
-          SpotifyAPI.playURI(res.uri, 0, error => {
+          SpotifyAPI.playURI(nowPlaying.uri, 0, error => {
             if (error === null) _this._setPlaying()
             else console.error(error)
           })
         })
-
-      }).catch(console.error)
+      })
+      .catch(console.error)
 
   }
 
@@ -222,7 +186,16 @@ class PlayerScene extends Component {
                 <View style={styles.card_object_inner}>
                   <Text style={{ fontSize: 24, fontWeight: '900' }}>Up Next</Text>
                 </View>
-                <ListViewObj />
+
+                <View>
+                  {['SONG 1', 'SONG 2'].map((item, i) => (
+                    <Listitem key={i}
+                      indent={constants.unit * 4}
+                      backgroundColor="transparent"
+                      text={item} />
+                  ))}
+                </View>
+
                 <View style={styles.card_object_inner} />
               </View>
             </Card>
