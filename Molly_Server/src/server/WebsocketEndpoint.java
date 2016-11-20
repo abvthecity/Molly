@@ -36,7 +36,7 @@ public class WebsocketEndpoint {
 		logger.log(Level.INFO, "Received: {0}", msg.toString());
 		if (msg instanceof AddSongToPlaylistMessage) {
 			AddSongToPlaylistMessage addSongToPlaylistMessage = (AddSongToPlaylistMessage) msg;
-			channelIDToChannelMap.get(addSongToPlaylistMessage.getClientID()).addSongToPlaylist(addSongToPlaylistMessage.getSongURI());
+			//channelIDToChannelMap.get(addSongToPlaylistMessage.getClientID()).addSongToPlaylist(addSongToPlaylistMessage.getSongURI());
 			//sendAll(); send update playlist message to everyone
 		} else {
 

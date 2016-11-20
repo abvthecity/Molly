@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import classes.Channel;
 import sql.ChannelDataManager;
+import sql.TagDataManager;
 import sql.UserDataManager;
 
 /**
@@ -75,7 +76,7 @@ public class ChannelServlet extends HttpServlet {
 		for(int i=0; i<5; i++){
 			TagDataManager.addChannelForTag(channelTags[i], clientID);
 		}
-		startThread(clientID);
+		//startThread(clientID);
 	}
 
 }
