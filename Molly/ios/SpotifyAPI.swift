@@ -22,8 +22,29 @@ class SpotifyAPI: RCTEventEmitter, SPTAudioStreamingDelegate {
   // Notification Name
   let closeUserAuthVC: String! = "closeUserAuthVC"
   
-  // First App Launch?
-  var firstAppLaunch: Bool! = true
+  // First Authentication?
+  var firstAuth: Bool! = true
+  
+  // Check If User is Already Authenticated
+  @objc(userHasAuth:)
+  func userHasAuth(callback: @escaping RCTResponseSenderBlock) {
+    // do we already have a valid session?
+    if SPTAuth.defaultInstance().session.isValid() {
+      // if session is valid, login with access token we already have
+      SPTAudioStreamingController.sharedInstance().login(withAccessToken: SPTAuth.defaultInstance().session.accessToken)
+      
+      // assign object refs to important internal Spotify objects
+      self.auth = SPTAuth.defaultInstance()
+      self.player = SPTAudioStreamingController.sharedInstance()
+      self.session = SPTAuth.defaultInstance().session
+      
+      // send "true" in callback
+      callback([NSNull(), true])
+    } else {
+      // send "false" in callback
+      callback([NSNull(), false])
+    }
+  }
   
   // Authenticate User With Spotify
   @objc(authenticate:redirectURL:)
@@ -35,9 +56,9 @@ class SpotifyAPI: RCTEventEmitter, SPTAudioStreamingDelegate {
     SPTAuth.defaultInstance().requestedScopes = [SPTAuthStreamingScope]
     
     // set notification name
-    if firstAppLaunch == true {
+    if firstAuth == true {
       NotificationCenter.default.addObserver(self, selector: #selector(SpotifyAPI.afterAuthentication(notification:)), name: NSNotification.Name(rawValue: self.closeUserAuthVC), object: nil)
-      firstAppLaunch = false
+      firstAuth = false
     }
     
     // become controller's delegate
@@ -60,13 +81,14 @@ class SpotifyAPI: RCTEventEmitter, SPTAudioStreamingDelegate {
   
   // Authentication Helper for User Auth Flow
   func startAuthenticationFlow() {
+    // get url to display
     let urlToDisplay = SPTAuth.defaultInstance().spotifyWebAuthenticationURL()
     if #available(iOS 9.0, *) {
       self.authVC = SFSafariViewController.init(url: urlToDisplay!)
     } else {
       // Fallback on earlier versions
     }
-    
+      
     // display with help of appdelegate
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     appDelegate.window?.rootViewController?.present(self.authVC, animated: true, completion: nil)
@@ -85,7 +107,7 @@ class SpotifyAPI: RCTEventEmitter, SPTAudioStreamingDelegate {
       // get auth and player from default and shared instances of respective classes
       self.auth = SPTAuth.defaultInstance()
       self.player = SPTAudioStreamingController.sharedInstance()
-      
+
       // emit login success
       self.sendEvent(withName: "Login", body: ["success": true, "userSpotifyID": self.auth.session.canonicalUsername])
     } else {
@@ -102,9 +124,7 @@ class SpotifyAPI: RCTEventEmitter, SPTAudioStreamingDelegate {
   override func supportedEvents() -> [String]! {
     return ["Login"]
   }
-  
-  
-  
+
   /* SPOTIFY MUSIC PLAYBACK SECTION */
   
   // Song URI Queue
