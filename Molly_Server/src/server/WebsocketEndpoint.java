@@ -17,12 +17,15 @@ import javax.websocket.server.ServerEndpoint;
 import encoders.SongChangedMessageEncoder;
 import messages.AddSongToPlaylistMessage;
 import messages.ChangeSongMessage;
+import messages.DJIsOfflineMessage;
 import messages.GoLiveMessage;
 import messages.GoOfflineMessage;
 import messages.JoinChannelMessage;
 import messages.Message;
 import messages.SongChangedMessage;
 import messages.UpdatePlaylistMessage;
+
+
 
 @ServerEndpoint(value = "/websocketEndpoint", decoders = { MessageDecoder.class }, encoders = {
 		SongChangedMessageEncoder.class })
@@ -42,20 +45,35 @@ public class WebsocketEndpoint {
 		logger.log(Level.INFO, "Received: {0}", msg.toString());
 		if (msg instanceof AddSongToPlaylistMessage) {
 			AddSongToPlaylistMessage addSongToPlaylistMessage = (AddSongToPlaylistMessage) msg;
-			MainServer.class.channelIDToChannelMap.get(addSongToPlaylistMessage.getClientID()).addSongToPlaylist(addSongToPlaylistMessage.getSongURI());
+			MainServer.channelIDToChannelMap.get(addSongToPlaylistMessage.getClientID()).addSongToPlaylist(addSongToPlaylistMessage.getSongURI());
+			ArrayList<String> newPlaylist = MainServer.channelIDToChannelMap.get(addSongToPlaylistMessage.getClientID()).getSongURIPlaylist();
 			//channelIDToChannelMap.get(addSongToPlaylistMessage.getClientID()).addSongToPlaylist(addSongToPlaylistMessage.getSongURI());
 			//sendAll(); send update playlist message to everyone
+			sendAll(session, new UpdatePlaylistMessage(null, "false", "false", addSongToPlaylistMessage.getClientID(), newPlaylist ));
 		}else if(msg instanceof ChangeSongMessage){
 			ChangeSongMessage changeSongMessage = (ChangeSongMessage) msg;
 
 		}else if(msg instanceof GoLiveMessage){
 			GoLiveMessage goLiveMessage = (GoLiveMessage) msg;
-
+			MainServer.channelIDToChannelMap.get(goLiveMessage.getClientID()).setLive(true);
+			channelIDs.add(goLiveMessage.getClientID());
+			ArrayList<String> newArray = new ArrayList<String>();
+			DJToListenersMap.put(goLiveMessage.getClientID(), newArray);
 		}else if(msg instanceof GoOfflineMessage){
 			GoOfflineMessage goOfflineMessage = (GoOfflineMessage) msg;
-
+			MainServer.channelIDToChannelMap.get(goOfflineMessage.getClientID()).setLive(false);
+			channelIDs.remove(goOfflineMessage.getClientID());
+			DJToListenersMap.remove(goOfflineMessage.getClientID());
+			sendAll(session, new DJIsOfflineMessage(null, "false", "false", null, goOfflineMessage.getClientID()));
 		}else if(msg instanceof JoinChannelMessage){
 			JoinChannelMessage joinChannelMessage = (JoinChannelMessage) msg;
+			
+			if(MainServer.channelIDToChannelMap.get(joinChannelMessage.getDJIWishToJoin()).isLive()){
+				DJToListenersMap.get(joinChannelMessage.getDJIWishToJoin()).add(joinChannelMessage.getClientID());
+			}
+			else{
+				sendAll(session, new DJIsOfflineMessage(null, "false", "false", joinChannelMessage.getCurrDJ(), joinChannelMessage.getDJIWishToJoin()));
+			}
 
 		}else if(msg instanceof SongChangedMessage){
 			SongChangedMessage songChangedMessage = (SongChangedMessage) msg;

@@ -12,6 +12,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import messages.AddSongToPlaylistMessage;
+import messages.GoLiveMessage;
+import messages.GoOfflineMessage;
+import messages.JoinChannelMessage;
 import messages.Message;
 
 /* Decode a JSON message into a Message object */
@@ -39,11 +42,16 @@ public class MessageDecoder implements Decoder.Text<Message> {
 				
 				break;
 			case "GoLive":
-				// msg = new
+				msg = new GoLiveMessage(messageMap.get("clientID"), messageMap.get("isDJ"),
+						messageMap.get("isLive"), messageMap.get("currDJ"));
 			case "GoOffline":
-				// msg = new
+				msg = new GoOfflineMessage(messageMap.get("clientID"), messageMap.get("isDJ"),
+						messageMap.get("isLive"), messageMap.get("currDJ"));
+				
 			case "JoinChannel":
-				// msg = new
+				msg = new JoinChannelMessage(messageMap.get("clientID"), messageMap.get("isDJ"),
+						messageMap.get("isLive"), messageMap.get("currDJ"), messageMap.get("DJIWishToJoin"));
+				
 			case "ChangeSong":
 				// msg = new
 			}
@@ -84,11 +92,29 @@ public class MessageDecoder implements Decoder.Text<Message> {
 				}
 				//break;
 			case "GoLive":
-				// msg = new
+				if(map.containsKey("clientID") && map.containsKey("isDJ") && map.containsKey("islive")
+						&& map.containsKey("currDJ")){
+					return true;
+				}
+				else{
+					return false;
+				}
 			case "GoOffline":
-				// msg = new
+				if(map.containsKey("clientID") && map.containsKey("isDJ") && map.containsKey("islive")
+						&& map.containsKey("currDJ")){
+					return true;
+				}
+				else{
+					return false;
+				}
 			case "JoinChannel":
-				// msg = new
+				if(map.containsKey("clientID") && map.containsKey("isDJ") && map.containsKey("islive")
+						&& map.containsKey("currDJ") && map.containsKey("DJIWishToJoin")){
+					return true;
+				}
+				else{
+					return false;
+				}
 			case "ChangeSong":
 				// msg = new
 			}
