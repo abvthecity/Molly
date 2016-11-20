@@ -10,6 +10,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import classes.Channel;
+import sql.ChannelDataManager;
+import sql.TagDataManager;
+import sql.UserDataManager;
 
 /**
  * Servlet implementation class ChannelServlet
@@ -68,9 +71,13 @@ public class ChannelServlet extends HttpServlet {
 		//String isDJ = request.getParameter("isDJ"); 
 		//String email = request.getParameter("email");
 		//String[] clientBookmarks = new String[50];
-		ChannelDataManager.createChannel(clientID, channelTags, 0, 0); //insert in sql
+		ChannelDataManager.createChannel(clientID, channelTags, 0, 0);
+		Channel c = new Channel(clientID, channelTags, 0, 0);//insert in sql
 		UserDataManager.makeDJ(clientID); //update in sql
-		startThread(clientID);
+		for(int i=0; i<5; i++){
+			TagDataManager.addChannelForTag(channelTags[i], clientID);
+		}
+		//startThread(clientID);
 	}
 
 }

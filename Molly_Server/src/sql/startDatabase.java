@@ -13,8 +13,7 @@ import java.sql.SQLException;
 public class startDatabase extends Thread{
 	
 	static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";  
-	static final String DB_URL = "jdbc:mysql://localhost/SpotifyDJ?user=root&password=lertom30&useSSL = false";
-
+	static final String DB_URL = "jdbc:mysql://localhost?user=root&password=root&useSSL = false";
 
 	
 		/** A very basic SQL script runner
@@ -57,7 +56,8 @@ public class startDatabase extends Thread{
 			} catch (IOException ioe) {
 				System.out.println("Startup ioe: " + ioe.getMessage());
 			} catch (SQLException sqle) {
-				System.out.println ("Startup SQLException: " + sqle.getMessage());
+				System.out.println ("Startup SQLException: ");
+				sqle.printStackTrace();
 			} catch (ClassNotFoundException cnfe) {
 				System.out.println ("Startup ClassNotFoundException: " + cnfe.getMessage());
 			}  finally {
@@ -88,7 +88,13 @@ public class startDatabase extends Thread{
 		@Override
 		public void run() {
 			runScript("src/sql/Spotify.sql");
+			System.out.println("run in startDatabase");
 			
+		}
+		
+		public static void main(String[] args) {
+			startDatabase s = new startDatabase();
+			s.start();
 		}
 		
 	

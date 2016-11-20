@@ -1,10 +1,12 @@
 package sql;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 import classes.Channel;
 import classes.User;
@@ -12,38 +14,37 @@ import classes.User;
 
 public class ChannelDataManager {
 
-	
-	
+	//initializing the Driver
 	static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";  
 	static final String DB_URL = "jdbc:mysql://localhost/SpotifyDJ?user=root&password=lertom30&useSSL = false";
 	static Channel channel;
 	
-	public  static void CreateChannel(String clientId, String[] channelTags, int channelsSubscriberNum, int channelLikesNum ){
+	public  static void createChannel(String clientId, String[] channelTags, int channelsSubscriberNum, int channelLikesNum ){
 		channel = new Channel(clientId, channelTags, channelsSubscriberNum, channelLikesNum);
 		Connection conn = null;
 		PreparedStatement ps = null;
 		String tags="";
 		int likes, subscribes;
 		
+		
 		try {
 		
 			for(int i=0; i<channelTags.length; i++){
-				tags +=channelTags[i]+":";
+				if(!channelTags.equals("null")){
+					tags +=channelTags[i]+":";
+				}
 			}
-			
 	   
 			Class.forName(JDBC_DRIVER);
 			conn = DriverManager.getConnection(DB_URL);
-			ps = conn.prepareStatement("INSERT INTO Channel (clientID, channelTags, subscribersNum, likesNum) VALUES (?, ?, ?, ?);");
+			ps = conn.prepareStatement("INSERT INTO Channel (clientID, channelTags, subscribersNum, likesNum ) VALUES (?, ?, ?, ?);");
 			ps.setString(1, clientId);
 			ps.setString(2, tags);
 			ps.setInt(3, channelsSubscriberNum);
 			ps.setInt(4, channelLikesNum);
 			ps.executeUpdate();
 			channel = new Channel(clientId, channelTags, channelsSubscriberNum, channelLikesNum);
-			
-			
-			
+	
 		}catch (ClassNotFoundException cnfe) {
 			// TODO Auto-generated catch block
 			cnfe.printStackTrace();
@@ -56,7 +57,6 @@ public class ChannelDataManager {
 	
 	
 public static Channel getChannel(String clientID){
-		
 		
 		Connection conn = null;
 		PreparedStatement ps = null;
@@ -107,8 +107,7 @@ public static Channel getChannel(String clientID){
 			Class.forName(JDBC_DRIVER);
 			conn = DriverManager.getConnection(DB_URL);
 			ps = conn.prepareStatement("SELECT channelLikesNum FROM Channel WHERE clientID=?");
-			
-	        
+        
 			ps.setString(1, clientID);
 			rs = ps.executeQuery();
 			if (rs.next()) {
@@ -129,8 +128,7 @@ public static Channel getChannel(String clientID){
 	
 	
 	public static void addLikes(String clientID){
-		
-		
+	
 			int likes = getLikes(clientID);
 			channel.setNumChannelLikes(likes);
 			//System.out.println("UserDataManager : "+user.getIfCLientIsDJ());
@@ -162,7 +160,7 @@ public static Channel getChannel(String clientID){
 	}
 	
 		
-public static int getNumChannelSubscribers(String clientID){
+	public static int getNumChannelSubscribers(String clientID){
 			
 		Connection conn = null;
 		PreparedStatement ps = null;
@@ -195,8 +193,7 @@ public static int getNumChannelSubscribers(String clientID){
 	
 	
 	public static void addNumChannelSubscribers(String clientID){
-		
-		
+	
 			int sub = getLikes(clientID);
 			channel.setNumChannelSubscribers(sub);
 			//System.out.println("UserDataManager : "+user.getIfCLientIsDJ());

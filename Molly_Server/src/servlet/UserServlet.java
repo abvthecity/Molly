@@ -2,6 +2,9 @@ package servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -9,7 +12,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.json.JSONObject;
+
+
 import classes.User;
+import sql.TagDataManager;
 import sql.UserDataManager;
 
 /**
@@ -45,7 +52,7 @@ public class UserServlet extends HttpServlet {
 				else{
 					b = "false";
 				}
-				String jsonObject = "{\"clientID\": \""+u.clientID+"\", \"clientTags\": [";
+				String jsonObject = "{\"clientID\": \""+clientID+"\", \"clientTags\": [";
 				for(int i = 0; i< tags.length; i++){
 					jsonObject += "{\""+tags[i]+"\"}";
 					if(i!=4){
@@ -82,7 +89,32 @@ public class UserServlet extends HttpServlet {
 		//String isDJ = request.getParameter("isDJ"); 
 		//String email = request.getParameter("email");
 		String[] clientBookmarks = new String[50];
-		UserDataManager.createUser(clientID, tags, false, clientBookmarks); //insert in sql
+		UserDataManager.createUser(clientID, tags, false, clientBookmarks);
+		HashSet<String> channelsBasedOnTags = new HashSet<String>();
+		for(int i = 0; i<5; i++){
+			String [] arr = TagDataManager.getChannelsForTag(tags[i]);
+			for(int j = 0; j < arr.length; j++){
+				channelsBasedOnTags.add(arr[j]);
+			}
+		}
+		String jsonObject = "{\"clientID\": \""+clientID+"\", \"channelsBasedOnTags\": [";
+		Iterator<String> it = channelsBasedOnTags.iterator();
+		int count = 0;
+		while(it.hasNext()){
+			count++;
+			jsonObject += "{\""+it.next()+"\"}";
+			if(count != channelsBasedOnTags.size()){
+				jsonObject += ", ";
+			}
+			
+		}
+		jsonObject += "]}";
+		response.setContentType("application/json");
+		PrintWriter out = response.getWriter(); 
+		out.print(jsonObject);
+		out.flush();
+		
+		//insert in sql
 	}
 
 }

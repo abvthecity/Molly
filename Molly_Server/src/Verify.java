@@ -36,9 +36,9 @@ public class Verify extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		String info = request.getParameter("hi");
-		
+		System.out.println("comes here");
 //		response.setHeader();
-		response.getWriter().append("{\"object\": \"key\"}");
+		response.getWriter().append("{\"object\": \"key\"}"+info);
 	}
 
 	/**
@@ -46,6 +46,7 @@ public class Verify extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
+		System.out.println("comes here2");
 		doGet(request, response);
 	}
 

@@ -22,7 +22,7 @@ public  class UserDataManager {
 //    static BufferedReader br;
 	static User  user = null;
     
-	public  static void CreateUser(String clientId, String[] clientTags, boolean isClienDJ, String[] bookmarks ){
+	public  static void createUser(String clientId, String[] clientTags, boolean isClienDJ, String[] bookmarks ){
 		
 		Connection conn = null;
 		PreparedStatement ps = null;
@@ -45,11 +45,15 @@ public  class UserDataManager {
 //	    dout.close();
 //	    byte[] asBytes1 = bout.toByteArray();
 			
+			
+
 			for(int i=0; i<clientTags.length; i++){
 				tags +=clientTags[i]+":";
 			}
-			for(int i=0; i<bookmarks.length; i++){
-				bm +=bookmarks[i]+":";
+			if(bookmarks.equals("null")){
+				for(int i=0; i<bookmarks.length; i++){
+					bm +=bookmarks[i]+":";
+				}
 			}
 	   
 			Class.forName(JDBC_DRIVER);
@@ -119,6 +123,129 @@ public  class UserDataManager {
 		return user;
 	}
 	
+	
+	
+	//getClientTags
+	public static String[] getClientTags(String clientID){
+		
+		User user = null;
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+
+		String[] tags = new String[5];
+		
+		try {
+			
+			Class.forName(JDBC_DRIVER);
+			conn = DriverManager.getConnection(DB_URL);
+			ps = conn.prepareStatement("SELECT clientTags FROM Users WHERE clientID=?");
+			
+	        
+	    	ps.setString(1, clientID);
+			rs = ps.executeQuery();
+			if (rs.next()) {
+				tags = rs.getString("clientTags").split(":");
+	
+			}
+		}catch (ClassNotFoundException e){
+			e.getStackTrace();
+	
+		}
+		catch (SQLException e){
+			e.getStackTrace();
+		}
+		finally {
+			try {
+				ps.close();
+			} catch (SQLException e) { /* Do nothing */ }
+	
+			try {
+				conn.close();
+			} catch (SQLException e) { /* Do nothing */ }
+	}
+
+		return tags;
+
+	}
+	
+	
+	
+	//add bookmarks
+	public static void addClientBookmark(String clientID, String channelClientID){
+		
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+
+		String bm ="";
+		
+		try {
+			
+			Class.forName(JDBC_DRIVER);
+			conn = DriverManager.getConnection(DB_URL);
+			ps = conn.prepareStatement("SELECT clientBookmarks FROM Users WHERE clientID=?");
+			
+	        
+	    	ps.setString(1, clientID);
+			rs = ps.executeQuery();
+			if (rs.next()) {
+				bm = rs.getString("clientBookmarks");
+	
+			}
+			
+			bm+=channelClientID+":";
+		}catch (ClassNotFoundException e){
+			e.getStackTrace();
+	
+		}
+		catch (SQLException e){
+			e.getStackTrace();
+		}  finally {
+			try {
+				ps.close();
+			} catch (SQLException e) { /* Do nothing */ }
+
+			try {
+				conn.close();
+			} catch (SQLException e) { /* Do nothing */ }
+		}
+		
+		addBookmarksHelper( clientID,  bm);
+	
+	}
+	//add bookmarks helper method
+	public static void addBookmarksHelper(String clientID, String bm){
+		//System.out.println("UserDataManager : "+user.getIfCLientIsDJ());
+		Connection conn = null;
+		PreparedStatement ps = null;
+		try {
+			Class.forName(JDBC_DRIVER);
+			conn = DriverManager.getConnection(DB_URL);
+			ps = conn.prepareStatement("UPDATE Users SET clientBookmarks='"+bm +"' WHERE clientID=?");
+			ps.setString(1, clientID);
+			int result = ps.executeUpdate();
+			if (result == 0) {
+				System.out.println("UserDataManager.createUser|user: clientID " 
+						+ clientID + " not in database, couldn't set as dj.");
+			}
+			
+		} catch (SQLException sqle) {
+			System.out.println ("UserDataManager SQLException: " + sqle.getMessage());
+		} catch (ClassNotFoundException cnfe) {
+			System.out.println ("UserDataManager ClassNotFoundException: " + cnfe.getMessage());
+		} finally {
+			try {
+				ps.close();
+			} catch (SQLException e) { /* Do nothing */ }
+			try {
+				conn.close();
+			} catch (SQLException e) { /* Do nothing */ }
+		}
+	}
+	
+	
+	
 	public static String[] getClientBookmarks(String clientID){
 		
 		User user = null;
@@ -148,6 +275,16 @@ public  class UserDataManager {
 		catch (SQLException e){
 			e.getStackTrace();
 		}
+		finally {
+		try {
+			ps.close();
+		} catch (SQLException e) { /* Do nothing */ }
+
+		try {
+			conn.close();
+		} catch (SQLException e) { /* Do nothing */ }
+	}
+
 		return bm;
 		
 	}
