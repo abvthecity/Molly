@@ -72,6 +72,9 @@ public class ChannelServlet extends HttpServlet {
 		//String[] clientBookmarks = new String[50];
 		ChannelDataManager.createChannel(clientID, channelTags, 0, 0); //insert in sql
 		UserDataManager.makeDJ(clientID); //update in sql
+		for(int i=0; i<5; i++){
+			TagDataManager.addChannelForTag(channelTags[i], clientID);
+		}
 		startThread(clientID);
 	}
 
