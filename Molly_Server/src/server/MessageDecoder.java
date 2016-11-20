@@ -36,6 +36,7 @@ public class MessageDecoder implements Decoder.Text<Message> {
 			case "AddSongToPlaylist":
 				msg = new AddSongToPlaylistMessage(messageMap.get("clientID"), messageMap.get("isDJ"),
 						messageMap.get("isLive"), messageMap.get("currDJ"), messageMap.get("songURI"));
+				
 				break;
 			case "GoLive":
 				// msg = new

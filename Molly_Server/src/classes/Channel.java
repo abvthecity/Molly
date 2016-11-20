@@ -2,6 +2,7 @@ package classes;
 
 import java.util.ArrayList;
 import java.util.Queue;
+import server.MainServer;
 
 public class Channel extends Thread{
 
@@ -19,7 +20,8 @@ public class Channel extends Thread{
 		this.channelTags = channelTags;
 		this.numChannelSubscribers = numSubscribers;
 		this.numChannelLikes = numlikes;
-		this.songURIPlaylist = new ArrayList<String>();
+		this.start();
+		MainServer.class.channelIDToChannelsMap.put(clientID, this);
 	}
 	
 //	public int getChannelID(){
@@ -70,5 +72,9 @@ public class Channel extends Thread{
 	
 	public ArrayList<String> getSongURIPlaylist(){
 		return songURIPlaylist;
+	}
+	
+	public void run(){
+		
 	}
 }
