@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import {
   AppRegistry, NativeModules, NativeEventEmitter,
-  NavigatorIOS,
+  NavigatorIOS, ActivityIndicator,
   View, Text, Modal
 } from 'react-native'
 
@@ -95,30 +95,33 @@ const LiveRoute = props => (
 
 class Molly extends Component {
   state = {
+    loaded: false,
     isLoggedIn: false
   }
 
   componentWillMount() {
-    SpotifyAPI.isLoggedIn((error, loggedInState) => {
-      this.setState({
-        isLoggedIn: loggedInState
-      })
-    })
-  }
+    let _this = this
 
-  componentDidMount() {
-    this.LoginSubscriber = SpotifyAPIEventEmitter.addListener('Login', res => {
-      if (res.success === true) {
-        console.log("CLIENT_ID:", res.userSpotifyID)
-        SpotifyAPI.isLoggedIn((error, loggedInState) => {
-          this.setState({ isLoggedIn: loggedInState })
+    SpotifyAPI.userHasAuth((error, hasAuth) => {
+
+      if (!hasAuth) {
+        _this.loginSubscriber = SpotifyAPIEventEmitter.addListener('Login', res => {
+          if (res.success === true) {
+            console.log("CLIENT_ID:", res.userSpotifyID)
+            this.setState({ isLoggedIn: true })
+          } else console.log("FAILED TO BEGIN")
         })
-      } else console.log("FAILED TO BEGIN")
+      } else this.setState({ isLoggedIn: true })
+
+      this.setState({ loaded: true })
+
     })
   }
 
   componentWillUnmount() {
-    this.LoginSubscriber.remove()
+    if (this.LoginSubscriber) {
+      this.LoginSubscriber.remove()
+    }
   }
 
   _login = () => {
@@ -131,6 +134,15 @@ class Molly extends Component {
   }
 
   render() {
+    if (!this.state.loaded) {
+      return <View style={{
+        flex: 1,
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}><ActivityIndicator size="large" /></View>
+    }
+
     if (this.state.isLoggedIn) {
       return (
         <NavigatorIOS
