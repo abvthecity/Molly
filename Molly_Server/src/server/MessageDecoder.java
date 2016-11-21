@@ -38,7 +38,8 @@ public class MessageDecoder implements Decoder.Text<Message> {
 			switch (messageMap.get("type")) {
 			case "AddSongToPlaylist":
 				msg = new AddSongToPlaylistMessage(messageMap.get("clientID"), messageMap.get("isDJ"),
-						messageMap.get("isLive"), messageMap.get("currDJ"), messageMap.get("songURI"));
+						messageMap.get("isLive"), messageMap.get("currDJ"), messageMap.get("songURI"), 
+						Integer.parseInt(messageMap.get("songDuration")));
 				
 				break;
 			case "GoLive":
@@ -84,7 +85,7 @@ public class MessageDecoder implements Decoder.Text<Message> {
 
 			case "AddSongToPlaylist":
 				if(map.containsKey("clientID") && map.containsKey("isDJ") && map.containsKey("islive")
-						&& map.containsKey("currDJ") && map.containsKey("songURI")){
+						&& map.containsKey("currDJ") && map.containsKey("songURI") && map.containsKey("songDuration")){
 					return true;
 				}
 				else{

@@ -14,6 +14,8 @@ import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
+
+import classes.Song;
 import encoders.SongChangedMessageEncoder;
 import messages.AddSongToPlaylistMessage;
 import messages.ChangeSongMessage;
@@ -45,7 +47,9 @@ public class WebsocketEndpoint {
 		logger.log(Level.INFO, "Received: {0}", msg.toString());
 		if (msg instanceof AddSongToPlaylistMessage) {
 			AddSongToPlaylistMessage addSongToPlaylistMessage = (AddSongToPlaylistMessage) msg;
-			MainServer.channelIDToChannelMap.get(addSongToPlaylistMessage.getClientID()).addSongToPlaylist(addSongToPlaylistMessage.getSongURI());
+			String songURI  = addSongToPlaylistMessage.getSongURI();
+			Integer songDuration = addSongToPlaylistMessage.getSongDuration();
+			MainServer.channelIDToChannelMap.get(addSongToPlaylistMessage.getClientID()).addSongToPlaylist(new Song(songURI, songDuration));
 			ArrayList<String> newPlaylist = MainServer.channelIDToChannelMap.get(addSongToPlaylistMessage.getClientID()).getSongURIPlaylist();
 			//channelIDToChannelMap.get(addSongToPlaylistMessage.getClientID()).addSongToPlaylist(addSongToPlaylistMessage.getSongURI());
 			//sendAll(); send update playlist message to everyone
