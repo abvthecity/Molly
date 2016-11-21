@@ -11,25 +11,35 @@ import NowPlayingCardView from './NowPlayingCardView'
 class ChannelCard extends Component {
 
   static propTypes = {
-    title: PropTypes.string.isRequired,
-    host: PropTypes.string.isRequired,
+    title: PropTypes.string,
+    host: PropTypes.string,
     favorite: PropTypes.bool,
     shadow: PropTypes.bool,
     border: PropTypes.bool,
     nowPlaying: PropTypes.shape({
-      album_cover: PropTypes.object.isRequired,
-      song_title: PropTypes.string.isRequired,
-      artist_name: PropTypes.string.isRequired,
-      neutral: PropTypes.string.isRequired,
-      accent: PropTypes.string.isRequired,
-      progress: PropTypes.number.isRequired
+      album_cover: PropTypes.object,
+      song_title: PropTypes.string,
+      artist_name: PropTypes.string,
+      uri: PropTypes.string,
+      currentTime: PropTypes.number,
+      duration: PropTypes.number
     })
   }
 
   static defaultProps = {
+    title: null,
+    host: null,
     favorite: false,
     shadow: true,
-    border: false
+    border: false,
+    nowPlaying: {
+      album_cover: null,
+      song_title: null,
+      artist_name: null,
+      uri: null,
+      currentTime: 0,
+      duration: 1
+    }
   }
 
   setNativeProps(nativeProps) {

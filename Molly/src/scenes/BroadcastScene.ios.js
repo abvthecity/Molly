@@ -55,6 +55,18 @@ class BroadcastScene extends Component {
     width: 375
   }
 
+  componentWillMount() {
+    this.props.socket.addListener("broadcast", this._onMessage)
+  }
+
+  componentWillUnmount() {
+    this.props.socket.removeListener("broadcast")
+  }
+
+  _onMessage() {
+    // something happnes here
+  }
+
   _renderSwitch() {
     return (
       <Switch

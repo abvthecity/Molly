@@ -27,28 +27,82 @@ class ExploreScene extends Component {
   }
 
   componentWillMount() {
-    fetch('https://api.spotify.com/v1/users/' + this.props.clientId)
+    fetch(constants.spotify + 'users/' + this.props.clientId)
       .then(res => res.json())
-      .then(res => {
-
-        console.log(res)
-
-        this.setState({ name: res.display_name })
-
-      }).catch(console.error)
+      .then(res => this.setState({ name: res.display_name }))
+      .catch(console.error)
 
     this._getChannels()
+    this._updateTimer()
 
     // establish a socket here!
+    this.props.socket.addListener("explore", this._onMessage)
+  }
+
+  componentWillUnmount() {
+    this.props.socket.removeListener("explore")
+  }
+
+  _onMessage() {
+    // something happnes here
   }
 
   _getChannels() {
     let _this = this;
-    API.getChannels().then(data => {
-      _this.setState({
-        cards: data
-      })
-    }).catch(e => console.error(e))
+
+    fetch(constants.server + '/channels')
+      .then(res => res.json())
+      .then(res => {
+
+        let cards = res.channels.map(d => ({
+          title: d.name,
+          host: d.channelId,
+          favorite: d.favorite,
+          channelId: card.channelId,
+          nowPlaying: {
+            uri: d.trackId,
+            currentTime: d.currentTime,
+            duration: d.duration
+          }
+        }))
+
+        // just to get things started, in case spotify is slow
+        _this.setState({ cards })
+
+        // grab trackdata from spotify
+        let tracks = res.channels.map(d => d.trackId.split(':').pop())
+        return fetch(constants.spotify + '/tracks/?ids=' + tracks.join(','))
+          .then(data => data.json())
+          .then(data => {
+            let tracksObj = {}
+            for (let track of data.tracks) {
+              tracksObj[track.uri] = track
+              Image.prefetch(track.album.images[0].url)
+            }
+
+            return cards.map(card => ({
+              title: card.title,
+              host: card.host,
+              favorite: d.favorite,
+              channelId: card.host,
+              nowPlaying: {
+                album_cover: { uri: tracksObj[card.nowPlaying.uri].album.images[0].url },
+                song_title: tracksObj[card.nowPlaying.uri].name,
+                artist_name: tracksObj[card.nowPlaying.uri].artists.map(d => d.name).join(', '),
+                uri: card.nowPlaying.uri,
+                currentTime: d.currentTime,
+                duration: tracksObj[card.nowPlaying.uri].duration_ms
+              }
+            }))
+
+          })
+          .then(cards => _this.setState({ cards }))
+
+      }).catch(console.log)
+  }
+
+  _updateTimer() {
+    // every half second, increment each card
   }
 
   render() {
@@ -108,75 +162,54 @@ class ExploreScene extends Component {
             <HeadingWithAction title={this.state.browseTitle} style={{ marginBottom: constants.unit * 2 }} />
           </View>
 
-            {/* <ListView
-              style={{ overflow: 'visible' }}
-              enableEmptySections={true}
-              dataSource={this.state.cards}
-              renderRow={(card) => (
-                <TouchableWithoutFeedback
-                  onPress={() => {
-                    this.props.openPlayer()
-                  }} disabled={!card.live}>
-                  <ChannelCard
-                    style={{ marginBottom: constants.unit * 3, borderRadius: constants.borderRadiusLg }}
-                    title={card.title}
-                    host={card.host}
-                    distance={card.distance}
-                    live={card.live}
-                    nowPlaying={card.nowPlaying}
-                  />
-                </TouchableWithoutFeedback>
-              )}
-            /> */}
+          {this.state.cards.map((card, i) => {
 
-            {this.state.cards.map((card, i) => {
+            let press = e => {
+              this.props.openPlayer(card.channelId)
+            }
 
-              let press = e => {
-                this.props.openPlayer()
+            let channelCard = <ChannelCard
+              title={card.title}
+              host={card.host}
+              nowPlaying={card.nowPlaying}
+              border={true}
+            />
+
+            let swipeButtonComponent = (
+              <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'center' }}>
+                <Button>Save</Button>
+              </View>
+            )
+
+            let swipeButtons = [
+              {
+                text: 'Save',
+                backgroundColor: 'transparent',
+                color: '#007AFF',
+                component: swipeButtonComponent
               }
+            ]
 
-              let swipeButtonComponent = (
-                <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'center' }}>
-                  <Button>Save</Button>
-                </View>
-              )
-
-              let swipeButtons = [
-                {
-                  text: 'Save',
-                  backgroundColor: 'transparent',
-                  color: '#007AFF',
-                  component: swipeButtonComponent
-                }
-              ]
-
-              return (
-                <View key={i}
-                  style={{
-                    marginBottom: constants.unit * 3,
-                    paddingHorizontal: constants.unit * 4
-                  }}>
-                  <Swipeout
-                    right={swipeButtons}
-                    style={{ overflow: 'visible' }}
-                    backgroundColor="transparent">
-                    <TouchableOpacity
-                      activeOpacity={0.7}
-                      onPress={press}
-                      style={{ overflow: 'visible' }} >
-                      <ChannelCard
-                        title={card.title}
-                        host={card.host}
-                        distance={card.distance}
-                        live={card.live}
-                        nowPlaying={card.nowPlaying}
-                        border={true}
-                      />
-                    </TouchableOpacity>
-                  </Swipeout>
-                </View>
-              )
-            })}
+            return (
+              <View key={i}
+                style={{
+                  marginBottom: constants.unit * 3,
+                  paddingHorizontal: constants.unit * 4
+                }}>
+                <Swipeout
+                  right={swipeButtons}
+                  style={{ overflow: 'visible' }}
+                  backgroundColor="transparent">
+                  <TouchableOpacity
+                    activeOpacity={0.7}
+                    onPress={press}
+                    style={{ overflow: 'visible' }} >
+                    {channelCard}
+                  </TouchableOpacity>
+                </Swipeout>
+              </View>
+            )
+          })}
 
         </ScrollView>
       </View>

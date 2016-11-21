@@ -45,14 +45,14 @@ class PlayerScene extends Component {
     let trackId = '2Im64pIz6m0EJKdUe6eZ8r'
 
 
-    fetch('https://api.spotify.com/v1/tracks/' + trackId)
+    fetch(constants.spotify + 'tracks/' + trackId)
       .then(res => res.json())
       .then(res => {
         Image.prefetch(res.album.images[0].url)
         return {
-          album_cover: { uri: res.album.images[0].url } || null,
-          song_title: res.name || null,
-          artist_name: res.artists.map(d => d.name).join(', ') || null,
+          album_cover: { uri: res.album.images[0].url },
+          song_title: res.name,
+          artist_name: res.artists.map(d => d.name).join(', '),
           uri: res.uri,
           progress: 0,
         }
@@ -67,12 +67,19 @@ class PlayerScene extends Component {
       })
       .catch(console.error)
 
+      this.props.socket.addListener("player", this._onMessage)
   }
 
   componentWillUnmount() {
     SpotifyAPI.setIsPlaying(false, error => {
       if (error != null) console.error(error)
     })
+
+    this.props.socket.removeListener("player")
+  }
+
+  _onMessage() {
+    // something happnes here
   }
 
   _setPlaying() {

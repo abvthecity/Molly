@@ -33,6 +33,15 @@ class FavoritesScene extends Component {
     this._getChannels()
 
     // establish a socket here!
+    this.props.socket.addListener("favorites", this._onMessage)
+  }
+
+  componentWillUnmount() {
+    this.props.socket.removeListener("favorites")
+  }
+
+  _onMessage() {
+    // something happnes here
   }
 
   _getChannels() {

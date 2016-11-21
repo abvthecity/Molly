@@ -14,7 +14,8 @@ import PlayerScene from './src/scenes/PlayerScene'
 const SpotifyAPI = NativeModules.SpotifyAPI;
 const SpotifyAPIEventEmitter = new NativeEventEmitter(SpotifyAPI);
 
-import socket from './src/common/socket'
+import ws from './src/common/socket'
+const socket = new ws()
 
 const PlayerModal = props => (
   <Modal {...props} transparent={false}
@@ -42,42 +43,43 @@ class Routes extends Component {
   componentWillMount() {
     let _this = this
 
-    socket.onopen = () => {
-      console.log("HI")
-    }
-
-    // socket.send("TEST")
-
+    // check if already authenticated
     SpotifyAPI.userHasAuth((error, hasAuth) => {
-
       this.setState({ loginAttempted: false })
 
+      // no authentication avail, open webview
       if (!hasAuth) {
         _this.loginSubscriber = SpotifyAPIEventEmitter.addListener('Login', res => {
           if (res.success === true) {
             console.log("CLIENT_ID:", res.userSpotifyID)
 
             AsyncStorage.setItem('@SessionData:ClientID', res.userSpotifyID)
-              .then(() => {
-                _this.setState({ isLoggedIn: true, clientId: res.userSpotifyID })
-              }).catch(console.error)
+              .then(() => _this.setState({ isLoggedIn: true, clientId: res.userSpotifyID }))
+              .catch(console.error)
 
           } else console.log("FAILED TO BEGIN")
         })
       } else this.setState({ isLoggedIn: true })
 
+      // already authenticated, jump right in
       AsyncStorage.getItem('@SessionData:ClientID')
-        .then(id => {
-          _this.setState({ loaded: true, clientId: id })
-        }).catch(console.error)
-
+        .then(id => _this.setState({ loaded: true, clientId: id }))
+        .catch(console.error)
     })
+
+    // add websocket listener
+    socket.addListener("index", this._onMessage)
   }
 
   componentWillUnmount() {
     if (this.LoginSubscriber) {
       this.LoginSubscriber.remove()
+      socket.removeListener("index")
     }
+  }
+
+  _onMessage(e) {
+    console.log(e)
   }
 
   _login = () => {
@@ -120,9 +122,6 @@ class Routes extends Component {
     }
 
     if (!this.state.isLoggedIn) {
-      // return <Modal transparent={false}
-      //   supportedOrientations={['portrait']}
-      //   animationType={'slide'}><LandingScene login={this._login} /></Modal>
       return (
         <View style={{ flex: 1 }}>
           <LandingScene login={this._login} />
@@ -154,10 +153,12 @@ class Routes extends Component {
             openFavorites={this._openFavorites}
             openLive={this._openLive}
             openPlayer={this._openPlayer}
-            logout={this._logout} />
+            logout={this._logout}
+            socket={socket} />
           <PlayerModal clientId={this.state.clientId}
             visible={this.state.showPlayer}
-            close={this._closePlayer} />
+            close={this._closePlayer}
+            socket={socket} />
         </View>
       )
     } else if (this.props.scene === 'FAVORITES') {
@@ -165,16 +166,21 @@ class Routes extends Component {
         <View {...this.props} style={[{ flex: 1 }, this.props.style]}>
           <FavoritesScene clientId={this.state.clientId}
             goBack={this.props.navigator.pop}
-            openPlayer={this._openPlayer} />
+            openPlayer={this._openPlayer}
+            socket={socket} />
           <PlayerModal clientId={this.state.clientId}
             visible={this.state.showPlayer}
-            close={this._closePlayer} />
+            close={this._closePlayer}
+            socket={socket} />
         </View>
       )
     } else if (this.props.scene === 'LIVE') {
       return (
         <View {...this.props} style={[{ flex: 1 }, this.props.style]}>
-          <BroadcastScene clientId={this.state.clientId} goBack={this.props.navigator.pop} />
+          <BroadcastScene
+            clientId={this.state.clientId}
+            goBack={this.props.navigator.pop}
+            socket={socket} />
         </View>
       )
     }
