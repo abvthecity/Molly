@@ -57,6 +57,41 @@ public class ChannelDataManager {
 	}
 	
 	
+	
+public static void updateCahnnelName(String clientID, String channelName){
+	Connection conn = null;
+	PreparedStatement ps = null;
+	ResultSet rs = null;
+	
+	try {
+		Class.forName(JDBC_DRIVER);
+		conn = DriverManager.getConnection(DB_URL);
+		ps = conn.prepareStatement("UPDATE Channels SET channelname='"+ channelName+"' WHERE clientID=?");
+		ps.setString(1, clientID);
+		int result = ps.executeUpdate();
+		if (result == 0) {
+			System.out.println("UserDataManager.updateName: clientID " 
+					+ clientID + " not in database, couldn't set as dj.");
+		}
+		
+	} catch (SQLException sqle) {
+		System.out.println ("UserDataManager SQLException: " + sqle.getMessage());
+	} catch (ClassNotFoundException cnfe) {
+		System.out.println ("UserDataManager ClassNotFoundException: " + cnfe.getMessage());
+	} finally {
+		try {
+			ps.close();
+		} catch (SQLException e) { /* Do nothing */ }
+		try {
+			conn.close();
+		} catch (SQLException e) { /* Do nothing */ }
+	}
+	
+}
+
+
+
+
 public static Channel getChannel(String clientID){
 		
 		Connection conn = null;
