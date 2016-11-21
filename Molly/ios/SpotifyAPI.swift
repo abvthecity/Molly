@@ -50,11 +50,11 @@ class SpotifyAPI: RCTEventEmitter, SPTAudioStreamingDelegate {
   // Log User Out
   @objc(logout:)
   func logout(callback: @escaping RCTResponseSenderBlock) {
-    // if player is not nil, then logout through player
-    if self.player != nil {
-      self.player.logout()
-      callback([NSNull(), true])
-    }
+    // to log user out, set session of default instance to nil (so that it can be re-ref'd on reauth)
+    SPTAuth.defaultInstance().session = nil
+    
+    // send "true" in callback
+    callback([NSNull(), true])
   }
 
   // Check If User is Already Authenticated
