@@ -15,12 +15,12 @@ public class Channel extends Thread{
 	public ArrayList<String> songURIPlaylist;
 	
 	
-	public Channel( String clientId, String[] channelTags, int numSubscribers, int numlikes){
+	public Channel( String clientId, String[] channelTags){
 		//this.channelID = channelId;
 		this.clientID = clientId;
-		this.channelTags = channelTags;
-		this.numChannelSubscribers = numSubscribers;
-		this.numChannelLikes = numlikes;
+//		this.channelTags = channelTags;
+//		this.numChannelSubscribers = numSubscribers;
+//		this.numChannelLikes = numlikes;
 		this.isLive = false;
 		this.start();
 		MainServer.channelIDToChannelMap.put(clientID, this);
