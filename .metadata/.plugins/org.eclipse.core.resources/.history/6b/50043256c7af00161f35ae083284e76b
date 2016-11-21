@@ -22,8 +22,7 @@ public class ChannelsServlet extends HttpServlet {
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    	String favorites = request.getParameter("favorites");
-    	boolean favs = (favorites != null && !favorites.isEmpty() && favorites.equals("true"));
+		
 		response.setContentType("application/json");
 		PrintWriter out = response.getWriter();  
 		
@@ -44,7 +43,7 @@ public class ChannelsServlet extends HttpServlet {
 			JSONObject obj = new JSONObject();
 			obj.put("id", "clientId");
 			obj.put("name", "Random Radio");
-			obj.put("favorite", favs);
+			obj.put("favorite", false);
 			obj.put("currentTrackURI", "spotify:track:4VqPOruhp5EdPBeR92t6lQ");
 			obj.put("currentTrackTime", 100);
 			obj.put("currentTrackDuration", 204053);

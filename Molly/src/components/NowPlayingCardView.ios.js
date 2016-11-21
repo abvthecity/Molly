@@ -6,6 +6,13 @@ import {
 
 import constants from '../common/constants'
 
+function millisToMinutesAndSeconds(millis) {
+  var minutes = Math.floor(millis / 60000);
+  var seconds = ((millis % 60000) / 1000).toFixed(0);
+  return minutes + ":" + (seconds < 10 ? '0' : '') + seconds;
+}
+
+
 const NowPlayingCardView = props => (
   <View style={styles.playing}>
     <View style={styles.playing_album_art}>
@@ -18,9 +25,12 @@ const NowPlayingCardView = props => (
         <Text style={{ fontSize: 18, fontWeight: '500', color: '#808080', letterSpacing: -0.5 }}>{props.nowPlaying.artist_name}</Text>
       </View>
       <View style={{ marginTop: -constants.unit * 8 }}>
-        <Text style={{ fontSize: 13, fontWeight: '500', color: '#B2B2B2', textAlign: 'right' }}>1:27</Text>
+        <Text style={{ fontSize: 13, fontWeight: '500', color: '#B2B2B2', textAlign: 'right' }}>
+          {/* {props.nowPlaying.duration} */}
+          {millisToMinutesAndSeconds(props.nowPlaying.duration)}
+        </Text>
         <ProgressViewIOS
-          progress={props.nowPlaying.progress}
+          progress={props.nowPlaying.currentTime / props.nowPlaying.duration}
           progressTintColor={props.nowPlaying.accent || '#FF2D55'}
           trackTintColor={'rgba(0, 0, 0, 0.15)'}
           style={{ height: 3, borderRadius: 1.5, overflow: 'hidden'}}

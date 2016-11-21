@@ -46,11 +46,56 @@ class FavoritesScene extends Component {
 
   _getChannels() {
     let _this = this;
-    API.getFavorites().then(data => {
-      _this.setState({
-        cards: data
-      })
-    }).catch(e => console.error(e))
+
+    fetch(constants.server + '/channels?favorites=true')
+      .then(res => res.json())
+      .then(res => {
+
+        let cards = res.channels.map(d => ({
+          title: d.name,
+          host: d.id,
+          favorite: d.favorite,
+          channelId: d.id,
+          nowPlaying: {
+            uri: d.currentTrackURI,
+            currentTime: d.currentTrackTime,
+            duration: d.currentTrackDuration
+          }
+        }))
+
+        // just to get things started, in case spotify is slow
+        _this.setState({ cards })
+
+        // grab trackdata from spotify
+        let tracks = res.channels.map(d => d.currentTrackURI.split(':').pop())
+        return fetch(constants.spotify + 'tracks/?ids=' + tracks.join(','))
+          .then(data => data.json())
+          .then(data => {
+            let tracksObj = {}
+            for (let track of data.tracks) {
+              tracksObj[track.uri] = track
+              Image.prefetch(track.album.images[0].url)
+            }
+
+            return cards.map(card => ({
+              title: card.title,
+              host: card.host,
+              favorite: card.favorite,
+              channelId: card.host,
+              nowPlaying: {
+                album_cover: { uri: tracksObj[card.nowPlaying.uri].album.images[0].url },
+                song_title: tracksObj[card.nowPlaying.uri].name,
+                artist_name: tracksObj[card.nowPlaying.uri].artists.map(d => d.name).join(', '),
+                uri: card.nowPlaying.uri,
+                currentTime: card.nowPlaying.currentTime,
+                duration: card.nowPlaying.duration
+              }
+            }))
+
+          })
+          .then(cards => _this.setState({ cards }))
+
+      }).catch(console.error)
   }
 
   render() {
@@ -107,8 +152,7 @@ class FavoritesScene extends Component {
                     <ChannelCard
                       title={card.title}
                       host={card.host}
-                      distance={card.distance}
-                      live={card.live}
+                      favorite={card.favorite}
                       nowPlaying={card.nowPlaying}
                     />
                   </TouchableOpacity>

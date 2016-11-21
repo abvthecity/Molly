@@ -23,7 +23,7 @@ public class ChannelsServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     	String favorites = request.getParameter("favorites");
-    	boolean favs = (favorites != null && !favorites.isEmpty() && favorites.equals("true"));
+    	boolean favs = (!favorites.isEmpty() && favorites.equals("true"));
 		response.setContentType("application/json");
 		PrintWriter out = response.getWriter();  
 		

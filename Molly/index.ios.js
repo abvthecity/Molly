@@ -21,7 +21,10 @@ const PlayerModal = props => (
   <Modal {...props} transparent={false}
     supportedOrientations={['portrait']}
     animationType={'slide'}>
-    <PlayerScene goBack={props.close} clientId={props.clientId} />
+    <PlayerScene
+      goBack={props.close}
+      clientId={props.clientId}
+      socket={props.socket} />
   </Modal>
 )
 

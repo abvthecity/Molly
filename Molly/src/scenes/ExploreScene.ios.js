@@ -57,7 +57,7 @@ class ExploreScene extends Component {
         favorite: bool,
         currentTrackURI: string,
         currentTrackTime: number,
-        currentTrackduration: number
+        currentTrackDuration: number
       }]}
     */
 
@@ -72,8 +72,8 @@ class ExploreScene extends Component {
           channelId: d.id,
           nowPlaying: {
             uri: d.currentTrackURI,
-            currentTime: d.currentTime,
-            duration: d.duration
+            currentTime: d.currentTrackTime,
+            duration: d.currentTrackDuration
           }
         }))
 
@@ -81,8 +81,8 @@ class ExploreScene extends Component {
         _this.setState({ cards })
 
         // grab trackdata from spotify
-        let tracks = res.channels.map(d => d.trackId.split(':').pop())
-        return fetch(constants.spotify + '/tracks/?ids=' + tracks.join(','))
+        let tracks = res.channels.map(d => d.currentTrackURI.split(':').pop())
+        return fetch(constants.spotify + 'tracks/?ids=' + tracks.join(','))
           .then(data => data.json())
           .then(data => {
             let tracksObj = {}
@@ -94,26 +94,38 @@ class ExploreScene extends Component {
             return cards.map(card => ({
               title: card.title,
               host: card.host,
-              favorite: d.favorite,
+              favorite: card.favorite,
               channelId: card.host,
               nowPlaying: {
                 album_cover: { uri: tracksObj[card.nowPlaying.uri].album.images[0].url },
                 song_title: tracksObj[card.nowPlaying.uri].name,
                 artist_name: tracksObj[card.nowPlaying.uri].artists.map(d => d.name).join(', '),
                 uri: card.nowPlaying.uri,
-                currentTime: d.currentTime,
-                duration: tracksObj[card.nowPlaying.uri].duration_ms
+                currentTime: card.nowPlaying.currentTime,
+                duration: card.nowPlaying.duration
               }
             }))
 
           })
           .then(cards => _this.setState({ cards }))
 
-      }).catch(console.log)
+      }).catch(console.error)
   }
 
   _updateTimer() {
-    // every half second, increment each card
+    let _this = this;
+
+    function start() {
+      let cards = _this.state.cards.map(card => {
+        let newCard = card;
+        newCard.nowPlaying.currentTime += 200;
+        return newCard;
+      })
+      _this.setState({ cards })
+      var t = setTimeout(start, 200);
+    }
+
+    start();
   }
 
   render() {
@@ -169,7 +181,7 @@ class ExploreScene extends Component {
           </LinearGradient>
 
           {/* SECTION 2 */}
-          <View style={{ padding: constants.unit * 4 }}>
+          <View style={{ padding: constants.unit * 4, paddingBottom: 0 }}>
             <HeadingWithAction title={this.state.browseTitle} style={{ marginBottom: constants.unit * 2 }} />
           </View>
 

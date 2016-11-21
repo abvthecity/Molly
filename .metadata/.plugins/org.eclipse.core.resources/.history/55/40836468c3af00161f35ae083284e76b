@@ -131,8 +131,7 @@ public class Channel extends Thread{
         endTime = System.nanoTime();
         totalTimePlayed += (endTime - startTime);
 
-//        return totalTimePlayed;
-        return 0;
+        return totalTimePlayed;
     }
 
     public void setCurrentSongPosition(Integer i){
