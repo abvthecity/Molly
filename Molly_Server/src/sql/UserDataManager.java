@@ -13,8 +13,8 @@ import classes.User;
 
 public  class UserDataManager {
 	static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";  
+	static final String DB_URL = "jdbc:mysql://localhost/SpotifyDJ?user=root&password=lertom30&useSSL = false";
 
-	static final String DB_URL = "jdbc:mysql://localhost/SpotifyDJ?user=root&password=&useSSL = false";
 	static User  user = null;
     
 	
@@ -37,11 +37,11 @@ public  class UserDataManager {
 	   
 			Class.forName(JDBC_DRIVER);
 			conn = DriverManager.getConnection(DB_URL);
-			ps = conn.prepareStatement("INSERT INTO Users (clientID, clientTags, clientDJ, clientBookmarks) VALUES (?, ?, ?, ?);");
+			ps = conn.prepareStatement("INSERT INTO Users (clientID, clientDJ) VALUES (?, ?);");
 			ps.setString(1, clientID);
-			ps.setString(2, tags);
-			ps.setBoolean(3, isClienDJ);
-			ps.setString(4, bm);
+			
+			ps.setBoolean(2, isClienDJ);
+			
 			ps.executeUpdate();
 			user = new User(clientID,isClienDJ);
 			
@@ -85,15 +85,15 @@ public  class UserDataManager {
 			conn = DriverManager.getConnection(DB_URL);
 			ps = conn.prepareStatement("SELECT * FROM Users WHERE clientID=?");
 						
-			tags = new String[5];
-			bm = new String[50];
+//			tags = new String[5];
+//			bm = new String[50];
 	        
 
 			ps.setString(1, clientID);
 			rs = ps.executeQuery();
 			if (rs.next()) {
-				tags = rs.getString("clientTags").split(":");
-				bm = rs.getString("clientBookmarks").split(":");
+				//tags = rs.getString("clientTags").split(":");
+				//bm = rs.getString("clientBookmarks").split(":");
 				isDJ = rs.getBoolean("clientDJ");
 				
 				user= new User(clientID, isDJ);
