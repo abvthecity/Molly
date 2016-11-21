@@ -78,9 +78,6 @@ public class WebsocketEndpoint {
 		}else if(msg instanceof SongChangedMessage){
 			SongChangedMessage songChangedMessage = (SongChangedMessage) msg;
 
-		}else if(msg instanceof UpdatePlaylistMessage){
-			UpdatePlaylistMessage updatePlaylistMessage = (UpdatePlaylistMessage) msg;
-			
 		}
 	}
 
