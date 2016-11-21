@@ -2,6 +2,7 @@ package servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -10,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import classes.Channel;
+import server.MainServer;
 import sql.ChannelDataManager;
 import sql.TagDataManager;
 import sql.UserDataManager;
@@ -36,24 +38,25 @@ public class ChannelServlet extends HttpServlet {
 		// TODO Auto-generated method stub
 		//response.getWriter().append("Served at: ").append(request.getContextPath());
 		String clientID = request.getParameter("clientID");
-		Channel c = ChannelDataManager.getChannel(clientID);
+//		Channel c = ChannelDataManager.getChannel(clientID);
 		//String clientID = c.getClientID();
-		String[] channelTags = c.getChannelTags();
-		Integer numChannelSubscribers = c.getNumChannelSubscribers();
-		Integer numChannelLikes = c.getNumChannelLikes();
+//		String[] channelTags = c.getChannelTags();
+//		Integer numChannelSubscribers = c.getNumChannelSubscribers();
+//		Integer numChannelLikes = c.getNumChannelLikes();
 		response.setContentType("application/json");
 		PrintWriter out = response.getWriter();      
 		
 		//Create String to send in response to get request
-		String jsonObject = "{\"clientID\": \""+clientID+"\", \"channelTags\": [";
-		for(int i = 0; i< channelTags.length; i++){
-			jsonObject += "{\""+channelTags[i]+"\"}";
-			if(i!=4){
+		String jsonObject = "{\"clientID\": \""+clientID+"\", \"playlist\": \"[";
+		ArrayList<String> sup = MainServer.channelIDToChannelMap.get(clientID).getSongURIPlaylist();
+		for(int i = 0; i<sup.size(); i++){
+			jsonObject += "{\""+sup.get(i)+"\"}";
+			if(i != sup.size()-1){
 				jsonObject += ", ";
 			}
 		}
-		jsonObject += "], \"numChannelSubscribers\": \""+numChannelSubscribers+"\", \"numChannelLikes\": \""+
-				numChannelLikes+"\"}";
+		jsonObject += "], \"currentSong\": \""+MainServer.channelIDToChannelMap.get(clientID).getCurrentSong()+"\"}";
+		
 		
 		// Assuming your json object is **jsonObject**, perform the following, it will return your json object  
 		out.print(jsonObject);
@@ -67,16 +70,16 @@ public class ChannelServlet extends HttpServlet {
 		// TODO Auto-generated method stub
 		
 		String clientID=request.getParameter("clientID"); 
-		String[] channelTags =request.getParameterValues("channelTags");
+//		String[] channelTags =request.getParameterValues("channelTags");
 		//String isDJ = request.getParameter("isDJ"); 
 		//String email = request.getParameter("email");
 		//String[] clientBookmarks = new String[50];
-		ChannelDataManager.createChannel(clientID, channelTags, 0, 0);
-		Channel c = new Channel(clientID, channelTags, 0, 0);//insert in sql
+//		ChannelDataManager.createChannel(clientID, channelTags, 0, 0);
+		Channel c = new Channel(clientID);//insert in sql
 		UserDataManager.makeDJ(clientID); //update in sql
-		for(int i=0; i<5; i++){
-			TagDataManager.addChannelForTag(channelTags[i], clientID);
-		}
+//		for(int i=0; i<5; i++){
+//			TagDataManager.addChannelForTag(channelTags[i], clientID);
+//		}
 		//startThread(clientID);
 	}
 

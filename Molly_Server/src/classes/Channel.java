@@ -13,9 +13,10 @@ public class Channel extends Thread{
 	public int numChannelLikes; 
 	public boolean isLive;
 	public ArrayList<Song> songPlaylist;
+
+	public Song currentSong;
 	
-	
-	public Channel( String clientId, String[] channelTags){
+	public Channel( String clientId){
 		//this.channelID = channelId;
 		this.clientID = clientId;
 //		this.channelTags = channelTags;
@@ -87,6 +88,15 @@ public class Channel extends Thread{
 		}
 		return arrSongURI;
 	}
+	
+	public Song getCurrentSong() {
+		return currentSong;
+	}
+
+	public void setCurrentSong(Song currentSong) {
+		this.currentSong = currentSong;
+	}
+
 	
 	public void run(){
 		
