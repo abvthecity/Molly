@@ -19,8 +19,8 @@ public class ChannelDataManager {
 	static final String DB_URL = "jdbc:mysql://localhost/SpotifyDJ?user=root&password=lertom30&useSSL = false";
 	static Channel channel;
 	
-	public  static void createChannel(String clientId, String[] channelTags, int channelsSubscriberNum, int channelLikesNum ){
-		channel = new Channel(clientId);
+	public  static void createChannel(String clientId, String channelName, String[] channelTags, int channelsSubscriberNum, int channelLikesNum ){
+		channel = new Channel(clientId, channelName);
 		Connection conn = null;
 		PreparedStatement ps = null;
 		String tags="";
@@ -37,13 +37,14 @@ public class ChannelDataManager {
 	   
 			Class.forName(JDBC_DRIVER);
 			conn = DriverManager.getConnection(DB_URL);
-			ps = conn.prepareStatement("INSERT INTO Channel (clientID, channelTags, subscribersNum, likesNum ) VALUES (?, ?, ?, ?);");
+			ps = conn.prepareStatement("INSERT INTO Channel (clientID,channelName, channelTags, subscribersNum, likesNum ) VALUES (?, ?, ?, ?, ?);");
 			ps.setString(1, clientId);
-			ps.setString(2, tags);
-			ps.setInt(3, channelsSubscriberNum);
-			ps.setInt(4, channelLikesNum);
+			ps.setString(2, channelName);
+			ps.setString(3, tags);
+			ps.setInt(4, channelsSubscriberNum);
+			ps.setInt(5, channelLikesNum);
 			ps.executeUpdate();
-			channel = new Channel(clientId);
+			
 	
 		}catch (ClassNotFoundException cnfe) {
 			// TODO Auto-generated catch block
@@ -63,7 +64,7 @@ public static Channel getChannel(String clientID){
 		ResultSet rs = null;
 		String[] tags;
 		int likes, subscribers;
-		
+		String channelName="";
 		try {
 			
 			Class.forName(JDBC_DRIVER);
@@ -79,7 +80,8 @@ public static Channel getChannel(String clientID){
 				tags = rs.getString("clientTags").split(":");
 				likes = rs.getInt("likesNum");
 				subscribers = rs.getInt("subscribersNum");
-				channel= new Channel(clientID);
+				channelName = rs.getString("channelName");
+				channel= new Channel(clientID, channelName);
 				System.out.println("here   "+channel.getClientID());
 			}
 		}catch (ClassNotFoundException e){
