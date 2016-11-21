@@ -44,7 +44,7 @@ public class WebsocketEndpoint {
 	public void openConnection(Session session) {
 		logger.log(Level.INFO, "Connection opened." + session.getId());
 	}
-	
+
     @OnClose
     public void close(Session session) {
     }
@@ -67,7 +67,9 @@ public class WebsocketEndpoint {
 			sendAll(session, new UpdatePlaylistMessage(null, "false", "false", addSongToPlaylistMessage.getClientID(), newPlaylist ));
 		}else if(msg instanceof ChangeSongMessage){
 			ChangeSongMessage changeSongMessage = (ChangeSongMessage) msg;
-
+			MainServer.channelIDToChannelMap.get(changeSongMessage.getClientID()).changeSong();
+			ArrayList<String> newPlaylist = MainServer.channelIDToChannelMap.get(changeSongMessage.getClientID()).getSongURIPlaylist();
+			sendAll(session, new UpdatePlaylistMessage(null, "false", "false", changeSongMessage.getClientID(), newPlaylist ));
 		}else if(msg instanceof GoLiveMessage){
 			GoLiveMessage goLiveMessage = (GoLiveMessage) msg;
 			MainServer.channelIDToChannelMap.get(goLiveMessage.getClientID()).setLive(true);
@@ -82,11 +84,11 @@ public class WebsocketEndpoint {
 			sendAll(session, new DJIsOfflineMessage(null, "false", "false", null, goOfflineMessage.getClientID()));
 		}else if(msg instanceof JoinChannelMessage){
 			JoinChannelMessage joinChannelMessage = (JoinChannelMessage) msg;
-			
+
 			if(MainServer.channelIDToChannelMap.get(joinChannelMessage.getDJIWishToJoin()).isLive()){
 				DJToListenersMap.get(joinChannelMessage.getDJIWishToJoin()).add(joinChannelMessage.getClientID());
-				sendAll(session, new JoinedChannelSuccessfullyMessage(null, "false", "false", joinChannelMessage.getDJIWishToJoin(), 
-						MainServer.channelIDToChannelMap.get(joinChannelMessage.getDJIWishToJoin()).getSongURIPlaylist(), 
+				sendAll(session, new JoinedChannelSuccessfullyMessage(null, "false", "false", joinChannelMessage.getDJIWishToJoin(),
+						MainServer.channelIDToChannelMap.get(joinChannelMessage.getDJIWishToJoin()).getSongURIPlaylist(),
 						MainServer.channelIDToChannelMap.get(joinChannelMessage.getDJIWishToJoin()).getCurrentSongURI(),
 						MainServer.channelIDToChannelMap.get(joinChannelMessage.getDJIWishToJoin()).getCurrentSongPosition()));
 			}

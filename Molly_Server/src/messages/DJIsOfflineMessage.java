@@ -3,7 +3,7 @@ package messages;
 public class DJIsOfflineMessage extends Message {
 	private String whichDJIsOffline;
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 9129247594569861762L;
 	public String getWhichDJIsOffline() {
