@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import classes.Channel;
 import server.MainServer;
+import sql.ChannelDataManager;
 import sql.UserDataManager;
 
 /**
@@ -63,12 +64,16 @@ public class ChannelServlet extends HttpServlet {
 		String clientID=request.getParameter("clientID");
 		String channelName = request.getParameter("channelName"); 
 		Channel c = new Channel(clientID, channelName);
+		String[] tags = new String[5];
+		ChannelDataManager.createChannel(clientID, channelName, tags, 0, 0);
 		UserDataManager.makeDJ(clientID); //update in sql
 
 	}
 	
 	protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
+		String clientID=request.getParameter("clientID");
+		String channelName = request.getParameter("channelName");
+		ChannelDataManager.updateChannelName(clientID, channelName);
 		
 	}	
 	
