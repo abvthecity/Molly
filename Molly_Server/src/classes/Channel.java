@@ -8,6 +8,7 @@ public class Channel extends Thread{
 
 	//public int channelID;
 	public String clientID;
+	public String channelName;
 	public String[] channelTags;
 	public int numChannelSubscribers;
 	public int numChannelLikes; 
@@ -17,15 +18,17 @@ public class Channel extends Thread{
 	public String currentSongURI;
 	private Integer currentSongPosition;
 	
-	public Channel( String clientId){
+	public Channel( String clientId, String channelName){
 		//this.channelID = channelId;
 		this.clientID = clientId;
+		this.channelName = channelName;
 //		this.channelTags = channelTags;
 //		this.numChannelSubscribers = numSubscribers;
 //		this.numChannelLikes = numlikes;
 		this.isLive = false;
 		this.start();
 		MainServer.channelIDToChannelMap.put(clientID, this);
+		
 	}
 	
 //	public int getChannelID(){
@@ -90,6 +93,14 @@ public class Channel extends Thread{
 		return arrSongURI;
 	}
 	
+	public String getChannelName() {
+		return channelName;
+	}
+
+	public void setChannelName(String channelName) {
+		this.channelName = channelName;
+	}
+
 	public String getCurrentSongURI() {
 		return currentSongURI;
 	}

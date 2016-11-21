@@ -18,7 +18,7 @@ public  class UserDataManager {
 	static User  user = null;
     
 	
-	public  static void createUser(String clientId, String[] clientTags, boolean isClienDJ, String[] bookmarks ){
+	public  static void createUser(String clientID, String[] clientTags, boolean isClienDJ, String[] bookmarks ){
 		
 		Connection conn = null;
 		PreparedStatement ps = null;
@@ -38,7 +38,7 @@ public  class UserDataManager {
 			Class.forName(JDBC_DRIVER);
 			conn = DriverManager.getConnection(DB_URL);
 			ps = conn.prepareStatement("INSERT INTO Users (clientID, clientTags, clientDJ, clientBookmarks) VALUES (?, ?, ?, ?);");
-			ps.setString(1, clientId);
+			ps.setString(1, clientID);
 			ps.setString(2, tags);
 			ps.setBoolean(3, isClienDJ);
 			ps.setString(4, bm);
@@ -96,7 +96,7 @@ public  class UserDataManager {
 				bm = rs.getString("clientBookmarks").split(":");
 				isDJ = rs.getBoolean("clientDJ");
 				
-				user= new User(clientID, tags, isDJ, bm);
+				user= new User(clientID, isDJ);
 				System.out.println("here   "+user.getClientID());
 			}
 		}catch (ClassNotFoundException e){
