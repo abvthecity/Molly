@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import sql.ChannelDataManager;
 
 
 /**
@@ -32,17 +31,17 @@ public class Reaction extends HttpServlet {
 	 */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		String clientID = request.getParameter("clientID");
-		Integer likes = ChannelDataManager.getLikes(clientID); //search in sql
-		response.setContentType("application/json");
-		PrintWriter out = response.getWriter();      
-		
-		//Create String to send in response to get request
-		String jsonObject = "{\"likes\": \""+likes+"\"}";
-		
-		// Assuming your json object is **jsonObject**, perform the following, it will return your json object  
-		out.print(jsonObject);
-		out.flush();
+//		String clientID = request.getParameter("clientID");
+//		Integer likes = ChannelDataManager.getLikes(clientID); //search in sql
+//		response.setContentType("application/json");
+//		PrintWriter out = response.getWriter();      
+//		
+//		//Create String to send in response to get request
+//		String jsonObject = "{\"likes\": \""+likes+"\"}";
+//		
+//		// Assuming your json object is **jsonObject**, perform the following, it will return your json object  
+//		out.print(jsonObject);
+//		out.flush();
 	}
 
 	/**
@@ -50,8 +49,8 @@ public class Reaction extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		String clientID = request.getParameter("clientID"); 
-		ChannelDataManager.addLikes(clientID); //update in sql
+//		String clientID = request.getParameter("clientID"); 
+//		ChannelDataManager.addLikes(clientID); //update in sql
 	}
 
 }

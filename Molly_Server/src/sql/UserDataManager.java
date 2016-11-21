@@ -64,7 +64,7 @@ public  class UserDataManager {
 			ps.setBoolean(3, isClienDJ);
 			ps.setString(4, bm);
 			ps.executeUpdate();
-			user = new User(clientId, clientTags,isClienDJ, bookmarks);
+			//user = new User(clientId, clientTags,isClienDJ, bookmarks);
 			
 		} 
 		catch (ClassNotFoundException cnfe) {
@@ -110,8 +110,8 @@ public  class UserDataManager {
 				bm = rs.getString("clientBookmarks").split(":");
 				isDJ = rs.getBoolean("clientDJ");
 				
-				user= new User(clientID, tags, isDJ, bm);
-				System.out.println("here   "+user.getClientID());
+				user= new User(clientID, isDJ);
+				//System.out.println("here   "+user.getClientID());
 			}
 		}catch (ClassNotFoundException e){
 			e.getStackTrace();

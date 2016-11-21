@@ -12,8 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import classes.Channel;
 import server.MainServer;
-import sql.ChannelDataManager;
-import sql.TagDataManager;
 import sql.UserDataManager;
 
 /**

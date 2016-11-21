@@ -13,7 +13,7 @@ import java.sql.SQLException;
 public class startDatabase extends Thread{
 	
 	static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";  
-	static final String DB_URL = "jdbc:mysql://localhost?user=root&password=root&useSSL = false";
+	static final String DB_URL = "jdbc:mysql://localhost?user=root&password=lertom30&useSSL = false";
 
 	
 		/** A very basic SQL script runner
@@ -34,7 +34,7 @@ public class startDatabase extends Thread{
 				boolean multiLine = false;
 				while ((line = br.readLine()) != null) {
 					// Basic support to ignore blank lines and comment lines
-					if (!line.equals("") && !(line.charAt(0) == '#')) {
+					if (!line.equals("")) {
 						if (line.length() >= 2 && line.charAt(line.length()-1) == '(') {
 							multiLine = true;
 						} else if (multiLine && line.equals(");")) {
@@ -48,6 +48,7 @@ public class startDatabase extends Thread{
 						if (multiLine) {
 							multiLineStatement += line;
 						}
+						
 					}
 				}
 				System.out.println("Successfully ran SQL script: " + filename);
