@@ -12,15 +12,15 @@ public class Channel extends Thread{
 	public int numChannelSubscribers;
 	public int numChannelLikes; 
 	public boolean isLive;
-	public ArrayList<String> songURIPlaylist;
+	public ArrayList<Song> songPlaylist;
 	
 	
-	public Channel( String clientId, String[] channelTags, int numSubscribers, int numlikes){
+	public Channel( String clientId, String[] channelTags){
 		//this.channelID = channelId;
 		this.clientID = clientId;
-		this.channelTags = channelTags;
-		this.numChannelSubscribers = numSubscribers;
-		this.numChannelLikes = numlikes;
+//		this.channelTags = channelTags;
+//		this.numChannelSubscribers = numSubscribers;
+//		this.numChannelLikes = numlikes;
 		this.isLive = false;
 		this.start();
 		MainServer.channelIDToChannelMap.put(clientID, this);
@@ -76,12 +76,16 @@ public class Channel extends Thread{
 		
 	}
 	
-	public void addSongToPlaylist(String songURI){
-		songURIPlaylist.add(songURI);
+	public void addSongToPlaylist(Song song){
+		songPlaylist.add(song);
 	}
 	
 	public ArrayList<String> getSongURIPlaylist(){
-		return songURIPlaylist;
+		ArrayList<String> arrSongURI = new ArrayList<String>();
+		for(int i = 0; i <songPlaylist.size(); i++){
+			arrSongURI.add(songPlaylist.get(i).getSongURI());
+		}
+		return arrSongURI;
 	}
 	
 	public void run(){

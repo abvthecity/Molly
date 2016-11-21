@@ -29,17 +29,22 @@ class SpotifyAPI: RCTEventEmitter, SPTAudioStreamingDelegate {
   @objc(userHasAuth:)
   func userHasAuth(callback: @escaping RCTResponseSenderBlock) {
     // do we already have a valid session?
-    if SPTAuth.defaultInstance().session.isValid() {
-      // if session is valid, login with access token we already have
-      SPTAudioStreamingController.sharedInstance().login(withAccessToken: SPTAuth.defaultInstance().session.accessToken)
-      
-      // assign object refs to important internal Spotify objects
-      self.auth = SPTAuth.defaultInstance()
-      self.player = SPTAudioStreamingController.sharedInstance()
-      self.session = SPTAuth.defaultInstance().session
-      
-      // send "true" in callback
-      callback([NSNull(), true])
+    if SPTAuth.defaultInstance().session != nil {
+      if SPTAuth.defaultInstance().session.isValid() {
+        // if session is valid, login with access token we already have
+        SPTAudioStreamingController.sharedInstance().login(withAccessToken: SPTAuth.defaultInstance().session.accessToken)
+        
+        // assign object refs to important internal Spotify objects
+        self.auth = SPTAuth.defaultInstance()
+        self.player = SPTAudioStreamingController.sharedInstance()
+        self.session = SPTAuth.defaultInstance().session
+        
+        // send "true" in callback
+        callback([NSNull(), true])
+      } else {
+        // send "false" in callback
+        callback([NSNull(), false])
+      }
     } else {
       // send "false" in callback
       callback([NSNull(), false])
