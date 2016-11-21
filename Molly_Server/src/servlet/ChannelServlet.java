@@ -10,6 +10,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import classes.Channel;
 import server.MainServer;
 import sql.ChannelDataManager;
@@ -39,19 +42,34 @@ public class ChannelServlet extends HttpServlet {
 		PrintWriter out = response.getWriter();      
 		String channelName = MainServer.channelIDToChannelMap.get(clientID).getChannelName();
 		//Create String to send in response to get request
-		String jsonObject = "{\"clientID\": \""+clientID+"\", \"channelName\": \""+channelName+"\", \"playlist\": \"[";
+//		String jsonObject = "{\"clientID\": \""+clientID+"\", \"channelName\": \""+channelName+"\", \"playlist\": \"[";
 		ArrayList<String> sup = MainServer.channelIDToChannelMap.get(clientID).getSongURIPlaylist();
-		for(int i = 0; i<sup.size(); i++){
-			jsonObject += "{\""+sup.get(i)+"\"}";
-			if(i != sup.size()-1){
-				jsonObject += ", ";
-			}
-		}
-		jsonObject += "], \"currentSongURI\": \""+MainServer.channelIDToChannelMap.get(clientID).getCurrentSongURI()+"\"}";
+//		for(int i = 0; i<sup.size(); i++){
+//			jsonObject += "{\""+sup.get(i)+"\"}";
+//			if(i != sup.size()-1){
+//				jsonObject += ", ";
+//			}
+//		}
+//		jsonObject += "], \"currentSongURI\": \""+MainServer.channelIDToChannelMap.get(clientID).getCurrentSongURI()+"\"}";
+//		
 		
+		JSONObject obj = new JSONObject();
+		obj.put("clientID", clientID);
+		obj.put("channelName", channelName);
+    	JSONArray list = new JSONArray();
+    	for(int i = 0; i< sup.size(); i++){
+    		if(sup.get(i) != null){
+    			list.add(sup.get(i));
+    		}
+    		
+    	}
+     	obj.put("playlist", list);
+     	obj.put("currentSongURI", MainServer.channelIDToChannelMap.get(clientID).getCurrentSongURI());
+		String json = obj.toString();
+
 		
 		// Assuming your json object is **jsonObject**, perform the following, it will return your json object  
-		out.print(jsonObject);
+		out.print(json);
 		out.flush();
 	}
 
