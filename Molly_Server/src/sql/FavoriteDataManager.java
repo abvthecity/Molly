@@ -1,6 +1,5 @@
 package sql;
 
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -19,22 +18,65 @@ public class FavoriteDataManager {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
+		if(checkUserExists( clientID) && checkUserExists( channelID) ){
 
-		try {
+			try {
+				Class.forName(JDBC_DRIVER);
+				conn = DriverManager.getConnection(DB_URL);
+				ps = conn.prepareStatement("INSERT INTO Favorite (clientID, channelID ) VALUES (?, ?);");
+				ps.setString(1, clientID);
+				ps.setString(2, channelID);		
+				ps.executeUpdate();
+							
+			}catch (ClassNotFoundException cnfe) {
+				// TODO Auto-generated catch block
+				cnfe.printStackTrace();
+			}
+				catch (SQLException sqle) {
+				// TODO Auto-generated catch block
+				sqle.printStackTrace();
+			}
+			finally {
+				try {
+					ps.close();
+				} catch (SQLException e) { /* Do nothing */ }
+		
+				try {
+					conn.close();
+				} catch (SQLException e) { /* Do nothing */ }			
+			}
+		}
+	}
+	
+	
+	
+	public static boolean checkUserExists(String clientID){
+		
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		
+		int i =0;
+		boolean flag = false;
+		
+try {
+			
 			Class.forName(JDBC_DRIVER);
 			conn = DriverManager.getConnection(DB_URL);
-			ps = conn.prepareStatement("INSERT INTO Favorite (clientID, channelID ) VALUES (?, ?);");
+			ps = conn.prepareStatement("SELECT * FROM Users WHERE clientID=?");
+			
 			ps.setString(1, clientID);
-			ps.setString(2, channelID);		
-			ps.executeUpdate();
-						
-		}catch (ClassNotFoundException cnfe) {
-			// TODO Auto-generated catch block
-			cnfe.printStackTrace();
+			rs = ps.executeQuery();
+			if (rs.next()) {
+				flag = true;
+			}
+			
+		}catch (ClassNotFoundException e){
+			e.getStackTrace();
+	
 		}
-			catch (SQLException sqle) {
-			// TODO Auto-generated catch block
-			sqle.printStackTrace();
+		catch (SQLException e){
+			e.getStackTrace();
 		}
 		finally {
 			try {
@@ -43,9 +85,14 @@ public class FavoriteDataManager {
 	
 			try {
 				conn.close();
-			} catch (SQLException e) { /* Do nothing */ }			
+			} catch (SQLException e) { /* Do nothing */ }
 		}
+		
+		
+		
+		return flag;
 	}
+	
 	
 	public static String[] getFavorites(String clientID){
 		Connection conn = null;
