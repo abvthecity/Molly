@@ -29,6 +29,7 @@ public class Channel extends Thread{
         //		this.numChannelSubscribers = numSubscribers;
         //		this.numChannelLikes = numlikes;
         this.isLive = false;
+        this.songPlaylist = new ArrayList<Song>();
         MainServer.channelIDToChannelMap.put(clientID, this);
         startTime = 0;
         totalTimePlayed = 0;
@@ -87,10 +88,16 @@ public class Channel extends Thread{
 
     public ArrayList<String> getSongURIPlaylist(){
         ArrayList<String> arrSongURI = new ArrayList<String>();
+        System.out.println(songPlaylist.size());
         for(int i = 0; i <songPlaylist.size(); i++){
+
             arrSongURI.add(songPlaylist.get(i).getSongURI());
         }
         return arrSongURI;
+    }
+
+    public void setSongURIPlaylist(ArrayList<Song> songs){
+       this.songPlaylist = songs;
     }
 
     public String getChannelName() {
@@ -130,8 +137,6 @@ public class Channel extends Thread{
         // TODO Auto-generated method stub
         endTime = System.nanoTime();
         totalTimePlayed += (endTime - startTime);
-
-//        return totalTimePlayed;
         return 0;
     }
 
