@@ -11,20 +11,31 @@ import NotificationCenter
 
 @objc(SpotifyAPI)
 class SpotifyAPI: RCTEventEmitter, SPTAudioStreamingDelegate {
-  
+
   /* SPOTIFY AUTH SECTION */
   var auth: SPTAuth!
   var session: SPTSession!
   var player: SPTAudioStreamingController!
-  
+
   var authVC: UIViewController!
-  
+
   // Notification Name
   let closeUserAuthVC: String! = "closeUserAuthVC"
-  
+
   // First Authentication?
   var firstAuth: Bool! = true
   
+  // Get User's Spotify Client ID / Username
+  @objc(getClientID:)
+  func getClientID(callback: @escaping RCTResponseSenderBlock) {
+    // if session is exists and is valid, return user spotify ID
+    if self.auth.session != nil && self.auth.session.isValid() {
+      callback([NSNull(), self.auth.session.canonicalUsername])
+    } else {
+      callback([NSNull(), NSNull()])
+    }
+  }
+
   // Check If User is Already Authenticated
   @objc(userHasAuth:)
   func userHasAuth(callback: @escaping RCTResponseSenderBlock) {
@@ -33,12 +44,12 @@ class SpotifyAPI: RCTEventEmitter, SPTAudioStreamingDelegate {
       if SPTAuth.defaultInstance().session.isValid() {
         // if session is valid, login with access token we already have
         SPTAudioStreamingController.sharedInstance().login(withAccessToken: SPTAuth.defaultInstance().session.accessToken)
-        
+
         // assign object refs to important internal Spotify objects
         self.auth = SPTAuth.defaultInstance()
         self.player = SPTAudioStreamingController.sharedInstance()
         self.session = SPTAuth.defaultInstance().session
-        
+
         // send "true" in callback
         callback([NSNull(), true])
       } else {
@@ -50,7 +61,7 @@ class SpotifyAPI: RCTEventEmitter, SPTAudioStreamingDelegate {
       callback([NSNull(), false])
     }
   }
-  
+
   // Authenticate User With Spotify
   @objc(authenticate:redirectURL:)
   func authenticate(clientID: String!, redirectURL: String) {
@@ -59,16 +70,16 @@ class SpotifyAPI: RCTEventEmitter, SPTAudioStreamingDelegate {
     SPTAuth.defaultInstance().redirectURL = URL(string: redirectURL)
     SPTAuth.defaultInstance().sessionUserDefaultsKey = "current session"
     SPTAuth.defaultInstance().requestedScopes = [SPTAuthStreamingScope]
-    
+
     // set notification name
     if firstAuth == true {
       NotificationCenter.default.addObserver(self, selector: #selector(SpotifyAPI.afterAuthentication(notification:)), name: NSNotification.Name(rawValue: self.closeUserAuthVC), object: nil)
       firstAuth = false
     }
-    
+
     // become controller's delegate
     SPTAudioStreamingController.sharedInstance().delegate = self
-    
+
     // start streaming controller
     do {
       if SPTAudioStreamingController.sharedInstance().initialized == false {
@@ -77,13 +88,13 @@ class SpotifyAPI: RCTEventEmitter, SPTAudioStreamingDelegate {
     } catch {
       // something went wrong! figure out what to put here later! (lel)
     }
-    
+
     // async auth call
     DispatchQueue.main.async {
       self.startAuthenticationFlow()
     }
   }
-  
+
   // Authentication Helper for User Auth Flow
   func startAuthenticationFlow() {
     // get url to display
@@ -93,22 +104,22 @@ class SpotifyAPI: RCTEventEmitter, SPTAudioStreamingDelegate {
     } else {
       // Fallback on earlier versions
     }
-      
+
     // display with help of appdelegate
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     appDelegate.window?.rootViewController?.present(self.authVC, animated: true, completion: nil)
   }
-  
+
   // Authentication Helper for Post User Auth
   func afterAuthentication(notification: NSNotification) {
     if (notification.object as? SPTSession) != nil {
       // remove authVC with help of appdelegate
       let appDelegate = UIApplication.shared.delegate as! AppDelegate
       appDelegate.window?.rootViewController?.dismiss(animated: true, completion: nil)
-      
+
       // get session from notification
       self.session = notification.object as? SPTSession
-      
+
       // get auth and player from default and shared instances of respective classes
       self.auth = SPTAuth.defaultInstance()
       self.player = SPTAudioStreamingController.sharedInstance()
@@ -124,17 +135,17 @@ class SpotifyAPI: RCTEventEmitter, SPTAudioStreamingDelegate {
       self.sendEvent(withName: "Login", body: ["success": false, "userSpotifyID": "authFailure"])
     }
   }
-  
+
   // Supported RCTEmitter Events
   override func supportedEvents() -> [String]! {
     return ["Login"]
   }
 
   /* SPOTIFY MUSIC PLAYBACK SECTION */
-  
+
   // Song URI Queue
   var songURIQueue: [String]! = []
-  
+
   // Get Music Categories (Tags)
   @objc(getTags:)
   func getTags(callback: @escaping RCTResponseSenderBlock) {
@@ -145,31 +156,31 @@ class SpotifyAPI: RCTEventEmitter, SPTAudioStreamingDelegate {
       "Hip Hop", "Workout", "RnB", "Country",
       "Metal", "Soul", "Jazz", "Blues"
     ]
-    
+
     // return as part of callback
     callback([NSNull(), categories])
   }
-  
+
   // Is user currently logged in?
   @objc(isLoggedIn:)
   func isLoggedIn(callback: @escaping RCTResponseSenderBlock) {
     callback([NSNull(), (self.player != nil)])
   }
-  
+
   // Is Audio Currently Being Played?
   @objc(isPlaying:)
   func isPlaying(callback: @escaping RCTResponseSenderBlock) {
     // return play-state of streaming controller
     callback([NSNull(), self.player.playbackState.isPlaying])
   }
-  
+
   // Length of Current Track
   @objc(lenCurrentTrack:)
   func lenCurrentTrack(callback: @escaping RCTResponseSenderBlock) {
     // return length of current track
     callback([NSNull(), self.player.playbackState.position])
   }
-  
+
   // Play / Pause the Current Track
   @objc(setIsPlaying:callback:)
   func setIsPlaying(playState: Bool, callback: @escaping RCTResponseSenderBlock) {
@@ -183,7 +194,7 @@ class SpotifyAPI: RCTEventEmitter, SPTAudioStreamingDelegate {
       }
     })
   }
-  
+
   // Skip Current Track
   @objc(skipTrack:)
   func skipTrack(callback: @escaping RCTResponseSenderBlock) {
@@ -196,7 +207,7 @@ class SpotifyAPI: RCTEventEmitter, SPTAudioStreamingDelegate {
       }
     }
   }
-  
+
   // Play Music Given URI
   @objc(playURI:timeToStart:callback:)
   func playURI(songURI: String!, timeToStart: NSNumber!, callback: @escaping RCTResponseSenderBlock) {
@@ -204,7 +215,7 @@ class SpotifyAPI: RCTEventEmitter, SPTAudioStreamingDelegate {
     if (self.player == nil) {
       callback([NSNull()])
     } else {
-    
+
       self.player.playSpotifyURI(songURI, startingWith: 0, startingWithPosition: timeToStart as TimeInterval, callback: { (error) in
         // handle error
         if error == nil {
@@ -213,18 +224,18 @@ class SpotifyAPI: RCTEventEmitter, SPTAudioStreamingDelegate {
           callback([error!])
         }
       })
-      
+
     }
   }
 
   // Get Metadata of current track (REQUIRES PLAY URI BEFORE CALLS)
   @objc(getMetadata:)
   func getMetadata(callback: @escaping RCTResponseSenderBlock) {
-    
+
     let currentTrack = self.player?.metadata?.currentTrack
-    
+
     if (currentTrack != nil) {
-    
+
       let metadata: [String:Any] = [
         "uri": currentTrack!.uri as String,
         "playbackSourceUri": currentTrack!.playbackSourceUri as String,
@@ -237,13 +248,13 @@ class SpotifyAPI: RCTEventEmitter, SPTAudioStreamingDelegate {
         "duration": currentTrack!.duration as TimeInterval,
         "indexInContext": currentTrack!.indexInContext as UInt
       ]
-      
+
       callback([NSNull(), metadata])
     } else {
       callback([NSNull(), NSNull()])
     }
   }
-  
+
   // Get current track's seconds
   @objc(getCurrentSeconds:)
   func getCurrentSeconds(callback: @escaping RCTResponseSenderBlock) {
@@ -253,14 +264,14 @@ class SpotifyAPI: RCTEventEmitter, SPTAudioStreamingDelegate {
       callback([NSNull(), NSNull()])
     }
   }
-  
+
   // Queue Music Given URI
   @objc(queueURI:)
   func queueURI(songURI: String!) {
     // add URI to end of songURIQueue
     songURIQueue.append(songURI)
   }
-  
+
   // Get Next Song URI
   @objc(nextSongURI:)
   func nextSongURI(callback: @escaping RCTResponseSenderBlock) {
@@ -271,9 +282,9 @@ class SpotifyAPI: RCTEventEmitter, SPTAudioStreamingDelegate {
     } else {
       // remove and get first song from queue
       let nextSongURI: String! = songURIQueue.removeFirst()
-      
+
       self.player.playSpotifyURI(nextSongURI, startingWith: 0, startingWithPosition: 0, callback: { (error) in
-        
+
         // handle error
         if error == nil {
           callback([NSNull(), nextSongURI])
@@ -283,7 +294,7 @@ class SpotifyAPI: RCTEventEmitter, SPTAudioStreamingDelegate {
       })
     }
   }
-  
+
   // Search for Music
   @objc(searchForMusic:queryType:callback:)
   func searchForMusic(searchQuery: String!, queryType: String!, callback: @escaping RCTResponseSenderBlock) {
@@ -304,18 +315,18 @@ class SpotifyAPI: RCTEventEmitter, SPTAudioStreamingDelegate {
       if error == nil {
         // downcast data to sptlistpage
         let results: [SPTPartialTrack]! = (data as! SPTListPage).items as! [SPTPartialTrack]!
-        
+
         // calc max # of elements to return
         let numTracksToReturn: Int = (results.count < 5) ? results.count : 5
-        
+
         // keep array of results (JSON) to send as response
         var response: [Dictionary<String, AnyObject>]! = [[:]]
-        
+
         // iterate through results
         for i in 0 ..< numTracksToReturn {
           // get current sptpartialtrack
           let partialTrack: SPTPartialTrack! = results[i]
-          
+
           // get info about this song (name, artist, album, uri)
           let trackName: String! = partialTrack.name
           let trackURI: String! = partialTrack.playableUri.absoluteString
@@ -325,18 +336,18 @@ class SpotifyAPI: RCTEventEmitter, SPTAudioStreamingDelegate {
             trackArtists.append(indivArtist.name as String)
           }
           let trackAlbum: String! = partialTrack.album.name
-          
+
           // construct dictionary
           var trackDictionary: Dictionary<String, AnyObject>! = [:]
           trackDictionary["name"] = trackName as AnyObject?
           trackDictionary["uri"] = trackURI as AnyObject?
           trackDictionary["artists"] = (trackArtists as NSArray?)?[0] as AnyObject?
           trackDictionary["album"] = trackAlbum as AnyObject?
-          
+
           // append to response
           response.append(trackDictionary)
         }
-        
+
         // send callback with no error and response
         callback([NSNull(), response])
       } else {
