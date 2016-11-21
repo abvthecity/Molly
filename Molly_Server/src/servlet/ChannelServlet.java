@@ -18,9 +18,6 @@ import server.MainServer;
 import sql.ChannelDataManager;
 import sql.UserDataManager;
 
-/**
- * Servlet implementation class ChannelServlet
- */
 @WebServlet("/ChannelServlet")
 public class ChannelServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -40,18 +37,9 @@ public class ChannelServlet extends HttpServlet {
 		String clientID = request.getParameter("clientID");
 		response.setContentType("application/json");
 		PrintWriter out = response.getWriter();      
+		
 		String channelName = MainServer.channelIDToChannelMap.get(clientID).getChannelName();
-		//Create String to send in response to get request
-//		String jsonObject = "{\"clientID\": \""+clientID+"\", \"channelName\": \""+channelName+"\", \"playlist\": \"[";
 		ArrayList<String> sup = MainServer.channelIDToChannelMap.get(clientID).getSongURIPlaylist();
-//		for(int i = 0; i<sup.size(); i++){
-//			jsonObject += "{\""+sup.get(i)+"\"}";
-//			if(i != sup.size()-1){
-//				jsonObject += ", ";
-//			}
-//		}
-//		jsonObject += "], \"currentSongURI\": \""+MainServer.channelIDToChannelMap.get(clientID).getCurrentSongURI()+"\"}";
-//		
 		
 		JSONObject obj = new JSONObject();
 		obj.put("clientID", clientID);

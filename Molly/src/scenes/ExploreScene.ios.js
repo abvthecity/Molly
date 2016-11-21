@@ -50,17 +50,28 @@ class ExploreScene extends Component {
   _getChannels() {
     let _this = this;
 
+    /*
+      {channels: [{
+        id: string
+        name: string,
+        favorite: bool,
+        currentTrackURI: string,
+        currentTrackTime: number,
+        currentTrackduration: number
+      }]}
+    */
+
     fetch(constants.server + '/channels')
       .then(res => res.json())
       .then(res => {
 
         let cards = res.channels.map(d => ({
           title: d.name,
-          host: d.channelId,
+          host: d.id,
           favorite: d.favorite,
-          channelId: card.channelId,
+          channelId: d.id,
           nowPlaying: {
-            uri: d.trackId,
+            uri: d.currentTrackURI,
             currentTime: d.currentTime,
             duration: d.duration
           }
