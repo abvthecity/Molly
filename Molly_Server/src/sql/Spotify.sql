@@ -18,7 +18,7 @@ CREATE TABLE `SpotifyDJ`.`Channel` (
 PRIMARY KEY (`clientID`)
 );
 
-CREATE TABLE `SpotifyDJ`.`Favorites` (
+CREATE TABLE `SpotifyDJ`.`Favorite` (
 `favoriteID` INT NOT NULL AUTO_INCREMENT,
 `clientID` VARCHAR(100) NOT NULL,
 `channelID` VARCHAR(100) NULL,
