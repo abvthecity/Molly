@@ -12,7 +12,7 @@ const Button = props => (
       fontSize: 17,
       fontWeight: '600',
       letterSpacing: -0.24,
-      marginHorizontal: 6,
+      // marginHorizontal: 6,
       textAlign: 'center',
       color: props.tintColor,
       opacity: !props.disabled ? 1 : 0.5,

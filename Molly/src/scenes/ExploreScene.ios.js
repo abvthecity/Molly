@@ -22,10 +22,21 @@ class ExploreScene extends Component {
 
   state = {
     browseTitle: 'Explore',
+    name: null,
     cards: []
   }
 
   componentWillMount() {
+    fetch('https://api.spotify.com/v1/users/' + this.props.clientId)
+      .then(res => res.json())
+      .then(res => {
+
+        console.log(res)
+
+        this.setState({ name: res.display_name })
+
+      }).catch(console.error)
+
     this._getChannels()
 
     // establish a socket here!
@@ -45,9 +56,7 @@ class ExploreScene extends Component {
     const header = (
       <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>
         <Text style={{ fontSize: 40, fontWeight: '900' }}>Molly</Text>
-        <TouchableOpacity onPress={() => {}}>
-          <Text style={styles.button}>Settings</Text>
-        </TouchableOpacity>
+        <Button textStyle={{ textAlign: 'right' }} onPress={this.props.logout}>{this.state.name || this.props.clientId}</Button>
       </View>
     )
 

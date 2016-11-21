@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react'
 import {
   AppRegistry, NativeModules, NativeEventEmitter,
   NavigatorIOS, ActivityIndicator,
-  View, Text, Modal
+  View, Text, Modal, AsyncStorage
 } from 'react-native'
 
 import LandingScene from './src/scenes/LandingScene'
@@ -18,7 +18,7 @@ const PlayerModal = props => (
   <Modal {...props} transparent={false}
     supportedOrientations={['portrait']}
     animationType={'slide'}>
-    <PlayerScene goBack={props.close} />
+    <PlayerScene goBack={props.close} clientId={props.clientId} />
   </Modal>
 )
 
@@ -31,8 +31,10 @@ class Routes extends Component {
 
   state = {
     loaded: false,
+    loginAttempted: false,
     isLoggedIn: false,
     showPlayer: false,
+    clientId: null
   }
 
   componentWillMount() {
@@ -40,16 +42,26 @@ class Routes extends Component {
 
     SpotifyAPI.userHasAuth((error, hasAuth) => {
 
+      this.setState({ loginAttempted: false })
+
       if (!hasAuth) {
         _this.loginSubscriber = SpotifyAPIEventEmitter.addListener('Login', res => {
           if (res.success === true) {
             console.log("CLIENT_ID:", res.userSpotifyID)
-            this.setState({ isLoggedIn: true })
+
+            AsyncStorage.setItem('@SessionData:ClientID', res.userSpotifyID)
+              .then(() => {
+                _this.setState({ isLoggedIn: true, clientId: res.userSpotifyID })
+              }).catch(console.error)
+
           } else console.log("FAILED TO BEGIN")
         })
       } else this.setState({ isLoggedIn: true })
 
-      this.setState({ loaded: true })
+      AsyncStorage.getItem('@SessionData:ClientID')
+        .then(id => {
+          _this.setState({ loaded: true, clientId: id })
+        }).catch(console.error)
 
     })
   }
@@ -61,12 +73,16 @@ class Routes extends Component {
   }
 
   _login = () => {
+    this.setState({ loginAttempted: true })
     SpotifyAPI.authenticate('b9aa2793ac1a476ea7ed07175f38a6dd', 'molly://callback')
     console.log("CALLED")
   }
 
   _logout = () => {
-    // this.setState({ isLoggedIn: false })
+    console.log("SOMETHING")
+    SpotifyAPI.logout((error, res) => {
+      this.setState({ isLoggedIn: false, showPlayer: false, clientId: null })
+    })
   }
 
   _openPlayer = (channelId: string = null) => {
@@ -96,17 +112,42 @@ class Routes extends Component {
     }
 
     if (!this.state.isLoggedIn) {
-      return <LandingScene login={this._login} />
+      // return <Modal transparent={false}
+      //   supportedOrientations={['portrait']}
+      //   animationType={'slide'}><LandingScene login={this._login} /></Modal>
+      return (
+        <View style={{ flex: 1 }}>
+          <LandingScene login={this._login} />
+          {(() => {
+            if (this.state.loginAttempted) {
+              return (
+                <View style={{
+                  position: 'absolute',
+                  left: 0, right: 0, top: 0, bottom: 0,
+                  zIndex: 100,
+                  flex: 1,
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: 'rgba(255, 255, 255, 0.8)'
+                }}><ActivityIndicator size="large" color="black" />
+                </View>
+              )
+            }
+          })()}
+        </View>
+      )
     }
 
     if (this.props.scene === 'EXPLORE') {
       return (
         <View {...this.props} style={[{ flex: 1 }, this.props.style]}>
-          <ExploreScene
+          <ExploreScene clientId={this.state.clientId}
             openFavorites={this._openFavorites}
             openLive={this._openLive}
-            openPlayer={this._openPlayer} />
-          <PlayerModal
+            openPlayer={this._openPlayer}
+            logout={this._logout} />
+          <PlayerModal clientId={this.state.clientId}
             visible={this.state.showPlayer}
             close={this._closePlayer} />
         </View>
@@ -114,10 +155,10 @@ class Routes extends Component {
     } else if (this.props.scene === 'FAVORITES') {
       return (
         <View {...this.props} style={[{ flex: 1 }, this.props.style]}>
-          <FavoritesScene
+          <FavoritesScene clientId={this.state.clientId}
             goBack={this.props.navigator.pop}
             openPlayer={this._openPlayer} />
-          <PlayerModal
+          <PlayerModal clientId={this.state.clientId}
             visible={this.state.showPlayer}
             close={this._closePlayer} />
         </View>
@@ -125,7 +166,7 @@ class Routes extends Component {
     } else if (this.props.scene === 'LIVE') {
       return (
         <View {...this.props} style={[{ flex: 1 }, this.props.style]}>
-          <BroadcastScene goBack={this.props.navigator.pop} />
+          <BroadcastScene clientId={this.state.clientId} goBack={this.props.navigator.pop} />
         </View>
       )
     }
