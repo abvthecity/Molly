@@ -37,9 +37,10 @@ public class Verify extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		String info = request.getParameter("hi");
+		String info2 = request.getParameter("hey");
 		System.out.println("comes here");
 //		response.setHeader();
-		response.getWriter().append("{\"object\": \"key\"}"+info);
+		response.getWriter().append("{\"object\": \"key\"}"+info+"   "+info2);
 	}
 
 	/**

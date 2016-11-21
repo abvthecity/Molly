@@ -3,6 +3,8 @@ package servlet;
 import java.io.IOException;
 
 import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -10,6 +12,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.swing.UIManager;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 
 import sql.FavoriteDataManager;
 import sql.UserDataManager;
@@ -37,20 +43,35 @@ public class Bookmarks extends HttpServlet {
 		String clientID = request.getParameter("clientID");
 		String[] bookmarks = FavoriteDataManager.getFavorites(clientID);//search in sql
 		response.setContentType("application/json");
-		PrintWriter out = response.getWriter();      
+		PrintWriter out = response.getWriter();     
 		
+//		Map<String, String[]> map = new HashMap<String, String[]>();
+//		map.put("clientIsDJ", bookmarks);
+//    	String json = JSONValue.toJSONString(map);
+    	JSONObject obj = new JSONObject();
+    	JSONArray list = new JSONArray();
+    	for(int i = 0; i< bookmarks.length; i++){
+    		if(bookmarks[i] != null){
+    			list.add(bookmarks[i]);
+    		}
+    		
+    	}
+    	
+
+    	obj.put("messages", list);
+		String json = obj.toString();
 		//Create String to send in response to get request
-		String jsonObject = "\"clientFavorites\": [";
-		for(int i = 0; i< bookmarks.length; i++){
-			jsonObject += "{\""+bookmarks[i]+"\"}";
-			if(i!=bookmarks.length - 1){
-				jsonObject += ", ";
-			}
-		}
-		jsonObject += "]}";
+//		String jsonObject = "\"clientFavorites\": [";
+//		for(int i = 0; i< bookmarks.length; i++){
+//			jsonObject += "{\""+bookmarks[i]+"\"}";
+//			if(i!=bookmarks.length - 1){
+//				jsonObject += ", ";
+//			}
+//		}
+//		jsonObject += "]}";
 		
 		// Assuming your json object is **jsonObject**, perform the following, it will return your json object  
-		out.print(jsonObject);
+		out.print(json);
 		out.flush();
 	}
 
