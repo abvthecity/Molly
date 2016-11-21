@@ -53,9 +53,11 @@ class FavoritesScene extends Component {
 
     return (
       <LinearGradient colors={['#FFA832', '#FF5F33']} {...this.props} style={[{ flex: 1 }, this.props.style]}>
-        {/* <BlurNavigator light={true} onLeftButtonPress={this.props.goBack} leftButtonTitle="Explore"/> */}
+        <BlurNavigator light={true} onLeftButtonPress={this.props.goBack} leftButtonTitle="Explore"/>
 
-        <ScrollView style={{ backgroundColor: 'transparent', flex: 1, paddingTop: constants.navpad + 0 }}>
+        <ScrollView
+          style={{ backgroundColor: 'transparent', flex: 1, paddingTop: constants.navpad }}
+          contentInset={{ top: 20, bottom: 20 }} contentOffset={{ y: -20 }}>
           <View style={{ padding: constants.unit * 4 }}>{header}</View>
 
           {this.state.cards.map((card, i) => {

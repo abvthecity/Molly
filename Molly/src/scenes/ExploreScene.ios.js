@@ -83,9 +83,7 @@ class ExploreScene extends Component {
     return (
       <View {...this.props}>
         <BlurStatusBar light={false} />
-        <ScrollView
-          style={{ paddingTop: 0 }}
-          canCancelContentTouches={true}>
+        <ScrollView canCancelContentTouches={true} contentInset={{ top: 20, bottom: 20 }} contentOffset={{ y: -20 }}>
 
           {/* SECTION 1 */}
           <LinearGradient colors={['white', '#F0F0F0']} style={{ backgroundColor: 'transparent', padding: constants.unit * 4 }}>

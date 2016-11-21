@@ -6,10 +6,12 @@ import {
   StyleSheet, AlertIOS
 } from 'react-native'
 
-import constants from '../common/constants'
 import LinearGradient from 'react-native-linear-gradient'
-import BlurNavigator from '../components/BlurNavigator'
 import { BlurView, VibrancyView } from 'react-native-blur'
+import Swiper from 'react-native-swiper'
+
+import constants from '../common/constants'
+import BlurNavigator from '../components/BlurNavigator'
 
 import Card from '../components/Card'
 import NowPlayingCardView from '../components/NowPlayingCardView'
@@ -23,6 +25,25 @@ class BroadcastScene extends Component {
 
     this._renderSwitch = this._renderSwitch.bind(this)
     this._renderHeader = this._renderHeader.bind(this)
+
+    this.state = {
+      nowPlaying: {
+        album_cover: null,
+        song_title: 'Murder',
+        artist_name: 'Lido',
+        neutral: 'rgb(84, 107, 132)',
+        accent: 'rgb(207, 66, 65)',
+        progress: 0.7
+      },
+      playingNext: {
+        album_cover: null,
+        song_title: 'Murder',
+        artist_name: 'Lido',
+        neutral: 'rgb(84, 107, 132)',
+        accent: 'rgb(207, 66, 65)',
+        progress: 0.7
+      }
+    }
   }
 
   static propTypes = {
@@ -66,6 +87,15 @@ class BroadcastScene extends Component {
     )
   }
 
+  _onMomentumScrollEnd(e, state, context) {
+
+    if (state.index !== 0) {
+      context.scrollBy(-state.index, false)
+
+      // skip that fucking song
+    }
+  }
+
   render() {
 
     const header = (
@@ -83,71 +113,36 @@ class BroadcastScene extends Component {
         {this._renderHeader()}
         <ScrollView style={{
           backgroundColor: 'transparent',
-          paddingTop: constants.navpad + 0
+          paddingTop: constants.navpad
         }}
+          contentInset={{ top: 20, bottom: 20 }} contentOffset={{ y: -20 }}
           onLayout={event => {
             let { x, y, width, height } = event.nativeEvent.layout;
             this.setState({ width })
           }}>
           <View style={{ padding: constants.unit * 4 }}>{header}</View>
 
-          <ScrollView
-            horizontal={true}
-            snapToAlignment={'start'}
-            snapToInterval={this.state.width - constants.unit * 6}
-            style={{
-              paddingHorizontal: constants.unit * 4,
-              overflow: 'visible',
-              marginBottom: constants.unit * 3,
-            }}>
+          <Swiper
+            style={{ overflow: 'visible', marginLeft: constants.unit * 2 }}
+            loop={false}
+            height={118 + constants.unit * 6}
+            width={this.state.width - constants.unit * 5}
+            showsPagination={false}
+            showsButtons={false}
+            onMomentumScrollEnd={this._onMomentumScrollEnd}
+            >
 
-            <Card style={{ marginRight: constants.unit * 2, width: this.state.width - (constants.unit * 4 * 2) }} shadow={false}>
-              <NowPlayingCardView nowPlaying={{
-                album_cover: null,
-                song_title: 'Murder',
-                artist_name: 'Lido',
-                neutral: 'rgb(84, 107, 132)',
-                accent: 'rgb(207, 66, 65)',
-                progress: 0.7
-              }} />
+            <Card style={{ flex: 1, marginRight: constants.unit * 3 }}>
+              <NowPlayingCardView nowPlaying={this.state.nowPlaying} />
             </Card>
 
-            <Card style={{ marginRight: constants.unit * 2, width: this.state.width - (constants.unit * 4 * 2) }} shadow={false}>
-              <NowPlayingCardView nowPlaying={{
-                album_cover: null,
-                song_title: 'Murder',
-                artist_name: 'Lido',
-                neutral: 'rgb(84, 107, 132)',
-                accent: 'rgb(207, 66, 65)',
-                progress: 0.7
-              }} />
+            <Card style={{ flex: 1, marginRight: constants.unit * 3 }}>
+              <NowPlayingCardView nowPlaying={this.state.playingNext} />
             </Card>
 
-            <Card style={{ marginRight: constants.unit * 2, width: this.state.width - (constants.unit * 4 * 2) }} shadow={false}>
-              <NowPlayingCardView nowPlaying={{
-                album_cover: null,
-                song_title: 'Murder',
-                artist_name: 'Lido',
-                neutral: 'rgb(84, 107, 132)',
-                accent: 'rgb(207, 66, 65)',
-                progress: 0.7
-              }} />
-            </Card>
+          </Swiper>
 
-            <Card style={{ marginRight: constants.unit * 4, width: this.state.width - (constants.unit * 4 * 2) }} shadow={false}>
-              <NowPlayingCardView nowPlaying={{
-                album_cover: null,
-                song_title: 'Murder',
-                artist_name: 'Lido',
-                neutral: 'rgb(84, 107, 132)',
-                accent: 'rgb(207, 66, 65)',
-                progress: 0.7
-              }} />
-            </Card>
-
-          </ScrollView>
-
-          <View style={{ paddingHorizontal: constants.unit * 4 }}>
+          <View style={{ marginTop: constants.unit * 3, paddingHorizontal: constants.unit * 4 }}>
             <Card style={{ marginBottom: constants.unit * 3 }} shadow={false}>
               <View style={{ padding: constants.unit * 3 }}>
                 <HeadingWithAction

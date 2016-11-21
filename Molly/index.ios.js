@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, PropTypes } from 'react'
 import {
   AppRegistry, NativeModules, NativeEventEmitter,
   NavigatorIOS, ActivityIndicator,
@@ -14,89 +14,25 @@ import PlayerScene from './src/scenes/PlayerScene'
 const SpotifyAPI = NativeModules.SpotifyAPI;
 const SpotifyAPIEventEmitter = new NativeEventEmitter(SpotifyAPI);
 
-class ExploreRoute extends Component {
-  state = {
-    showPlayer: false
-  }
-
-  _openFavorites = () => {
-    this.props.navigator.push({
-      component: FavoritesRoute,
-      passProps: {
-        goBack: () => {
-          this.props.navigator.pop()
-        }
-      }
-    })
-  }
-
-  _openLive = () => {
-    this.props.navigator.push({
-      component: BroadcastScene,
-      passProps: {
-        goBack: () => {
-          this.props.navigator.pop()
-        }
-      }
-    })
-  }
-
-  render() {
-    return (
-      <View {...this.props} style={[{ flex: 1 }, this.props.style]}>
-        <ExploreScene
-          openFavorites={this._openFavorites}
-          openLive={this._openLive}
-          openPlayer={() => this.setState({ showPlayer: true })} />
-
-        {/* PLAYER */}
-        <Modal transparent={false}
-          visible={this.state.showPlayer}
-          supportedOrientations={['portrait']}
-          animationType={'slide'}>
-          <PlayerScene goBack={() => this.setState({ showPlayer: false })} />
-        </Modal>
-      </View>
-    )
-  }
-}
-
-class FavoritesRoute extends Component {
-  state = {
-    showPlayer: false
-  }
-
-  render() {
-    return (
-      <View {...this.props} style={[{ flex: 1 }, this.props.style]}>
-
-        <FavoritesScene
-          goBack={this.props.goBack}
-          openPlayer={() => this.setState({ showPlayer: true }) }
-        />
-
-        {/* PLAYER */}
-        <Modal transparent={false}
-          visible={this.state.showPlayer}
-          supportedOrientations={['portrait']}
-          animationType={'slide'}>
-          <PlayerScene goBack={() => this.setState({ showPlayer: false })} />
-        </Modal>
-      </View>
-    )
-  }
-}
-
-const LiveRoute = props => (
-  <View {...props} style={[{ flex: 1 }, props.style]}>
-    <BroadcastScene goBack={props.goBack} />
-  </View>
+const PlayerModal = props => (
+  <Modal {...props} transparent={false}
+    supportedOrientations={['portrait']}
+    animationType={'slide'}>
+    <PlayerScene goBack={props.close} />
+  </Modal>
 )
 
-class Molly extends Component {
+class Routes extends Component {
+
+  static propTypes = {
+    scene: PropTypes.string.isRequired,
+    navigator: PropTypes.object.isRequired,
+  }
+
   state = {
     loaded: false,
-    isLoggedIn: false
+    isLoggedIn: false,
+    showPlayer: false,
   }
 
   componentWillMount() {
@@ -133,35 +69,85 @@ class Molly extends Component {
     // this.setState({ isLoggedIn: false })
   }
 
+  _openPlayer = (channelId: string = null) => {
+    this.setState({ showPlayer: true })
+  }
+
+  _closePlayer = () => {
+    this.setState({ showPlayer: false })
+  }
+
+  _openFavorites = () => {
+    this.props.navigator.push({ component: Routes, passProps: { scene: 'FAVORITES' } })
+  }
+
+  _openLive = () => {
+    this.props.navigator.push({ component: Routes, passProps: { scene: 'LIVE' } })
+  }
+
   render() {
+
+    console.log(this.props.title)
+
     if (!this.state.loaded) {
-      return <View style={{
-        flex: 1,
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center'
-      }}><ActivityIndicator size="large" /></View>
+      return <View style={{ flex: 1, flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+        <ActivityIndicator size="large" />
+      </View>
     }
 
-    if (this.state.isLoggedIn) {
+    if (!this.state.isLoggedIn) {
+      return <LandingScene login={this._login} />
+    }
+
+    if (this.props.scene === 'EXPLORE') {
       return (
-        <NavigatorIOS
-          initialRoute={{
-            title: 'Explore',
-            component: ExploreRoute
-          }}
-          interactivePopGestureEnabled={false}
-          navigationBarHidden={true}
-          style={{ flex: 1 }}
-        />
+        <View {...this.props} style={[{ flex: 1 }, this.props.style]}>
+          <ExploreScene
+            openFavorites={this._openFavorites}
+            openLive={this._openLive}
+            openPlayer={this._openPlayer} />
+          <PlayerModal
+            visible={this.state.showPlayer}
+            close={this._closePlayer} />
+        </View>
       )
-    } else {
+    } else if (this.props.scene === 'FAVORITES') {
       return (
-        <LandingScene login={this._login} />
+        <View {...this.props} style={[{ flex: 1 }, this.props.style]}>
+          <FavoritesScene
+            goBack={this.props.navigator.pop}
+            openPlayer={this._openPlayer} />
+          <PlayerModal
+            visible={this.state.showPlayer}
+            close={this._closePlayer} />
+        </View>
+      )
+    } else if (this.props.scene === 'LIVE') {
+      return (
+        <View {...this.props} style={[{ flex: 1 }, this.props.style]}>
+          <BroadcastScene goBack={this.props.navigator.pop} />
+        </View>
       )
     }
+
+    return <View />
+
   }
+
 }
+
+const Molly = props => (
+  <NavigatorIOS
+    initialRoute={{
+      component: Routes,
+      title: 'Molly',
+      passProps: { scene: 'EXPLORE' }
+    }}
+    interactivePopGestureEnabled={true}
+    navigationBarHidden={true}
+    style={{ flex: 1 }}
+  />
+)
 
 AppRegistry.registerComponent('Molly', () => Molly)
 

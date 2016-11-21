@@ -37,7 +37,7 @@ const NowPlayingCardView = props => {
 
 NowPlayingCardView.propTypes = {
   nowPlaying: PropTypes.shape({
-    album_cover: PropTypes.object.isRequired,
+    album_cover: PropTypes.object,
     song_title: PropTypes.string.isRequired,
     artist_name: PropTypes.string.isRequired,
     neutral: PropTypes.string.isRequired,
