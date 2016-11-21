@@ -14,6 +14,8 @@ import PlayerScene from './src/scenes/PlayerScene'
 const SpotifyAPI = NativeModules.SpotifyAPI;
 const SpotifyAPIEventEmitter = new NativeEventEmitter(SpotifyAPI);
 
+import socket from './src/common/socket'
+
 const PlayerModal = props => (
   <Modal {...props} transparent={false}
     supportedOrientations={['portrait']}
@@ -39,6 +41,12 @@ class Routes extends Component {
 
   componentWillMount() {
     let _this = this
+
+    socket.onopen = () => {
+      console.log("HI")
+    }
+
+    // socket.send("TEST")
 
     SpotifyAPI.userHasAuth((error, hasAuth) => {
 

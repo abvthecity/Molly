@@ -10,6 +10,8 @@ import server.MainServer;
 
 import javax.annotation.Resource;
 import javax.websocket.EncodeException;
+import javax.websocket.OnClose;
+import javax.websocket.OnError;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
@@ -30,8 +32,8 @@ import messages.UpdatePlaylistMessage;
 
 
 
-@ServerEndpoint(value = "/websocketEndpoint", decoders = { MessageDecoder.class }, encoders = {
-		SongChangedMessageEncoder.class })
+@ServerEndpoint(value = "/ws", decoders = { MessageDecoder.class }, encoders = { SongChangedMessageEncoder.class })
+//@ServerEndpoint("/ws")
 
 public class WebsocketEndpoint {
 	private ArrayList<String> channelIDs = new ArrayList<String>();
@@ -42,6 +44,14 @@ public class WebsocketEndpoint {
 	public void openConnection(Session session) {
 		logger.log(Level.INFO, "Connection opened." + session.getId());
 	}
+	
+    @OnClose
+    public void close(Session session) {
+    }
+
+    @OnError
+    public void onError(Throwable error) {
+    }
 
 	@OnMessage
 	public void message(Session session, Message msg) {

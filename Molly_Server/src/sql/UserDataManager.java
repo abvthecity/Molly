@@ -13,7 +13,7 @@ import classes.User;
 
 public  class UserDataManager {
 	static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";  
-	static final String DB_URL = "jdbc:mysql://localhost/SpotifyDJ?user=root&password=lertom30&useSSL = false";
+	static final String DB_URL = "jdbc:mysql://localhost/SpotifyDJ?user=root&password=&useSSL = false";
 	//static  ByteArrayOutputStream bout;
 	//static  DataOutputStream dout;
 	

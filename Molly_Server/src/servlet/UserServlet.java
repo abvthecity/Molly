@@ -3,8 +3,10 @@ package servlet;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -13,7 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONObject;
-
+import org.json.simple.JSONValue;
 
 import classes.User;
 import sql.UserDataManager;
@@ -37,28 +39,22 @@ public class UserServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		//response.getWriter().append("Served at: ").append(request.getContextPath());
-		// Get the printwriter object from response to write the required json object to the output stream
-				String clientID = request.getParameter("clientID");
-				User u = UserDataManager.getUser(clientID); //search in sql
-				String b;
-				if(u.getIfCLientIsDJ()){
-					b = "true";
-				}
-				else{
-					b = "false";
-				}
-				String jsonObject = "{\"clientID\": \""+clientID+"\", \"isClientDJ\": \""+b+"\"}";
-				response.setContentType("application/json");
-				PrintWriter out = response.getWriter();      
-				
-				//Create String to send in response to get request
-				//String jsonObject = "{\"test\": \"Succesfull Ajax Call\"}";
-				
-				// Assuming your json object is **jsonObject**, perform the following, it will return your json object  
-				out.print(jsonObject);
-				out.flush();
+		response.setContentType("application/json");
+		PrintWriter out = response.getWriter();
+		
+    	Map<String, Comparable> map = new HashMap<String, Comparable>();
+
+    	String clientID = request.getParameter("clientID");
+		User u = UserDataManager.getUser(clientID); //search in sql
+		
+    	map.put("clientId", clientID);
+    	map.put("clientIsDJ", u.getIfCLientIsDJ() ? true : false);
+    	
+    	String json = JSONValue.toJSONString(map);
+		
+		// Assuming your json object is **jsonObject**, perform the following, it will return your json object  
+		out.print(json);
+		out.flush();
 				
 	}
 
