@@ -4,9 +4,7 @@ use SpotifyDJ;
 
 CREATE TABLE `SpotifyDJ`.`Users` (
 `clientID` VARCHAR(10) NOT NULL,
-`clientTags` VARCHAR(1000) NOT NULL,
 `clientDJ` bool NULL,
-`clientBookmarks` VARCHAR(1000) NULL,
 PRIMARY KEY (`clientID`)
 );
 
