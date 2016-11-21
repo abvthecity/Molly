@@ -42,15 +42,16 @@ public class UserServlet extends HttpServlet {
 		response.setContentType("application/json");
 		PrintWriter out = response.getWriter();
 		
-    	Map<String, Comparable> map = new HashMap<String, Comparable>();
+    	Map<String, String> map = new HashMap<String, String>();
 
     	String clientID = request.getParameter("clientID");
 		User u = UserDataManager.getUser(clientID); //search in sql
 		
-    	map.put("clientId", clientID);
-    	map.put("clientIsDJ", u.getIfCLientIsDJ() ? true : false);
+//    	map.put("clientId", clientID);
+//    	map.put("clientIsDJ", u.getIfCLientIsDJ() ? "true" : "false");
+//    	String json = JSONValue.toJSONString(map);
     	
-    	String json = JSONValue.toJSONString(map);
+		String json = "{\"clientID\": \""+clientID+"\", \"isDJ\": \""+u.getIfCLientIsDJ()+"\"}";
 		
 		// Assuming your json object is **jsonObject**, perform the following, it will return your json object  
 		out.print(json);

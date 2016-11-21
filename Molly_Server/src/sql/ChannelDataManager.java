@@ -16,7 +16,7 @@ public class ChannelDataManager {
 
 	//initializing the Driver
 	static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";  
-	static final String DB_URL = "jdbc:mysql://localhost/SpotifyDJ?user=root&password=lertom30&useSSL = false";
+	static final String DB_URL = "jdbc:mysql://localhost/SpotifyDJ?user=root&password=root&useSSL = false";
 	static Channel channel;
 	
 	public  static void createChannel(String clientId, String channelName, String[] channelTags, int channelsSubscriberNum, int channelLikesNum ){

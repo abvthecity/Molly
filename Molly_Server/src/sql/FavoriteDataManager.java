@@ -11,7 +11,7 @@ public class FavoriteDataManager {
 	
 	//initializing the Driver
 	static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";  
-	static final String DB_URL = "jdbc:mysql://localhost/SpotifyDJ?user=root&password=lertom30&useSSL = false";
+	static final String DB_URL = "jdbc:mysql://localhost/SpotifyDJ?user=root&password=root&useSSL = false";
 			
 	public static void addFavorite(String clientID, String channelID){
 		
