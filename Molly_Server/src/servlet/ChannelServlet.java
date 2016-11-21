@@ -55,7 +55,7 @@ public class ChannelServlet extends HttpServlet {
 				jsonObject += ", ";
 			}
 		}
-		jsonObject += "], \"currentSong\": \""+MainServer.channelIDToChannelMap.get(clientID).getCurrentSong()+"\"}";
+		jsonObject += "], \"currentSongURI\": \""+MainServer.channelIDToChannelMap.get(clientID).getCurrentSongURI()+"\"}";
 		
 		
 		// Assuming your json object is **jsonObject**, perform the following, it will return your json object  

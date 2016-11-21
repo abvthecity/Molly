@@ -14,7 +14,8 @@ public class Channel extends Thread{
 	public boolean isLive;
 	public ArrayList<Song> songPlaylist;
 
-	public Song currentSong;
+	public String currentSongURI;
+	private Integer currentSongPosition;
 	
 	public Channel( String clientId){
 		//this.channelID = channelId;
@@ -89,16 +90,26 @@ public class Channel extends Thread{
 		return arrSongURI;
 	}
 	
-	public Song getCurrentSong() {
-		return currentSong;
+	public String getCurrentSongURI() {
+		return currentSongURI;
 	}
 
-	public void setCurrentSong(Song currentSong) {
-		this.currentSong = currentSong;
+	public void setCurrentSongURI(String currentSong) {
+		this.currentSongURI = currentSong;
 	}
 
 	
 	public void run(){
 		
+	}
+
+	
+	public Integer getCurrentSongPosition() {
+		// TODO Auto-generated method stub
+		return this.currentSongPosition;
+	}
+	
+	public void setCurrentSongPosition(Integer i){
+		this.currentSongPosition = i;
 	}
 }

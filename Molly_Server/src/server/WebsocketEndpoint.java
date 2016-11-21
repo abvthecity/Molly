@@ -23,6 +23,7 @@ import messages.DJIsOfflineMessage;
 import messages.GoLiveMessage;
 import messages.GoOfflineMessage;
 import messages.JoinChannelMessage;
+import messages.JoinedChannelSuccessfullyMessage;
 import messages.Message;
 import messages.SongChangedMessage;
 import messages.UpdatePlaylistMessage;
@@ -74,6 +75,10 @@ public class WebsocketEndpoint {
 			
 			if(MainServer.channelIDToChannelMap.get(joinChannelMessage.getDJIWishToJoin()).isLive()){
 				DJToListenersMap.get(joinChannelMessage.getDJIWishToJoin()).add(joinChannelMessage.getClientID());
+				sendAll(session, new JoinedChannelSuccessfullyMessage(null, "false", "false", joinChannelMessage.getDJIWishToJoin(), 
+						MainServer.channelIDToChannelMap.get(joinChannelMessage.getDJIWishToJoin()).getSongURIPlaylist(), 
+						MainServer.channelIDToChannelMap.get(joinChannelMessage.getDJIWishToJoin()).getCurrentSongURI(),
+						MainServer.channelIDToChannelMap.get(joinChannelMessage.getDJIWishToJoin()).getCurrentSongPosition()));
 			}
 			else{
 				sendAll(session, new DJIsOfflineMessage(null, "false", "false", joinChannelMessage.getCurrDJ(), joinChannelMessage.getDJIWishToJoin()));

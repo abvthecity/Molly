@@ -20,7 +20,7 @@ public class ChannelDataManager {
 	static Channel channel;
 	
 	public  static void createChannel(String clientId, String[] channelTags, int channelsSubscriberNum, int channelLikesNum ){
-		channel = new Channel(clientId, channelTags, channelsSubscriberNum, channelLikesNum);
+		//channel = new Channel(clientId, channelTags, channelsSubscriberNum, channelLikesNum);
 		Connection conn = null;
 		PreparedStatement ps = null;
 		String tags="";
@@ -43,7 +43,7 @@ public class ChannelDataManager {
 			ps.setInt(3, channelsSubscriberNum);
 			ps.setInt(4, channelLikesNum);
 			ps.executeUpdate();
-			channel = new Channel(clientId, channelTags, channelsSubscriberNum, channelLikesNum);
+			//channel = new Channel(clientId, channelTags, channelsSubscriberNum, channelLikesNum);
 	
 		}catch (ClassNotFoundException cnfe) {
 			// TODO Auto-generated catch block
@@ -79,7 +79,7 @@ public static Channel getChannel(String clientID){
 				tags = rs.getString("clientTags").split(":");
 				likes = rs.getInt("likesNum");
 				subscribers = rs.getInt("subscribersNum");
-				channel= new Channel(clientID, tags, subscribers, likes);
+				//channel= new Channel(clientID, tags, subscribers, likes);
 				System.out.println("here   "+channel.getClientID());
 			}
 		}catch (ClassNotFoundException e){
