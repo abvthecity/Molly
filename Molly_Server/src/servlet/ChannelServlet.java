@@ -14,6 +14,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import classes.Channel;
+import classes.Song;
 import server.MainServer;
 import sql.ChannelDataManager;
 import sql.UserDataManager;
@@ -82,6 +83,18 @@ public class ChannelServlet extends HttpServlet {
 		String clientID=request.getParameter("clientID");
 		String channelName = request.getParameter("channelName"); 
 		Channel c = new Channel(clientID, channelName);
+		MainServer.channelIDToChannelMap.put(clientID, c);
+		//test case
+//		ArrayList<Song> playlist = new ArrayList<Song>();
+//		playlist.add(new Song("abcd", 45));
+//		playlist.add(new Song("efgh", 45));
+//		playlist.add(new Song("ijkl", 45));
+//		String name = c.getChannelName();
+//		if(c.equals("Rachit")){
+//			c.setSongURIPlaylist(playlist);
+//			c.setCurrentSongURI("abcd");
+//		}
+		
 		String[] tags = new String[5];
 		ChannelDataManager.createChannel(clientID, channelName, tags, 0, 0);
 		UserDataManager.makeDJ(clientID); //update in sql
