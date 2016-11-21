@@ -14,16 +14,37 @@ import classes.User;
 public  class UserDataManager {
 	static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";  
 	static final String DB_URL = "jdbc:mysql://localhost/SpotifyDJ?user=root&password=lertom30&useSSL = false";
-
+	//static  ByteArrayOutputStream bout;
+	//static  DataOutputStream dout;
+	
+//	static ByteArrayInputStream bin;
+//    static DataInputStream din;
+//    static BufferedReader br;
 	static User  user = null;
     
-	
 	public  static void createUser(String clientId, String[] clientTags, boolean isClienDJ, String[] bookmarks ){
 		
 		Connection conn = null;
 		PreparedStatement ps = null;
-		String bm="", tags="";
+		 String bm="", tags="";
 		try {
+		
+//		 bout = new ByteArrayOutputStream();
+//	     dout = new DataOutputStream(bout);
+//	     
+//	    for (String t : clientTags) {
+//	        dout.writeBytes(t);
+//	    }
+//	    dout.close();
+//	    byte[] asBytes = bout.toByteArray();
+//	    
+//	    for (String bm : bookmarks) {
+//	        
+//				dout.writeBytes(bm);
+//	    }
+//	    dout.close();
+//	    byte[] asBytes1 = bout.toByteArray();
+			
 			
 
 			for(int i=0; i<clientTags.length; i++){
@@ -43,7 +64,7 @@ public  class UserDataManager {
 			ps.setBoolean(3, isClienDJ);
 			ps.setString(4, bm);
 			ps.executeUpdate();
-			user = new User(clientId, clientTags,isClienDJ, bookmarks);
+			//user = new User(clientId, clientTags,isClienDJ, bookmarks);
 			
 		} 
 		catch (ClassNotFoundException cnfe) {
@@ -53,15 +74,6 @@ public  class UserDataManager {
 		catch (SQLException sqle) {
 			// TODO Auto-generated catch block
 			sqle.printStackTrace();
-		}
-		finally {
-			try {
-				ps.close();
-			} catch (SQLException e) { /* Do nothing */ }
-	
-			try {
-				conn.close();
-			} catch (SQLException e) { /* Do nothing */ }			
 		}
 			
 	}
@@ -84,11 +96,13 @@ public  class UserDataManager {
 			Class.forName(JDBC_DRIVER);
 			conn = DriverManager.getConnection(DB_URL);
 			ps = conn.prepareStatement("SELECT * FROM Users WHERE clientID=?");
-						
+			
+			
 			tags = new String[5];
 			bm = new String[50];
 	        
-
+	        
+	        
 			ps.setString(1, clientID);
 			rs = ps.executeQuery();
 			if (rs.next()) {
@@ -96,8 +110,43 @@ public  class UserDataManager {
 				bm = rs.getString("clientBookmarks").split(":");
 				isDJ = rs.getBoolean("clientDJ");
 				
-				user= new User(clientID, tags, isDJ, bm);
-				System.out.println("here   "+user.getClientID());
+				user= new User(clientID, isDJ);
+				//System.out.println("here   "+user.getClientID());
+			}
+		}catch (ClassNotFoundException e){
+			e.getStackTrace();
+	
+		}
+		catch (SQLException e){
+			e.getStackTrace();
+		}
+		return user;
+	}
+	
+	
+	
+	//getClientTags
+	public static String[] getClientTags(String clientID){
+		
+		User user = null;
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+
+		String[] tags = new String[5];
+		
+		try {
+			
+			Class.forName(JDBC_DRIVER);
+			conn = DriverManager.getConnection(DB_URL);
+			ps = conn.prepareStatement("SELECT clientTags FROM Users WHERE clientID=?");
+			
+	        
+	    	ps.setString(1, clientID);
+			rs = ps.executeQuery();
+			if (rs.next()) {
+				tags = rs.getString("clientTags").split(":");
+	
 			}
 		}catch (ClassNotFoundException e){
 			e.getStackTrace();
@@ -113,12 +162,134 @@ public  class UserDataManager {
 	
 			try {
 				conn.close();
-			} catch (SQLException e) { /* Do nothing */ }			
-		}
-		return user;
+			} catch (SQLException e) { /* Do nothing */ }
+	}
+
+		return tags;
+
 	}
 	
-	//makeDj changes the status of the user to true if it's a DJ
+	
+	
+	//add bookmarks
+	public static void addClientBookmark(String clientID, String channelClientID){
+		
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+
+		String bm ="";
+		
+		try {
+			
+			Class.forName(JDBC_DRIVER);
+			conn = DriverManager.getConnection(DB_URL);
+			ps = conn.prepareStatement("SELECT clientBookmarks FROM Users WHERE clientID=?");
+			
+	        
+	    	ps.setString(1, clientID);
+			rs = ps.executeQuery();
+			if (rs.next()) {
+				bm = rs.getString("clientBookmarks");
+	
+			}
+			
+			bm+=channelClientID+":";
+		}catch (ClassNotFoundException e){
+			e.getStackTrace();
+	
+		}
+		catch (SQLException e){
+			e.getStackTrace();
+		}  finally {
+			try {
+				ps.close();
+			} catch (SQLException e) { /* Do nothing */ }
+
+			try {
+				conn.close();
+			} catch (SQLException e) { /* Do nothing */ }
+		}
+		
+		addBookmarksHelper( clientID,  bm);
+	
+	}
+	//add bookmarks helper method
+	public static void addBookmarksHelper(String clientID, String bm){
+		//System.out.println("UserDataManager : "+user.getIfCLientIsDJ());
+		Connection conn = null;
+		PreparedStatement ps = null;
+		try {
+			Class.forName(JDBC_DRIVER);
+			conn = DriverManager.getConnection(DB_URL);
+			ps = conn.prepareStatement("UPDATE Users SET clientBookmarks='"+bm +"' WHERE clientID=?");
+			ps.setString(1, clientID);
+			int result = ps.executeUpdate();
+			if (result == 0) {
+				System.out.println("UserDataManager.createUser|user: clientID " 
+						+ clientID + " not in database, couldn't set as dj.");
+			}
+			
+		} catch (SQLException sqle) {
+			System.out.println ("UserDataManager SQLException: " + sqle.getMessage());
+		} catch (ClassNotFoundException cnfe) {
+			System.out.println ("UserDataManager ClassNotFoundException: " + cnfe.getMessage());
+		} finally {
+			try {
+				ps.close();
+			} catch (SQLException e) { /* Do nothing */ }
+			try {
+				conn.close();
+			} catch (SQLException e) { /* Do nothing */ }
+		}
+	}
+	
+	
+	
+	public static String[] getClientBookmarks(String clientID){
+		
+		User user = null;
+		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+
+		String[] bm = new String[50];;
+		
+		try {
+			
+			Class.forName(JDBC_DRIVER);
+			conn = DriverManager.getConnection(DB_URL);
+			ps = conn.prepareStatement("SELECT clientBookmarks FROM Users WHERE clientID=?");
+			
+	        
+	    	ps.setString(1, clientID);
+			rs = ps.executeQuery();
+			if (rs.next()) {
+				bm = rs.getString("clientBookmarks").split(":");
+	
+			}
+		}catch (ClassNotFoundException e){
+			e.getStackTrace();
+	
+		}
+		catch (SQLException e){
+			e.getStackTrace();
+		}
+		finally {
+		try {
+			ps.close();
+		} catch (SQLException e) { /* Do nothing */ }
+
+		try {
+			conn.close();
+		} catch (SQLException e) { /* Do nothing */ }
+	}
+
+		return bm;
+		
+	}
+	
+	
 	public static void makeDJ(String clientID){
 		
 		//System.out.println("UserDataManager.createUser| " );

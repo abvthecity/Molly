@@ -16,7 +16,6 @@ import org.json.JSONObject;
 
 
 import classes.User;
-import sql.TagDataManager;
 import sql.UserDataManager;
 
 /**
@@ -69,9 +68,35 @@ public class UserServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		String clientID=request.getParameter("clientID"); 
-		
-		UserDataManager.createUser(clientID, false);
-		
+//		String[] tags =request.getParameterValues("tags");
+		//String isDJ = request.getParameter("isDJ"); 
+		//String email = request.getParameter("email");
+		String[] clientBookmarks = new String[50];
+		String[] tags = new String[5];
+		UserDataManager.createUser(clientID, tags, false, clientBookmarks);
+//		HashSet<String> channelsBasedOnTags = new HashSet<String>();
+//		for(int i = 0; i<5; i++){
+//			String [] arr = TagDataManager.getChannelsForTag(tags[i]);
+//			for(int j = 0; j < arr.length; j++){
+//				channelsBasedOnTags.add(arr[j]);
+//			}
+//		}
+//		String jsonObject = "{\"clientID\": \""+clientID+"\", \"channelsBasedOnTags\": [";
+//		Iterator<String> it = channelsBasedOnTags.iterator();
+//		int count = 0;
+//		while(it.hasNext()){
+//			count++;
+//			jsonObject += "{\""+it.next()+"\"}";
+//			if(count != channelsBasedOnTags.size()){
+//				jsonObject += ", ";
+//			}
+//			
+//		}
+//		jsonObject += "]}";
+//		response.setContentType("application/json");
+//		PrintWriter out = response.getWriter(); 
+//		out.print(jsonObject);
+//		out.flush();
 		
 		//insert in sql
 	}
