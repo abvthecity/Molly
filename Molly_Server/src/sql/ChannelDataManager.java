@@ -37,7 +37,7 @@ public class ChannelDataManager {
 	   
 			Class.forName(JDBC_DRIVER);
 			conn = DriverManager.getConnection(DB_URL);
-			ps = conn.prepareStatement("INSERT INTO Channel (clientID,channelName, channelTags, subscribersNum, likesNum ) VALUES (?, ?, ?, ?, ?);");
+			ps = conn.prepareStatement("INSERT INTO Channel (clientID, channelName, channelTags, subscribersNum, likesNum ) VALUES (?, ?, ?, ?, ?);");
 			ps.setString(1, clientId);
 			ps.setString(2, channelName);
 			ps.setString(3, tags);
@@ -58,7 +58,7 @@ public class ChannelDataManager {
 	
 	
 	
-public static void updateChannelName(String clientID, String channelName){
+public static void updateCahnnelName(String clientID, String channelName){
 	Connection conn = null;
 	PreparedStatement ps = null;
 	ResultSet rs = null;
@@ -66,7 +66,7 @@ public static void updateChannelName(String clientID, String channelName){
 	try {
 		Class.forName(JDBC_DRIVER);
 		conn = DriverManager.getConnection(DB_URL);
-		ps = conn.prepareStatement("UPDATE Channels SET channelname='"+ channelName+"' WHERE clientID=?");
+		ps = conn.prepareStatement("UPDATE Channel SET channelName='"+ channelName+"' WHERE clientID=?");
 		ps.setString(1, clientID);
 		int result = ps.executeUpdate();
 		if (result == 0) {
