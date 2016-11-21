@@ -27,7 +27,7 @@ const NowPlayingCardView = props => (
       <View style={{ marginTop: -constants.unit * 8 }}>
         <Text style={{ fontSize: 13, fontWeight: '500', color: '#B2B2B2', textAlign: 'right' }}>
           {/* {props.nowPlaying.duration} */}
-          {millisToMinutesAndSeconds(props.nowPlaying.duration)}
+          {millisToMinutesAndSeconds(props.nowPlaying.currentTime)}
         </Text>
         <ProgressViewIOS
           progress={props.nowPlaying.currentTime / props.nowPlaying.duration}

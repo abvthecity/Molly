@@ -232,12 +232,15 @@ class SpotifyAPI: RCTEventEmitter, SPTAudioStreamingDelegate {
   // Play Music Given URI
   @objc(playURI:timeToStart:callback:)
   func playURI(songURI: String!, timeToStart: NSNumber!, callback: @escaping RCTResponseSenderBlock) {
+    // timeToStart is in milliseconds
+    let time: TimeInterval = timeToStart.doubleValue * 0.001
+    
     // play music through streaming controller
     if (self.player == nil) {
       callback([NSNull()])
     } else {
 
-      self.player.playSpotifyURI(songURI, startingWith: 0, startingWithPosition: timeToStart as TimeInterval, callback: { (error) in
+      self.player.playSpotifyURI(songURI, startingWith: 0, startingWithPosition: time, callback: { (error) in
         // handle error
         if error == nil {
           callback([NSNull()])
@@ -246,6 +249,21 @@ class SpotifyAPI: RCTEventEmitter, SPTAudioStreamingDelegate {
         }
       })
 
+    }
+  }
+  
+  @objc(seekTo:callback:)
+  func seekTo(time_ms: NSNumber!, callback: @escaping RCTResponseSenderBlock) {
+    if (self.player == nil) {
+      callback([NSNull()])
+    } else {
+      self.player.seek(to: (time_ms.doubleValue * 0.001) as TimeInterval, callback: {(error) in
+        if (error == nil) {
+          callback([NSNull()])
+        } else {
+          callback([error!])
+        }
+      })
     }
   }
 

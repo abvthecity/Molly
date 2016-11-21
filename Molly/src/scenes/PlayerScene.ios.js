@@ -17,6 +17,12 @@ import Listitem from '../components/Listitem'
 import BlurNavigator from '../components/BlurNavigator'
 import BlurStatusBar from '../components/BlurStatusBar'
 
+function millisToMinutesAndSeconds(millis) {
+  var minutes = Math.floor(millis / 60000);
+  var seconds = ((millis % 60000) / 1000).toFixed(0);
+  return minutes + ":" + (seconds < 10 ? '0' : '') + seconds;
+}
+
 class PlayerScene extends Component {
 
   constructor(props) {
@@ -25,67 +31,153 @@ class PlayerScene extends Component {
     this.state = {
       muted: false,
       animatedValue: new Animated.Value(1),
-      title: 'Rachit\'s Bangers',
-      host: 'Rachit Kataria',
+
+      title: null,
+      host: null,
+      favorite: false,
       nowPlaying: {
         album_cover: null,
         song_title: null,
         artist_name: null,
         uri: null,
-        progress: 0
-      }
+        startTime: 0,
+        currentTime: 0,
+        duration: 1
+      },
+      upNext: []
     }
 
     this.toggleMute = this.toggleMute.bind(this)
+    this._updateTimer = this._updateTimer.bind(this)
   }
 
   componentWillMount() {
-    let _this = this
+    this._fetchCurrentInfo()
 
-    let trackId = '2Im64pIz6m0EJKdUe6eZ8r'
-
-
-    fetch(constants.spotify + 'tracks/' + trackId)
-      .then(res => res.json())
-      .then(res => {
-        Image.prefetch(res.album.images[0].url)
-        return {
-          album_cover: { uri: res.album.images[0].url },
-          song_title: res.name,
-          artist_name: res.artists.map(d => d.name).join(', '),
-          uri: res.uri,
-          progress: 0,
-        }
-      })
-      .then(nowPlaying => {
-        _this.setState({ nowPlaying }, () => {
-          SpotifyAPI.playURI(nowPlaying.uri, 0, error => {
-            if (error === null) _this._setPlaying()
-            else console.error(error)
-          })
-        })
-      })
-      .catch(console.error)
-
-      this.props.socket.addListener("player", this._onMessage)
+    this.props.socket.addListener("player", this._onMessage)
   }
 
   componentWillUnmount() {
     SpotifyAPI.setIsPlaying(false, error => {
-      if (error != null) console.error(error)
+      if (error) console.log(error)
     })
 
     this.props.socket.removeListener("player")
+
+    // remove timers
+    if (this.t) clearInterval(this.t)
+  }
+
+  componentWillReceiveProps(newProps) {
+    this._fetchCurrentInfo()
+  }
+
+  componentWillUpdate(newProps, newState) {
+    if (newState.nowPlaying.uri && (this.state.nowPlaying.uri !== newState.nowPlaying.uri || this.state.nowPlaying.startTime != newState.nowPlaying.startTime)) {
+      SpotifyAPI.playURI(newState.nowPlaying.uri, newState.nowPlaying.currentTime, error => {
+        if (error) console.log(error)
+      })
+    }
   }
 
   _onMessage() {
     // something happnes here
   }
 
+  _fetchCurrentInfo() {
+    let _this = this
+
+    console.log(this.props.channelId)
+
+    if (!this.props.channelId) return;
+
+    fetch(constants.server + 'channel?id=' + this.props.channelId)
+      .then(res => res.json())
+      .then(res => {
+        let date = new Date();
+        let offset = date.getTime() - res.time
+
+        _this.setState({
+          title: res.name,
+          host: res.id,
+          favorite: res.favorite,
+          nowPlaying: {
+            album_cover: null,
+            song_title: null,
+            artist_name: null,
+            uri: res.currentTrackURI,
+            startTime: date.getTime() - res.currentTrackTime - offset,
+            currentTime: res.currentTrackTime + offset,
+            duration: res.currentTrackDuration
+          },
+          upNext: res.upNext
+        }, _this._updateTimer)
+
+        // fetch current song info
+        fetch(constants.spotify + 'tracks/' + res.currentTrackURI.split(':').pop())
+          .then(data => data.json())
+          .then(data => {
+            Image.prefetch(data.album.images[0].url)
+            let nowPlaying = this.state.nowPlaying
+            Object.assign(nowPlaying, {
+              album_cover: { uri: data.album.images[0].url },
+              song_title: data.name,
+              artist_name: data.artists.map(d => d.name).join(', '),
+            })
+            return nowPlaying
+          })
+          .then(nowPlaying => _this.setState({ nowPlaying }))
+
+        // fetch upNext
+        fetch(constants.spotify + 'tracks/?ids=' + res.upNext.map(d => d.split(':').pop()).join(','))
+          .then(data => data.json())
+          .then(data => {
+            let tracksObj = {}
+            for (let track of data.tracks) {
+              tracksObj[track.uri] = track
+              Image.prefetch(track.album.images[0].url)
+            }
+
+            return this.state.upNext.map(uri => tracksObj[uri].name)
+          })
+          .then(queue => _this.setState({ upNext: queue }))
+
+      })
+      .catch(console.log)
+  }
+
+  _updateTimer() {
+    let _this = this;
+    clearInterval(this.t)
+
+    this.t = setInterval(() => {
+
+      let nowPlaying = _this.state.nowPlaying;
+      let date = new Date();
+      nowPlaying.currentTime = date.getTime() - nowPlaying.startTime
+
+      _this.setState({ nowPlaying })
+
+      if (nowPlaying.currentTime >= nowPlaying.duration - 100) {
+        _this._fetchCurrentInfo()
+      }
+
+    }, 100);
+  }
+
   _setPlaying() {
-    SpotifyAPI.setIsPlaying(!this.state.muted, error => {
-      if (error !== null) console.error(error)
-    })
+    if (this.state.muted) {
+      SpotifyAPI.setIsPlaying(false, error => {
+        if (error) return console.log(error)
+      })
+    } else {
+      SpotifyAPI.seekTo(this.state.nowPlaying.currentTime, error => {
+        if (error) return console.log(error)
+        SpotifyAPI.setIsPlaying(true, error => {
+          if (error) return console.log(error)
+        })
+      })
+    }
   }
 
   toggleMute() {
@@ -131,13 +223,13 @@ class PlayerScene extends Component {
               fontSize: 20,
               fontWeight: '900',
               textAlign: 'center'
-            }}>TopKek</Text>
+            }}>{this.state.title}</Text>
             <Text style={{
               color: 'white',
               fontSize: 11,
               fontWeight: '500',
               textAlign: 'center'
-            }}>Rachit Kataria</Text>
+            }}>{this.state.host}</Text>
           </BlurNavigator>
           <ScrollView style={{ paddingTop: 64 }}>
             <Card shadow={true} style={[{ zIndex: 2}, { flex: 1 }]}>
@@ -170,20 +262,20 @@ class PlayerScene extends Component {
 
                 <View style={{ marginTop: constants.unit * 6 }}>
                   <ProgressViewIOS
-                    progress={0.8}
+                    progress={this.state.nowPlaying.currentTime / this.state.nowPlaying.duration}
                     progressTintColor={'#FF2D55'}
                     trackTintColor={'rgba(0, 0, 0, 0.15)'}
                     style={{ height: 3, borderRadius: 1.5, overflow: 'hidden'}}
                   />
                   <View style={styles.under_bar}>
-                    <Text style={styles.under_bar_text}>0:15</Text>
-                    <Text style={styles.under_bar_text}>-2:53</Text>
+                    <Text style={styles.under_bar_text}>{millisToMinutesAndSeconds(this.state.nowPlaying.currentTime)}</Text>
+                    <Text style={styles.under_bar_text}>-{millisToMinutesAndSeconds(this.state.nowPlaying.duration - this.state.nowPlaying.currentTime)}</Text>
                   </View>
                 </View>
 
                 <View style={{ marginVertical: constants.unit * 2 }}>
-                  <Text style={{ fontSize: 24, fontWeight: '800', color: 'black', letterSpacing: -1}}>Lost in the World</Text>
-                  <Text style={{ fontSize: 24, fontWeight: '500', color: '#808080', letterSpacing: -1}}>Kanye West</Text>
+                  <Text style={{ fontSize: 24, fontWeight: '800', color: 'black', letterSpacing: -1}}>{this.state.nowPlaying.song_title}</Text>
+                  <Text style={{ fontSize: 24, fontWeight: '500', color: '#808080', letterSpacing: -1}}>{this.state.nowPlaying.artist_name}</Text>
                 </View>
               </View>
 
@@ -195,7 +287,7 @@ class PlayerScene extends Component {
                 </View>
 
                 <View>
-                  {['SONG 1', 'SONG 2'].map((item, i) => (
+                  {this.state.upNext.map((item, i) => (
                     <Listitem key={i}
                       indent={constants.unit * 4}
                       backgroundColor="transparent"

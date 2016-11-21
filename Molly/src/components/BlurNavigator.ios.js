@@ -68,7 +68,7 @@ const BlurNavigator = props => {
       <View style={{ flex: 1 }}>{leftButton()}</View>
 
       {/* CENTER CONTENT */}
-      <View style={{ flex: 1 }}>{props.children}</View>
+      <View style={{ flex: 2 }}>{props.children}</View>
 
       {/* RIGHT BUTTON */}
       <View style={{ flex: 1 }}>{rightButton()}</View>

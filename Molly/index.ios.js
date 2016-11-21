@@ -24,6 +24,7 @@ const PlayerModal = props => (
     <PlayerScene
       goBack={props.close}
       clientId={props.clientId}
+      channelId={props.channelId}
       socket={props.socket} />
   </Modal>
 )
@@ -40,6 +41,7 @@ class Routes extends Component {
     loginAttempted: false,
     isLoggedIn: false,
     showPlayer: false,
+    playerChannelId: null,
     clientId: null
   }
 
@@ -99,7 +101,10 @@ class Routes extends Component {
   }
 
   _openPlayer = (channelId: string = null) => {
-    this.setState({ showPlayer: true })
+    this.setState({
+      showPlayer: true,
+      playerChannelId: channelId
+    })
   }
 
   _closePlayer = () => {
@@ -160,6 +165,7 @@ class Routes extends Component {
             socket={socket} />
           <PlayerModal clientId={this.state.clientId}
             visible={this.state.showPlayer}
+            channelId={this.state.playerChannelId}
             close={this._closePlayer}
             socket={socket} />
         </View>
@@ -173,6 +179,7 @@ class Routes extends Component {
             socket={socket} />
           <PlayerModal clientId={this.state.clientId}
             visible={this.state.showPlayer}
+            channelId={this.state.playerChannelId}
             close={this._closePlayer}
             socket={socket} />
         </View>

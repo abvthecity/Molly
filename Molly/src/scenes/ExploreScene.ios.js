@@ -41,6 +41,7 @@ class ExploreScene extends Component {
 
   componentWillUnmount() {
     this.props.socket.removeListener("explore")
+    clearInterval(this.t)
   }
 
   _onMessage() {
@@ -65,6 +66,8 @@ class ExploreScene extends Component {
       .then(res => res.json())
       .then(res => {
 
+        let date = new Date();
+
         let cards = res.channels.map(d => ({
           title: d.name,
           host: d.id,
@@ -72,6 +75,7 @@ class ExploreScene extends Component {
           channelId: d.id,
           nowPlaying: {
             uri: d.currentTrackURI,
+            startTime: date.getTime() - d.currentTrackTime,
             currentTime: d.currentTrackTime,
             duration: d.currentTrackDuration
           }
@@ -101,6 +105,7 @@ class ExploreScene extends Component {
                 song_title: tracksObj[card.nowPlaying.uri].name,
                 artist_name: tracksObj[card.nowPlaying.uri].artists.map(d => d.name).join(', '),
                 uri: card.nowPlaying.uri,
+                startTime: card.nowPlaying.startTime,
                 currentTime: card.nowPlaying.currentTime,
                 duration: card.nowPlaying.duration
               }
@@ -114,18 +119,18 @@ class ExploreScene extends Component {
 
   _updateTimer() {
     let _this = this;
+    clearInterval(this.t)
 
-    function start() {
+    this.t = setInterval(() => {
       let cards = _this.state.cards.map(card => {
         let newCard = card;
-        newCard.nowPlaying.currentTime += 200;
+        let date = new Date();
+        newCard.nowPlaying.currentTime = date.getTime() - newCard.nowPlaying.startTime;
         return newCard;
       })
-      _this.setState({ cards })
-      var t = setTimeout(start, 200);
-    }
 
-    start();
+      _this.setState({ cards })
+    }, 100);
   }
 
   render() {
@@ -194,6 +199,7 @@ class ExploreScene extends Component {
             let channelCard = <ChannelCard
               title={card.title}
               host={card.host}
+              favorite={card.favorite}
               nowPlaying={card.nowPlaying}
               border={true}
             />
