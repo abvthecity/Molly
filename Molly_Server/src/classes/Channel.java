@@ -113,6 +113,7 @@ public class Channel extends Thread{
         songPlaylist.remove(0);
         if(!songPlaylist.isEmpty()) {
             startTime = System.nanoTime();
+            totalTimePlayed = 0;
         }
     }
     
@@ -128,7 +129,9 @@ public class Channel extends Thread{
     public Integer getCurrentSongPosition() {
         // TODO Auto-generated method stub
         endTime = System.nanoTime();
-        return endTime - startTime;
+        totalTimePlayed += (endTime - startTime);
+
+        return totalTimePlayed;
     }
     
     public void setCurrentSongPosition(Integer i){
