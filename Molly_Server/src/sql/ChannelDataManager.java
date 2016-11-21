@@ -58,7 +58,7 @@ public class ChannelDataManager {
 	
 	
 	
-public static void updateCahnnelName(String clientID, String channelName){
+public static void updateChannelName(String clientID, String channelName){
 	Connection conn = null;
 	PreparedStatement ps = null;
 	ResultSet rs = null;
