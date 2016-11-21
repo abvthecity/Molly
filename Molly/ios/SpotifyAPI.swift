@@ -28,9 +28,20 @@ class SpotifyAPI: RCTEventEmitter, SPTAudioStreamingDelegate {
   // Get User's Spotify Client ID / Username
   @objc(getClientID:)
   func getClientID(callback: @escaping RCTResponseSenderBlock) {
-    // if session is exists and is valid, return user spotify ID
+    // if session exists and is valid, return user spotify ID
     if self.auth.session != nil && self.auth.session.isValid() {
       callback([NSNull(), self.auth.session.canonicalUsername])
+    } else {
+      callback([NSNull(), NSNull()])
+    }
+  }
+  
+  // Get User's Access Token
+  @objc(getAccessToken:)
+  func getAccessToken(callback: @escaping RCTResponseSenderBlock) {
+    // if session exists and is valid, return user access token
+    if self.auth.session != nil && self.auth.session.isValid() {
+      callback([NSNull(), self.auth.session.accessToken])
     } else {
       callback([NSNull(), NSNull()])
     }

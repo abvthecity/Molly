@@ -11,6 +11,7 @@
 @interface RCT_EXTERN_MODULE(SpotifyAPI, NSObject)
 
 RCT_EXTERN_METHOD(getClientID:(RCTResponseSenderBlock)callback)
+RCT_EXTERN_METHOD(getAccessToken:(RCTResponseSenderBlock)callback)
 RCT_EXTERN_METHOD(authenticate:(NSString *)clientID redirectURL:(NSString *)redirectURL)
 RCT_EXTERN_METHOD(userHasAuth:(RCTResponseSenderBlock)callback)
 
