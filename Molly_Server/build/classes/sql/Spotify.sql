@@ -22,5 +22,7 @@ CREATE TABLE `SpotifyDJ`.`Favorite` (
 `favoriteID` INT NOT NULL AUTO_INCREMENT,
 `clientID` VARCHAR(100) NOT NULL,
 `channelID` VARCHAR(100) NULL,
-PRIMARY KEY (`favoriteID`)
+PRIMARY KEY (`favoriteID`),
+FOREIGN KEY (`clientID`) REFERENCES `Users`(`clientID`),
+FOREIGN KEY (`channelID`) REFERENCES `Users`(`clientID`)
 );
