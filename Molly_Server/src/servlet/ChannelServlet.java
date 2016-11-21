@@ -35,14 +35,7 @@ public class ChannelServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		//response.getWriter().append("Served at: ").append(request.getContextPath());
 		String clientID = request.getParameter("clientID");
-//		Channel c = ChannelDataManager.getChannel(clientID);
-		//String clientID = c.getClientID();
-//		String[] channelTags = c.getChannelTags();
-//		Integer numChannelSubscribers = c.getNumChannelSubscribers();
-//		Integer numChannelLikes = c.getNumChannelLikes();
 		response.setContentType("application/json");
 		PrintWriter out = response.getWriter();      
 		
@@ -70,17 +63,9 @@ public class ChannelServlet extends HttpServlet {
 		// TODO Auto-generated method stub
 		
 		String clientID=request.getParameter("clientID"); 
-//		String[] channelTags =request.getParameterValues("channelTags");
-		//String isDJ = request.getParameter("isDJ"); 
-		//String email = request.getParameter("email");
-		//String[] clientBookmarks = new String[50];
-//		ChannelDataManager.createChannel(clientID, channelTags, 0, 0);
-		Channel c = new Channel(clientID);//insert in sql
+		Channel c = new Channel(clientID);
 		UserDataManager.makeDJ(clientID); //update in sql
-//		for(int i=0; i<5; i++){
-//			TagDataManager.addChannelForTag(channelTags[i], clientID);
-//		}
-		//startThread(clientID);
+
 	}
 
 }

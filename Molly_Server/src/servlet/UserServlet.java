@@ -43,8 +43,6 @@ public class UserServlet extends HttpServlet {
 		// Get the printwriter object from response to write the required json object to the output stream
 				String clientID = request.getParameter("clientID");
 				User u = UserDataManager.getUser(clientID); //search in sql
-				String [] tags = u.getClientTags();
-				String [] bookmarks = u.getClientBookmarks();
 				String b;
 				if(u.getIfCLientIsDJ()){
 					b = "true";
@@ -52,21 +50,7 @@ public class UserServlet extends HttpServlet {
 				else{
 					b = "false";
 				}
-				String jsonObject = "{\"clientID\": \""+clientID+"\", \"clientTags\": [";
-				for(int i = 0; i< tags.length; i++){
-					jsonObject += "{\""+tags[i]+"\"}";
-					if(i!=4){
-						jsonObject += ", ";
-					}
-				}
-				jsonObject += "], \"isClientDJ\": \""+b+"\", \"clientBookmarks\": [";
-				for(int i = 0; i< bookmarks.length; i++){
-					jsonObject += "{\""+bookmarks[i]+"\"}";
-					if(i!=bookmarks.length - 1){
-						jsonObject += ", ";
-					}
-				}
-				jsonObject += "]}";
+				String jsonObject = "{\"clientID\": \""+clientID+"\", \"isClientDJ\": \""+b+"\"}";
 				response.setContentType("application/json");
 				PrintWriter out = response.getWriter();      
 				
@@ -85,34 +69,9 @@ public class UserServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		String clientID=request.getParameter("clientID"); 
-		String[] tags =request.getParameterValues("tags");
-		//String isDJ = request.getParameter("isDJ"); 
-		//String email = request.getParameter("email");
-		String[] clientBookmarks = new String[50];
-		UserDataManager.createUser(clientID, tags, false, clientBookmarks);
-		HashSet<String> channelsBasedOnTags = new HashSet<String>();
-		for(int i = 0; i<5; i++){
-			String [] arr = TagDataManager.getChannelsForTag(tags[i]);
-			for(int j = 0; j < arr.length; j++){
-				channelsBasedOnTags.add(arr[j]);
-			}
-		}
-		String jsonObject = "{\"clientID\": \""+clientID+"\", \"channelsBasedOnTags\": [";
-		Iterator<String> it = channelsBasedOnTags.iterator();
-		int count = 0;
-		while(it.hasNext()){
-			count++;
-			jsonObject += "{\""+it.next()+"\"}";
-			if(count != channelsBasedOnTags.size()){
-				jsonObject += ", ";
-			}
-			
-		}
-		jsonObject += "]}";
-		response.setContentType("application/json");
-		PrintWriter out = response.getWriter(); 
-		out.print(jsonObject);
-		out.flush();
+		
+		UserDataManager.createUser(clientID, false);
+		
 		
 		//insert in sql
 	}
