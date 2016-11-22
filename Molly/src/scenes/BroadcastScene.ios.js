@@ -3,7 +3,7 @@ import {
   View, ScrollView,
   Image, Text, Switch,
   TouchableOpacity, TouchableHighlight,
-  StyleSheet, AlertIOS
+  StyleSheet, AlertIOS, Modal, TextInput
 } from 'react-native'
 
 import LinearGradient from 'react-native-linear-gradient'
@@ -12,6 +12,8 @@ import Swiper from 'react-native-swiper'
 
 import constants from '../common/constants'
 import BlurNavigator from '../components/BlurNavigator'
+import BlurStatusBar from '../components/BlurStatusBar'
+import Listitem from '../components/Listitem'
 
 import Card from '../components/Card'
 import NowPlayingCardView from '../components/NowPlayingCardView'
@@ -25,25 +27,8 @@ class BroadcastScene extends Component {
 
     this._renderSwitch = this._renderSwitch.bind(this)
     this._renderHeader = this._renderHeader.bind(this)
-
-    this.state = {
-      nowPlaying: {
-        album_cover: null,
-        song_title: 'Murder',
-        artist_name: 'Lido',
-        neutral: 'rgb(84, 107, 132)',
-        accent: 'rgb(207, 66, 65)',
-        progress: 0.7
-      },
-      playingNext: {
-        album_cover: null,
-        song_title: 'Murder',
-        artist_name: 'Lido',
-        neutral: 'rgb(84, 107, 132)',
-        accent: 'rgb(207, 66, 65)',
-        progress: 0.7
-      }
-    }
+    this._onMessage = this._onMessage.bind(this)
+    this._updateChannel = this._updateChannel.bind(this)
   }
 
   static propTypes = {
@@ -52,19 +37,73 @@ class BroadcastScene extends Component {
 
   state = {
     live: false,
-    width: 375
+    width: 375,
+    searchSpotify: false,
+    query: '',
+    spotifySearchResults: [],
+
+    hostName: null,
+    channelName: null,
+    nowPlaying: null,
+    playingNext: null,
+    upNext: [],
   }
 
   componentWillMount() {
+    let _this = this;
     this.props.socket.addListener("broadcast", this._onMessage)
+
+    fetch(constants.server + 'channel?id=' + this.props.clientId)
+      .then(res => res.json())
+      .then(res => {
+        if ('error' in res) {
+          return fetch(constants.server + 'channel', {
+            method: 'POST',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              host: this.props.clientId,
+              name: this.props.clientId + '\'s Channel',
+          })}).then(data => data.json())
+          .then(data => data.channel)
+        } else return res
+      }).then(this._updateChannel)
+      .catch(console.error);
+  }
+
+  _updateChannel(channelData) {
+    let _this = this;
+    this.setState({
+      channelName: channelData.name,
+      hostName: channelData.hostId,
+      upNext: channelData.upNext,
+      live: channelData.isLive,
+    }, () => {
+      fetch(constants.spotify + 'tracks/?ids=' + this.state.upNext.map(d => d.split(':').pop()).join(','))
+        .then(res => res.json())
+        .then(data => {
+          let tracksObj = {}
+          for (let track of data.tracks) {
+            tracksObj[track.uri] = track
+            Image.prefetch(track.album.images[0].url)
+          }
+          return this.state.upNext.map(trackId => tracksObj[trackId])
+        }).then(upNext => _this.setState({ upNext }))
+        .catch(console.error)
+    })
   }
 
   componentWillUnmount() {
     this.props.socket.removeListener("broadcast")
   }
 
-  _onMessage() {
-    // something happnes here
+  _onMessage(e) {
+    console.log(e)
+    if (e.emit == 'channel_updated' && e.channel == this.props.clientId) {
+      this._updateChannel(e.data)
+    }
   }
 
   _renderSwitch() {
@@ -108,21 +147,144 @@ class BroadcastScene extends Component {
     }
   }
 
+  _spotifySearch() {
+    let _this = this;
+    fetch('https://api.spotify.com/v1/search?type=track&limit=50&q=' + this.state.query.replace(' ', '+'))
+      .then(res => res.json())
+      .then(res => {
+        if ('error' in res) {
+          _this.setState({ spotifySearchResults: [] })
+        } else {
+          _this.setState({ spotifySearchResults: res.tracks.items })
+        }
+      })
+      .catch(console.error)
+  }
+
+  _addSong(track) {
+    this.props.socket.send(JSON.stringify({
+      emit: 'addTrackToQueue',
+      channel: this.props.clientId,
+      track: {
+        uri: track.uri,
+        duration: track.duration_ms
+      }
+    }))
+
+    this.setState({
+      searchSpotify: false,
+      query: '',
+      spotifySearchResults: [],
+    })
+  }
+
   render() {
 
     const header = (
       <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>
         <View>
-          <Text style={{ color: 'white', fontSize: 24, fontWeight: '900' }}>Rachit's Bangers</Text>
-          <Text style={{ color: 'white', fontSize: 18, fontWeight: '500' }}>Rachit Kataria</Text>
+          <Text style={{ color: 'white', fontSize: 24, fontWeight: '900' }}>{this.state.channelName}</Text>
+          <Text style={{ color: 'white', fontSize: 18, fontWeight: '500' }}>{this.state.hostName}</Text>
         </View>
         <Button tintColor="white">Edit</Button>
       </View>
     )
 
+    const controls = () => {
+      if (this.state.nowPlaying != null) {
+        return (<Swiper
+          style={{ overflow: 'visible', marginLeft: constants.unit * 2, marginTop: constants.unit * 3 }}
+          loop={false}
+          height={118 + constants.unit * 6}
+          width={this.state.width - constants.unit * 5}
+          showsPagination={false}
+          showsButtons={false}
+          onMomentumScrollEnd={this._onMomentumScrollEnd}
+          >
+
+          <Card style={{ flex: 1, marginRight: constants.unit * 3 }}>
+            <NowPlayingCardView nowPlaying={this.state.nowPlaying} />
+          </Card>
+
+          <Card style={{ flex: 1, marginRight: constants.unit * 3 }}>
+            <NowPlayingCardView nowPlaying={this.state.playingNext} />
+          </Card>
+
+        </Swiper>)
+      }
+    }
+
+    const modal = (
+      <Modal supportedOrientations={['portrait']}
+        transparent={false}
+        animationType={'slide'}
+        visible={this.state.searchSpotify}
+        onShow={() => {
+          this.refs.search.focus()
+        }}
+        >
+        <BlurStatusBar light={false} />
+        <BlurView
+          blurType={'xlight'}
+          blurAmount={27.18}
+          style={{
+            padding: constants.unit * 2,
+            paddingTop: constants.unit * 2 + 20,
+            flexDirection: 'row',
+            justifyContent: 'flex-end',
+            alignItems: 'center',
+            borderWidth: StyleSheet.hairlineWidth,
+            borderColor: '#C8C7CC'
+          }}>
+          <TextInput ref="search"
+            placeholder="Search tracks on Spotify"
+            value={this.state.query}
+            style={{
+              flex: 1,
+              paddingHorizontal: constants.unit * 2,
+              height: 28,
+              fontSize: 14,
+              backgroundColor: '#E5E5E5',
+              borderRadius: constants.borderRadiusSm,
+            }}
+            onChangeText={query => {
+              this.setState({ query }, this._spotifySearch)
+            }}/>
+            <Button style={{
+              marginLeft: constants.unit * 2
+            }} onPress={() => {
+              this.setState({ searchSpotify: false })
+            }}>Cancel</Button>
+        </BlurView>
+        <ScrollView style={{ flex: 1 }}>
+          <View>
+            {this.state.spotifySearchResults.map((track, i) => (
+              <Listitem key={i} indent={constants.unit * 4} onPress={() => this._addSong(track)}>
+                <View style={{ flex: 1, flexDirection: 'row' }}>
+                  <Image source={{ uri: track.album.images[1].url }} style={{
+                    width: 50, height: 50,
+                    borderRadius: constants.borderRadiusSm,
+                    borderWidth: StyleSheet.hairlineWidth,
+                    borderColor: 'rgba(0, 0, 0, 0.1)',
+                    marginRight: constants.unit * 2
+                  }} />
+                  <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-between'}}>
+                    <Text style={{ fontWeight: '500', fontSize: 17 }} tail="tail" numberOfLines={1}>{track.name}</Text>
+                    <Text style={{ fontWeight: '400', fontSize: 12 }} tail="tail" numberOfLines={1}>{track.artists.map(d => d.name).join(', ')}</Text>
+                    <Text style={{ fontWeight: '400', fontSize: 12 }} tail="tail" numberOfLines={1}>{track.album.name}</Text>
+                  </View>
+                </View>
+              </Listitem>
+            ))}
+          </View>
+        </ScrollView>
+      </Modal>
+    )
+
     return (
       <LinearGradient colors={['#FF6E88', '#BF2993']} {...this.props} style={[{ flex: 1 }, this.props.style]}>
         {this._renderHeader()}
+        {modal}
         <ScrollView style={{
           backgroundColor: 'transparent',
           paddingTop: constants.navpad
@@ -134,33 +296,42 @@ class BroadcastScene extends Component {
           }}>
           <View style={{ padding: constants.unit * 4 }}>{header}</View>
 
-          <Swiper
-            style={{ overflow: 'visible', marginLeft: constants.unit * 2 }}
-            loop={false}
-            height={118 + constants.unit * 6}
-            width={this.state.width - constants.unit * 5}
-            showsPagination={false}
-            showsButtons={false}
-            onMomentumScrollEnd={this._onMomentumScrollEnd}
-            >
+          {controls()}
 
-            <Card style={{ flex: 1, marginRight: constants.unit * 3 }}>
-              <NowPlayingCardView nowPlaying={this.state.nowPlaying} />
-            </Card>
-
-            <Card style={{ flex: 1, marginRight: constants.unit * 3 }}>
-              <NowPlayingCardView nowPlaying={this.state.playingNext} />
-            </Card>
-
-          </Swiper>
-
-          <View style={{ marginTop: constants.unit * 3, paddingHorizontal: constants.unit * 4 }}>
+          <View style={{ paddingHorizontal: constants.unit * 4 }}>
             <Card style={{ marginBottom: constants.unit * 3 }} shadow={false}>
               <View style={{ padding: constants.unit * 3 }}>
                 <HeadingWithAction
                   title="Up Next"
                   buttonTitle="Add song"
+                  onButtonPress={() => this.setState({ searchSpotify: true })}
                 />
+              </View>
+              <View>
+                {this.state.upNext.map((track, i) => {
+                  if (typeof track !== 'string') {
+                    return (
+                      <Listitem key={i} indent={constants.unit * 4}>
+                        <View style={{ flex: 1, flexDirection: 'row' }}>
+                          <Image source={{ uri: track.album.images[1].url }} style={{
+                            width: 50, height: 50,
+                            borderRadius: constants.borderRadiusSm,
+                            borderWidth: StyleSheet.hairlineWidth,
+                            borderColor: 'rgba(0, 0, 0, 0.1)',
+                            marginRight: constants.unit * 2
+                          }} />
+                          <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'space-between'}}>
+                            <Text style={{ fontWeight: '500', fontSize: 17 }} tail="tail" numberOfLines={1}>{track.name}</Text>
+                            <Text style={{ fontWeight: '400', fontSize: 12 }} tail="tail" numberOfLines={1}>{track.artists.map(d => d.name).join(', ')}</Text>
+                            <Text style={{ fontWeight: '400', fontSize: 12 }} tail="tail" numberOfLines={1}>{track.album.name}</Text>
+                          </View>
+                        </View>
+                      </Listitem>
+                    )
+                  } else {
+                    return <Listitem key={i} indent={constants.unit * 4} backgroundColor="transparent"/>
+                  }
+                })}
               </View>
             </Card>
           </View>

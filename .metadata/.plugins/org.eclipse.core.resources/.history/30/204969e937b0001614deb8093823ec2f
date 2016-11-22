@@ -1,0 +1,107 @@
+package classes;
+
+import java.util.ArrayList;
+import java.util.Queue;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+public class Channel extends Thread {
+
+//    public String channelId;
+//  public String[] channelTags;
+//  public int numChannelSubscribers;
+//  public int numChannelLikes;
+//  public boolean isLive;
+	
+    public String clientId;
+    public String channelName;
+    public ArrayList<Song> songQueue;
+    public boolean isLive;
+
+    public String currentSongURI;
+    public long startTime; // SYSTEM milliseconds
+    public long currentTime; // ms, percent of duration
+    public long duration; // ms, duration given by spotify
+
+    public Channel(String clientId, String channelName){
+    	this.clientId = clientId;
+        this.channelName = channelName;
+        this.songQueue = new ArrayList<Song>();
+        startTime = 0;
+        isLive = false;
+    }
+
+    @Override
+    public void run() {
+    	while (true) {
+    		if (isLive && currentSongURI != null) {
+    			currentTime = System.currentTimeMillis() - startTime;
+    			if (currentTime > duration) {
+    				startNextSong();
+    			}
+    		}
+    	}
+    }
+    
+    public void startNextSong() {
+    	if (isLive) {
+    		if (songQueue.size() > 0) {
+	    		Song nextSong = songQueue.get(0);
+	    		songQueue.remove(0);
+	    		currentSongURI = nextSong.getSongURI();
+	    		duration = nextSong.getDuration();
+	    		currentTime = 0;
+	    		startTime = System.currentTimeMillis();
+    		} else {
+    			currentSongURI = null;
+    			duration = 0;
+    			currentTime = 0;
+    			startTime = 0;
+    		}
+    	}
+    }
+    
+    public void addSong(Song song) {
+    	songQueue.add(song);
+    }
+
+    public void setChannelName(String channelName) {
+        this.channelName = channelName;
+    }
+    
+    public void goLive() {
+    	isLive = true;
+    	this.start();
+    }
+    
+    public void goOffline() {
+    	isLive = false;
+    	this.interrupt();
+    }
+    
+    public JSONObject toJSON() {
+		JSONObject obj = new JSONObject();
+		
+		obj.put("id", clientId);
+		obj.put("name", channelName);
+		obj.put("favorite", false);
+		obj.put("isLive", isLive);
+		
+		if (isLive) {	
+			obj.put("currentTrackURI", currentSongURI);
+			obj.put("currentTrackTime", currentTime);
+			obj.put("currentTrackDuration", duration);
+		}
+		
+		JSONArray songQueueJSON = new JSONArray();
+		for (Song s : songQueue) {
+			songQueue.add(s);
+		}
+    	
+    	obj.put("upNext", songQueueJSON);
+    	
+    	return obj;
+    }
+
+}

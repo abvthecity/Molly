@@ -18,9 +18,10 @@ class socket {
     this.ws.onmessage = e => {
       // a message was received
       console.log(e.data)
+      let parsedJSON = JSON.parse(e.data)
 
-      for (let listener in Object.keys(this.listeners)) {
-        this.listeners[listener](e)
+      for (let listener of Object.keys(this.listeners)) {
+        if (this.listeners[listener]) this.listeners[listener](parsedJSON)
       }
     };
 

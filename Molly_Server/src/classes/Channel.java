@@ -2,145 +2,135 @@ package classes;
 
 import java.util.ArrayList;
 import java.util.Queue;
-import server.MainServer;
 
-public class Channel extends Thread{
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
-    //public int channelID;
-    public String clientID;
-    public String channelName;
-    public String[] channelTags;
-    public int numChannelSubscribers;
-    public int numChannelLikes;
-    public boolean isLive;
-    public ArrayList<Song> songPlaylist;
+import server.ChannelManager;
 
-    public String currentSongURI;
-    private Integer currentSongPosition;
-    private double startTime;
-    private double endTime;
-    private double totalTimePlayed;
+public class Channel extends Thread {
 
-    public Channel( String clientId, String channelName){
-        //this.channelID = channelId;
-        this.clientID = clientId;
-        this.channelName = channelName;
-        //		this.channelTags = channelTags;
-        //		this.numChannelSubscribers = numSubscribers;
-        //		this.numChannelLikes = numlikes;
-        this.isLive = false;
-        this.songPlaylist = new ArrayList<Song>();
-        MainServer.channelIDToChannelMap.put(clientID, this);
-        startTime = 0;
-        totalTimePlayed = 0;
-        endTime = 0;
-    }
+//    public String channelId;
+//  public String[] channelTags;
+//  public int numChannelSubscribers;
+//  public int numChannelLikes;
+//  public boolean isLive;
 
-    public String getClientID(){
-        return clientID;
+public String channelId;
+public String clientId;
+public String channelName;
+public ArrayList<Song> songQueue;
+public boolean isLive;
 
-    }
-    public boolean isLive() {
-        return isLive;
-    }
+public String currentSongURI;
+public long startTime;     // SYSTEM milliseconds
+public long currentTime;     // ms, percent of duration
+public long duration;     // ms, duration given by spotify
 
-    public void setLive(boolean isLive) {
-        this.isLive = isLive;
+public Channel(String clientId, String channelId, String channelName){
+	this.clientId = clientId;
+	this.channelId = channelId;
+	this.channelName = channelName;
+	this.songQueue = new ArrayList<Song>();
+	startTime = 0;
+	isLive = false;
+}
 
-        if(isLive) {
-            this.start();
-        }
-    }
+@Override
+public void run() {
+	while (true) {
+		if (isLive && currentSongURI != null) {
+			currentTime = System.currentTimeMillis() - startTime;
+			if (currentTime > duration) {
+				startNextSong();
+			}
+		}
+	}
+}
 
-    public String[] getChannelTags(){
-        return channelTags;
+public void startNextSong() {
+	if (isLive) {
+		if (songQueue.size() > 0) {
+			Song nextSong = songQueue.get(0);
+			songQueue.remove(0);
+			currentSongURI = nextSong.getSongURI();
+			duration = nextSong.getDuration();
+			currentTime = 0;
+			startTime = System.currentTimeMillis();
+		} else {
+			currentSongURI = null;
+			duration = 0;
+			currentTime = 0;
+			startTime = 0;
+		}
+	}
+}
 
-    }
-    public int getNumChannelSubscribers(){
-        return numChannelSubscribers;
+public void addSong(Song song) {
+	songQueue.add(song);
+	emitUpdate();
+}
 
-    }
-    public int getNumChannelLikes(){
-        return numChannelLikes;
+public void setChannelName(String channelName) {
+	this.channelName = channelName;
+}
 
-    }
+public void goLive() {
+	isLive = true;
+	if (!this.isAlive()) {
+		this.start();
+	}
+}
 
-    public void setClientID(String clientId){
-        this.clientID = clientId;
+public void goOffline() {
+	isLive = false;
+	if (this.isAlive()) {
+		this.interrupt();
+	}
+}
 
-    }
-    public void addChannelTags(String [] tags){
-        this.channelTags = tags;
+public void emitUpdate() {
+	JSONObject msg = new JSONObject();
+	msg.put("emit", "channel_updated");
+	msg.put("channel", this.channelId);
+	msg.put("data", this.toJSON());
+	ChannelManager.ws.sendAll(msg);
+}
 
-    }
-    public void setNumChannelSubscribers(int numSubscribes){
-        this.numChannelSubscribers=numSubscribes;
+public JSONObject toJSON() {
+	/* {
+	    id: string,
+	    hostId: string,
+	    name: string,
+	    favorite: bool,
+	    isLive: bool,
+	    currentTrackURI: string, (optional)
+	    currentTrackTime: number, (optional)
+	    currentTrackDuration: number (optional)
+	   } */
 
-    }
-    public void setNumChannelLikes(int numLikes){
-        this.numChannelLikes = numLikes;
+	JSONObject obj = new JSONObject();
 
-    }
+	obj.put("id", channelId);
+	obj.put("hostId", clientId);
+	obj.put("name", channelName);
+	obj.put("favorite", false);
+	obj.put("isLive", isLive);
 
-    public void addSongToPlaylist(Song song){
-        songPlaylist.add(song);
-    }
+	if (isLive) {
+		obj.put("currentTrackURI", currentSongURI);
+		obj.put("currentTrackTime", currentTime);
+		obj.put("currentTrackDuration", duration);
+	}
 
-    public ArrayList<String> getSongURIPlaylist(){
-        ArrayList<String> arrSongURI = new ArrayList<String>();
-        System.out.println(songPlaylist.size());
-        for(int i = 0; i <songPlaylist.size(); i++){
+	JSONArray songQueueJSON = new JSONArray();
+	for (Song s : songQueue) {
+		songQueueJSON.add(s.getSongURI());
+	}
 
-            arrSongURI.add(songPlaylist.get(i).getSongURI());
-        }
-        return arrSongURI;
-    }
+	obj.put("upNext", songQueueJSON);
 
-    public void setSongURIPlaylist(ArrayList<Song> songs){
-       this.songPlaylist = songs;
-    }
+	return obj;
+}
 
-    public String getChannelName() {
-        return channelName;
-    }
-
-    public void setChannelName(String channelName) {
-        this.channelName = channelName;
-    }
-
-    public String getCurrentSongURI() {
-        return songPlaylist.get(0).getSongURI();
-    }
-
-    public void setCurrentSongURI(String currentSong) {
-        this.currentSongURI = currentSong;
-    }
-
-    public void changeSong() {
-        songPlaylist.remove(0);
-        if(!songPlaylist.isEmpty()) {
-            startTime = System.nanoTime();
-            totalTimePlayed = 0;
-        }
-    }
-
-    public void playSong() {
-        startTime = System.nanoTime();
-    }
-
-    public void pauseSong() {
-        endTime = System.nanoTime();
-        totalTimePlayed += endTime - startTime;
-    }
-
-    public Integer getCurrentSongPosition() {
-        // TODO Auto-generated method stub
-        endTime = System.nanoTime();
-        totalTimePlayed += (endTime - startTime);
-        return 0;
-    }
-
-    public void setCurrentSongPosition(Integer i){
-        this.currentSongPosition = i;
-    }
 }

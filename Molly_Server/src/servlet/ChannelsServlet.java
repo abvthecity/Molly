@@ -2,6 +2,7 @@ package servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Map.Entry;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -12,51 +13,39 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import classes.Channel;
+import server.ChannelManager;
+
 @WebServlet("/channels")
 public class ChannelsServlet extends HttpServlet {
-	private static final long serialVersionUID = 1L;
-       
-    public ChannelsServlet() {
-        super();
-        // TODO Auto-generated constructor stub
-    }
+private static final long serialVersionUID = 1L;
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    	String favorites = request.getParameter("favorites");
-    	boolean favs = (favorites != null && !favorites.isEmpty() && favorites.equals("true"));
-		response.setContentType("application/json");
-		PrintWriter out = response.getWriter();  
-		
-		/*
-	      {channels: [{
-	        id: string
-	        name: string,
-	        favorite: bool,
-	        currentTrackURI: string,
-	        currentTrackTime: number,
-	        currentTrackDuration: number
-	      }]}
-	    */
-		
-		
-		JSONArray channels = new JSONArray();
-		for (int i = 0; i < 5; i ++) {
-			JSONObject obj = new JSONObject();
-			obj.put("id", "clientId");
-			obj.put("name", "Random Radio");
-			obj.put("favorite", favs);
-			obj.put("currentTrackURI", "spotify:track:4VqPOruhp5EdPBeR92t6lQ");
-			obj.put("currentTrackTime", 100);
-			obj.put("currentTrackDuration", 204053);
-			
-			channels.add(obj);
-		}
-		
-		JSONObject jsonObj = new JSONObject();
-		jsonObj.put("channels", channels);
-		
-		out.print(jsonObj.toString());
-		out.flush();
+public ChannelsServlet() {
+	super();
+	// TODO Auto-generated constructor stub
+}
+
+protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	// set headers
+	response.setContentType("application/json");
+	PrintWriter out = response.getWriter();
+
+	// get parameters
+//      String channelId = request.getParameter("id");
+
+	JSONArray channelsArr = new JSONArray();
+	for (Channel ch : ChannelManager.channels.values()) {
+//		if (ch.isLive) {
+			channelsArr.add(ch.toJSON());
+//		}
 	}
+
+	JSONObject obj = new JSONObject();
+	obj.put("count", ChannelManager.size());
+	obj.put("channels", channelsArr);
+
+	out.print(obj.toJSONString());
+	out.flush();
+}
 
 }

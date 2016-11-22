@@ -3,10 +3,12 @@ package server;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import server.MainServer;
 
 import javax.annotation.Resource;
 import javax.websocket.EncodeException;
@@ -16,6 +18,11 @@ import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import classes.Song;
 import encoders.SongChangedMessageEncoder;
@@ -30,108 +37,64 @@ import messages.Message;
 import messages.SongChangedMessage;
 import messages.UpdatePlaylistMessage;
 
-
-
-@ServerEndpoint(value = "/ws", decoders = { MessageDecoder.class }, encoders = { SongChangedMessageEncoder.class })
+@ServerEndpoint(value = "/ws")
 //@ServerEndpoint("/ws")
 
 public class WebsocketEndpoint {
-	private ArrayList<String> channelIDs = new ArrayList<String>();
-	private Map<String, ArrayList<String>> DJToListenersMap = new HashMap<String, ArrayList<String>>();
-	private static final Logger logger = Logger.getLogger("BotEndpoint");
+private static final Logger logger = Logger.getLogger("BotEndpoint");
+private static final JSONParser parser = new JSONParser();
+private final Set<Session> sessions = new HashSet<>();
 
-	@OnOpen
-	public void openConnection(Session session) {
-		logger.log(Level.INFO, "Connection opened." + session.getId());
+public WebsocketEndpoint() {
+	ChannelManager.ws = this;
+	SocketListener.ws = this;
+}
+
+@OnOpen
+public void openConnection(Session session) {
+	logger.log(Level.INFO, "Connection opened. (id:)" + session.getId());
+	sessions.add(session);
+}
+
+@OnClose
+public void close(Session session) {
+	logger.log(Level.INFO, "Connection closed. (id:)" + session.getId());
+	sessions.remove(session);
+}
+
+@OnError
+public void onError(Throwable error) {
+	error.printStackTrace();
+}
+
+@OnMessage
+public void onMessage(String message, Session session) {
+
+	JSONObject msg;
+
+	try {
+		msg = (JSONObject) parser.parse(message);
+		SocketListener.route(msg);
+	} catch (ParseException e) {
+		e.printStackTrace();
+		return;
 	}
 
-    @OnClose
-    public void close(Session session) {
-    }
+	logger.log(Level.INFO, "Received: {0}", msg.toJSONString());
+}
 
-    @OnError
-    public void onError(Throwable error) {
-    }
-
-	@OnMessage
-	public void message(Session session, Message msg) {
-		logger.log(Level.INFO, "Received: {0}", msg.toString());
-		if (msg instanceof AddSongToPlaylistMessage) {
-			AddSongToPlaylistMessage addSongToPlaylistMessage = (AddSongToPlaylistMessage) msg;
-			String songURI  = addSongToPlaylistMessage.getSongURI();
-			Integer songDuration = addSongToPlaylistMessage.getSongDuration();
-			MainServer.channelIDToChannelMap.get(addSongToPlaylistMessage.getClientID()).addSongToPlaylist(new Song(songURI, songDuration));
-			ArrayList<String> newPlaylist = MainServer.channelIDToChannelMap.get(addSongToPlaylistMessage.getClientID()).getSongURIPlaylist();
-			//channelIDToChannelMap.get(addSongToPlaylistMessage.getClientID()).addSongToPlaylist(addSongToPlaylistMessage.getSongURI());
-			//sendAll(); send update playlist message to everyone
-			sendAll(session, new UpdatePlaylistMessage(null, "false", "false", addSongToPlaylistMessage.getClientID(), newPlaylist ));
-		}else if(msg instanceof ChangeSongMessage){
-			ChangeSongMessage changeSongMessage = (ChangeSongMessage) msg;
-			MainServer.channelIDToChannelMap.get(changeSongMessage.getClientID()).changeSong();
-			ArrayList<String> newPlaylist = MainServer.channelIDToChannelMap.get(changeSongMessage.getClientID()).getSongURIPlaylist();
-			sendAll(session, new UpdatePlaylistMessage(null, "false", "false", changeSongMessage.getClientID(), newPlaylist ));
-		}else if(msg instanceof GoLiveMessage){
-			GoLiveMessage goLiveMessage = (GoLiveMessage) msg;
-			MainServer.channelIDToChannelMap.get(goLiveMessage.getClientID()).setLive(true);
-			channelIDs.add(goLiveMessage.getClientID());
-			ArrayList<String> newArray = new ArrayList<String>();
-			DJToListenersMap.put(goLiveMessage.getClientID(), newArray);
-		}else if(msg instanceof GoOfflineMessage){
-			GoOfflineMessage goOfflineMessage = (GoOfflineMessage) msg;
-			MainServer.channelIDToChannelMap.get(goOfflineMessage.getClientID()).setLive(false);
-			channelIDs.remove(goOfflineMessage.getClientID());
-			DJToListenersMap.remove(goOfflineMessage.getClientID());
-			sendAll(session, new DJIsOfflineMessage(null, "false", "false", null, goOfflineMessage.getClientID()));
-		}else if(msg instanceof JoinChannelMessage){
-			JoinChannelMessage joinChannelMessage = (JoinChannelMessage) msg;
-
-			if(MainServer.channelIDToChannelMap.get(joinChannelMessage.getDJIWishToJoin()).isLive()){
-				DJToListenersMap.get(joinChannelMessage.getDJIWishToJoin()).add(joinChannelMessage.getClientID());
-				sendAll(session, new JoinedChannelSuccessfullyMessage(null, "false", "false", joinChannelMessage.getDJIWishToJoin(),
-						MainServer.channelIDToChannelMap.get(joinChannelMessage.getDJIWishToJoin()).getSongURIPlaylist(),
-						MainServer.channelIDToChannelMap.get(joinChannelMessage.getDJIWishToJoin()).getCurrentSongURI(),
-						MainServer.channelIDToChannelMap.get(joinChannelMessage.getDJIWishToJoin()).getCurrentSongPosition()));
-			}
-			else{
-				sendAll(session, new DJIsOfflineMessage(null, "false", "false", joinChannelMessage.getCurrDJ(), joinChannelMessage.getDJIWishToJoin()));
-			}
-
-		}else if(msg instanceof SongChangedMessage){
-			SongChangedMessage songChangedMessage = (SongChangedMessage) msg;
-
-		}
+public void sendAll(JSONObject msg) {
+	for (Session e : sessions) {
+		sendToSession(e, msg);
 	}
+}
 
-	public void sendAll(Session session, Message msg) {
-		try {
-			for (Session sess : session.getOpenSessions()) {
-				if (sess.isOpen())
-					sess.getBasicRemote().sendObject(msg);
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (EncodeException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
+private void sendToSession(Session session, JSONObject message) {
+	try {
+		session.getBasicRemote().sendText(message.toJSONString());
+	} catch (IOException ex) {
+		sessions.remove(session);
+		logger.log(Level.SEVERE, ex.getMessage(), ex.getStackTrace());
 	}
-
-	public void addClientIDToDJArray(String channelID) {
-		channelIDs.add(channelID);
-	}
-
-	public void removeClientIDToDJArray(String channelID) {
-		channelIDs.remove(channelID);
-	}
-
-	public void addListenerToMapForDJ(String clientID, String channelID) {
-		ArrayList<String> listenerArrayList = DJToListenersMap.get(channelID);
-		listenerArrayList.add(clientID);
-	}
-
-	public void removeListenerFromMapForDJ(String clientID, String channelID) {
-		ArrayList<String> listenerArrayList = DJToListenersMap.get(channelID);
-		listenerArrayList.remove(clientID);
-	}
+}
 }

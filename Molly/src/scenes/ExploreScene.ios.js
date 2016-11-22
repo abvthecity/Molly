@@ -66,11 +66,13 @@ class ExploreScene extends Component {
       .then(res => res.json())
       .then(res => {
 
+        console.log(res);
+
         let date = new Date();
 
         let cards = res.channels.map(d => ({
           title: d.name,
-          host: d.id,
+          host: d.hostId,
           favorite: d.favorite,
           channelId: d.id,
           nowPlaying: {
@@ -84,11 +86,17 @@ class ExploreScene extends Component {
         // just to get things started, in case spotify is slow
         _this.setState({ cards })
 
+        if (res.channels.length == 0) {
+          return cards;
+        }
+
         // grab trackdata from spotify
-        let tracks = res.channels.map(d => d.currentTrackURI.split(':').pop())
+        let tracks = res.channels.filter(d => d.currentTrackURI).map(d => d.currentTrackURI.split(':').pop())
         return fetch(constants.spotify + 'tracks/?ids=' + tracks.join(','))
           .then(data => data.json())
           .then(data => {
+            if ('error' in data) return cards
+
             let tracksObj = {}
             for (let track of data.tracks) {
               tracksObj[track.uri] = track
@@ -172,9 +180,9 @@ class ExploreScene extends Component {
     </LinearGradient>)
 
     return (
-      <View {...this.props}>
+      <View {...this.props} style={{ flex: 1 }}>
         <BlurStatusBar light={false} />
-        <ScrollView canCancelContentTouches={true} contentInset={{ top: 20, bottom: 20 }} contentOffset={{ y: -20 }}>
+        <ScrollView style={{ flex: 1 }} canCancelContentTouches={true} contentInset={{ top: 20, bottom: 20 }} contentOffset={{ y: -20 }}>
 
           {/* SECTION 1 */}
           <LinearGradient colors={['white', '#F0F0F0']} style={{ backgroundColor: 'transparent', padding: constants.unit * 4 }}>

@@ -1,0 +1,12 @@
+package server;
+
+import org.json.simple.JSONObject;
+
+public class SocketListener {
+public static WebsocketEndpoint ws;
+
+public static void route(JSONObject msg) {
+	
+}
+
+}

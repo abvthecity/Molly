@@ -1,0 +1,24 @@
+package server;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import classes.Channel;
+
+public class ChannelManager {
+	public static Map<String, Channel> channels = new HashMap<String, Channel>();
+	
+	public static void startChannel(String channelId, String channelName) {
+		
+	}
+	
+	public static void stopChannel(String channelId) {
+		
+	}
+	
+	public static void channelExists()
+//	public static void startThread(String channelID){
+//		channelIDToChannelMap.get(channelID).start();
+//	}
+
+}

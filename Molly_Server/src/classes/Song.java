@@ -1,28 +1,22 @@
 package classes;
 
+import org.json.simple.JSONObject;
+
 public class Song {
-	private String songURI;
-	private Integer songDuration;
-	
-	public Song(String songURI, Integer songDuration){
-		this.songURI = songURI;
-		this.songDuration = songDuration;
-	}
+private String songURI;
+private long duration;
 
-	public String getSongURI() {
-		return songURI;
-	}
+public Song(String songURI, long duration){
+	this.songURI = songURI;
+	this.duration = duration;
+}
 
-	public void setSongURI(String songURI) {
-		this.songURI = songURI;
-	}
+public String getSongURI() {
+	return songURI;
+}
 
-	public Integer getSongDuration() {
-		return songDuration;
-	}
-
-	public void setSongDuration(Integer songDuration) {
-		this.songDuration = songDuration;
-	}
+public long getDuration() {
+	return duration;
+}
 
 }

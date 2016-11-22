@@ -49,15 +49,28 @@ class FavoritesScene extends Component {
   _getChannels() {
     let _this = this;
 
+    /*
+      {channels: [{
+        id: string
+        name: string,
+        favorite: bool,
+        currentTrackURI: string,
+        currentTrackTime: number,
+        currentTrackDuration: number
+      }]}
+    */
+
     fetch(constants.server + '/channels?favorites=true')
       .then(res => res.json())
       .then(res => {
+
+        console.log(res);
 
         let date = new Date();
 
         let cards = res.channels.map(d => ({
           title: d.name,
-          host: d.id,
+          host: d.hostId,
           favorite: d.favorite,
           channelId: d.id,
           nowPlaying: {
@@ -70,6 +83,10 @@ class FavoritesScene extends Component {
 
         // just to get things started, in case spotify is slow
         _this.setState({ cards })
+
+        if (res.channels.length == 0) {
+          return cards;
+        }
 
         // grab trackdata from spotify
         let tracks = res.channels.map(d => d.currentTrackURI.split(':').pop())

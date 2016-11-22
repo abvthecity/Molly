@@ -80,8 +80,8 @@ class PlayerScene extends Component {
     }
   }
 
-  _onMessage() {
-    // something happnes here
+  _onMessage(e) {
+    console.log(e)
   }
 
   _fetchCurrentInfo() {
@@ -137,7 +137,6 @@ class PlayerScene extends Component {
               tracksObj[track.uri] = track
               Image.prefetch(track.album.images[0].url)
             }
-
             return this.state.upNext.map(uri => tracksObj[uri].name)
           })
           .then(queue => _this.setState({ upNext: queue }))
