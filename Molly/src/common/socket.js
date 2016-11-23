@@ -17,8 +17,8 @@ class socket {
 
     this.ws.onmessage = e => {
       // a message was received
-      console.log(e.data)
       let parsedJSON = JSON.parse(e.data)
+      parsedJSON.timeStamp = e.timeStamp
 
       for (let listener of Object.keys(this.listeners)) {
         if (this.listeners[listener]) this.listeners[listener](parsedJSON)

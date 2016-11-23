@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component jdk="Java SE 8 [1.8.0_102]">
+	<exclude-output/>
+	<contentEntry url="file://$MODULE_DIR$"/>
+	<lib name="java-json.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/Molly_Server/java-json.jar!/"/>
+	</lib>
+	<lib name="mysql-connector-java-5.1.40-bin.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/Molly_Server/mysql-connector-java-5.1.40-bin.jar!/"/>
+	</lib>
+	<lib name="json-simple-1.1.1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/Molly_Server/json-simple-1.1.1.jar!/"/>
+	</lib>
+</component>

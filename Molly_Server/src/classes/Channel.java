@@ -34,69 +34,65 @@ public Channel(String clientId, String channelId, String channelName){
 	this.channelId = channelId;
 	this.channelName = channelName;
 	this.songQueue = new ArrayList<Song>();
-	startTime = 0;
+	startTime = System.currentTimeMillis();
 	isLive = false;
 }
 
 private class ChannelRunner extends Thread {
+	private boolean alive = true;
 	@Override
 	public void run() {
-		while (isLive && this.isAlive()) {
+		while (alive) {
 			lock.lock();
-			if (currentSongURI != null && currentTime < duration) {
-				currentTime = System.currentTimeMillis() - startTime;
-			} else startNextSong();
+			try {
+				if (currentSongURI != null && currentTime < duration) {
+					currentTime = System.currentTimeMillis() - startTime;
+				} else {
+					while (songQueue.isEmpty()) {
+						System.out.println("Waiting for more songs in queue.");
+						queueNotEmpty.await();
+					}
+					startNextSong();
+				}
+
+			} catch (InterruptedException e) {
+				// todo
+			}
 			lock.unlock();
 		}
+	}
+	public void end() {
+		alive = false;
 	}
 }
 
 public void startNextSong() {
 	lock.lock();
-	try {
-		// check if queue empty
-		while (songQueue.isEmpty() && isLive) {
-			currentSongURI = null;
-			duration = 0;
-			currentTime = 0;
-			startTime = 0;
-			emitUpdate();
-			System.out.println("Waiting for more songs in queue.");
-			queueNotEmpty.await();
-		}
-		
-		if (!songQueue.isEmpty()) {
-			// after queue isn't empty...
-			Song nextSong = songQueue.get(0);
-			songQueue.remove(0);
-			// replace current song
-			currentSongURI = nextSong.getSongURI();
-			duration = nextSong.getDuration();
-			currentTime = 0;
-			startTime = System.currentTimeMillis();
-			System.out.println("START SONG " + currentSongURI);
-			emitUpdate();
-		} else {
-			currentSongURI = null;
-			duration = 0;
-			currentTime = 0;
-			startTime = 0;
-			emitUpdate();
-		}
-		
-	} catch (InterruptedException e) {
-//		e.printStackTrace();
-		System.out.println("Thread for channel '" + channelId + "' was interrupted.");
-	} finally {
-		lock.unlock();
+	if (songQueue.isEmpty()) {
+		currentSongURI = null;
+		duration = 0;
+		currentTime = 0;
+		startTime = 0;
+	} else {
+		// after queue isn't empty...
+		Song nextSong = songQueue.get(0);
+		songQueue.remove(0);
+		// replace current song
+		currentSongURI = nextSong.getSongURI();
+		duration = nextSong.getDuration();
+		currentTime = 0;
+		startTime = System.currentTimeMillis();
+		System.out.println("START SONG " + currentSongURI);
 	}
+	emitUpdate();
+	lock.unlock();
 }
 
 public void addSong(Song song) {
 	lock.lock();
 	songQueue.add(song);
-	queueNotEmpty.signal();
 	emitUpdate();
+	queueNotEmpty.signal();
 	lock.unlock();
 }
 
@@ -118,8 +114,8 @@ public void setChannelName(String channelName) {
 public void goLive() {
 	lock.lock();
 	// stop current runner
-	if (runner != null && runner.isAlive()) {
-		runner.interrupt();
+	if (runner != null) {
+		runner.end();
 	}
 	// update current song
 	if (currentSongURI != null) {
@@ -138,12 +134,12 @@ public void goOffline() {
 	lock.lock();
 	System.out.println("Going offline...");
 	isLive = false;
-	if (runner != null && runner.isAlive()) {
-		runner.interrupt();
+	if (runner != null) {
+		runner.end();
 		runner = null;
-		queueNotEmpty.signal();
-		emitUpdate();
 	}
+	emitUpdate();
+	queueNotEmpty.signal();
 	lock.unlock();
 }
 

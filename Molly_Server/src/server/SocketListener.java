@@ -11,7 +11,7 @@ import classes.Song;
 public class SocketListener {
 public static WebsocketEndpoint ws;
 
-public static synchronized void route(JSONObject msg) {
+public static void route(JSONObject msg) {
 	System.out.println(msg.toJSONString());
 	String emit = (String) msg.get("emit");
 	

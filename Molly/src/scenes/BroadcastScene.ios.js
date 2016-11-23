@@ -52,6 +52,7 @@ class BroadcastScene extends Component {
     nowPlaying:  null,
     playingNext: null,
     upNext:      [],
+    serverOffset: 0,
 
     searchSpotify: false, // open up the module
   }
@@ -85,20 +86,19 @@ class BroadcastScene extends Component {
   _updateChannel(channelData) {
     let _this = this
 
-    console.log(channelData.upNext)
-
     let newState = {
       channelName: channelData.name,
       hostName: channelData.hostId,
       upNext: channelData.upNext,
       live: channelData.isLive,
+      serverOffset: channelData.serverOffset,
     }
 
     if (channelData.currentTrackURI) {
       newState.nowPlaying = {
         uri: channelData.currentTrackURI,
-        startTime: channelData.currentTrackStartTime,
-        currentTime: channelData.currentTrackTime,
+        startTime: channelData.currentTrackStartTime + channelData.serverOffset,
+        currentTime: channelData.currentTrackTime - channelData.serverOffset,
         duration: channelData.currentTrackDuration,
         album_cover: null,
         song_title: null,
@@ -175,6 +175,7 @@ class BroadcastScene extends Component {
   _onMessage(e) {
     // console.log(e)
     if (e.emit == 'channel_updated' && e.channel == this.props.clientId) {
+      Object.assign(e.data, { serverOffset: this.state.serverOffset })
       this._updateChannel(e.data)
     }
   }

@@ -7,6 +7,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -44,6 +46,7 @@ public class WebsocketEndpoint {
 private static final Logger logger = Logger.getLogger("BotEndpoint");
 private static final JSONParser parser = new JSONParser();
 private final Set<Session> sessions = new HashSet<>();
+private static Lock lock = new ReentrantLock();
 
 public WebsocketEndpoint() {
 	ChannelManager.ws = this;
@@ -52,14 +55,18 @@ public WebsocketEndpoint() {
 
 @OnOpen
 public void openConnection(Session session) {
+	lock.lock();
 	logger.log(Level.INFO, "Connection opened. (id:)" + session.getId());
 	sessions.add(session);
+	lock.unlock();
 }
 
 @OnClose
 public void close(Session session) {
+	lock.lock();
 	logger.log(Level.INFO, "Connection closed. (id:)" + session.getId());
 	sessions.remove(session);
+	lock.unlock();
 }
 
 @OnError
@@ -68,25 +75,28 @@ public void onError(Throwable error) {
 }
 
 @OnMessage
-public synchronized void onMessage(String message, Session session) {
+public void onMessage(String message, Session session) {
 
 	JSONObject msg;
 
+	lock.lock();
 	try {
 		msg = (JSONObject) parser.parse(message);
+		logger.log(Level.INFO, "Received: {0}", msg.toJSONString());
 		SocketListener.route(msg);
 	} catch (ParseException e) {
 		e.printStackTrace();
 		return;
 	}
-
-	logger.log(Level.INFO, "Received: {0}", msg.toJSONString());
+	lock.unlock();
 }
 
-public synchronized void sendAll(JSONObject msg) {
+public void sendAll(JSONObject msg) {
+	lock.lock();
 	for (Session e : sessions) {
 		sendToSession(e, msg);
 	}
+	lock.unlock();
 }
 
 private void sendToSession(Session session, JSONObject message) {
