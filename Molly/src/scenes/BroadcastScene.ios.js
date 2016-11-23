@@ -36,6 +36,7 @@ class BroadcastScene extends Component {
     this._onMessage =     this._onMessage.bind(this)
     this._updateChannel = this._updateChannel.bind(this)
     this._flipSwitch =    this._flipSwitch.bind(this)
+    this._onMomentumScrollEnd = this._onMomentumScrollEnd.bind(this)
   }
 
   static propTypes = {
@@ -84,6 +85,8 @@ class BroadcastScene extends Component {
   _updateChannel(channelData) {
     let _this = this
 
+    console.log(channelData.upNext)
+
     let newState = {
       channelName: channelData.name,
       hostName: channelData.hostId,
@@ -95,13 +98,14 @@ class BroadcastScene extends Component {
       newState.nowPlaying = {
         uri: channelData.currentTrackURI,
         startTime: channelData.currentTrackStartTime,
-        startTime: channelData.currentTrackTime,
+        currentTime: channelData.currentTrackTime,
         duration: channelData.currentTrackDuration,
         album_cover: null,
         song_title: null,
         artist_name: null,
       }
     } else newState.nowPlaying = null
+    newState.playingNext = null
 
     this.setState(newState, () => {
       // start the clock
@@ -139,7 +143,7 @@ class BroadcastScene extends Component {
           return {
             uri: data.uri,
             startTime: 0,
-            startTime: 0,
+            currentTime: 0,
             duration: data.duration_ms,
             album_cover: { uri: data.album.images[1].url },
             song_title: data.name,
@@ -238,7 +242,7 @@ class BroadcastScene extends Component {
     if (state.index !== 0) {
       context.scrollBy(-state.index, false)
 
-      // skip that fucking song
+      this.props.socket.send(JSON.stringify({ emit: 'skipSongInChannel', channel: this.props.clientId }))
     }
   }
 
@@ -279,17 +283,15 @@ class BroadcastScene extends Component {
 
     const controls = () => {
       if (this.state.nowPlaying) {
-        console.log(this.state.nowPlaying)
+
         return (<Swiper
           style={{ overflow: 'visible', marginLeft: constants.unit * 2, marginTop: constants.unit * 3 }}
           loop={false}
-          height={118 + constants.unit * 6}
+          height={-1}
           width={this.state.width - constants.unit * 5}
           showsPagination={false}
           showsButtons={false}
-          onMomentumScrollEnd={this._onMomentumScrollEnd}
-          >
-
+          onMomentumScrollEnd={this._onMomentumScrollEnd}>
           <Card style={{ flex: 1, marginRight: constants.unit * 3 }}>
             <NowPlayingCardView nowPlaying={this.state.nowPlaying} />
           </Card>
@@ -298,10 +300,20 @@ class BroadcastScene extends Component {
               return (<Card style={{ flex: 1, marginRight: constants.unit * 3 }}>
                 <NowPlayingCardView nowPlaying={this.state.playingNext} />
               </Card>)
+            } else {
+              return (<View style={{
+                flex: 1,
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'flex-start',
+                paddingHorizontal: constants.unit * 3
+              }}>
+                <Text style={{ color: 'white', fontSize: 18, fontWeight: '700', opacity: 0.7 }}>Skip</Text>
+              </View>)
             }
           })()}
-
         </Swiper>)
+
       }
     }
 
@@ -324,7 +336,7 @@ class BroadcastScene extends Component {
           }}>
 
           {/* HEADING */}
-          <View style={{ padding: constants.unit * 4 }}>
+          <View style={{ margin: constants.unit * 4, marginBottom: 0 }}>
             <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>
               <View>
                 <Text style={{ color: 'white', fontSize: 24, fontWeight: '900' }}>{this.state.channelName}</Text>
@@ -338,35 +350,44 @@ class BroadcastScene extends Component {
           {controls()}
 
           {/* UP NEXT */}
-          <View style={{ paddingHorizontal: constants.unit * 4 }}>
-            <Card style={{ marginBottom: constants.unit * 3 }} shadow={false}>
+          <Card style={{ marginHorizontal: constants.unit * 4, marginVertical: constants.unit * 3 }}>
+            <Listitem indent={constants.unit * 3} backgroundColor="transparent">
               <HeadingWithAction
                 title="Up Next"
                 buttonTitle="Add song"
-                style={{ padding: constants.unit * 3 }}
                 onButtonPress={() => this.setState({ searchSpotify: true })} />
-              <View>
-                {this.state.upNext.map((track, i) => {
-                  if (typeof track !== 'string') {
-                    let swipeButtons = [{ text: 'Remove', type: 'delete', onPress: () => this._removeSong(i) }]
+            </Listitem>
+            <View style={{ minHeight: 0, paddingBottom: constants.unit * 6 }}>
+              {this.state.upNext.map((track, i) => {
+                if (typeof track !== 'string') {
+                  let swipeButtons = [{ text: 'Remove', type: 'delete', onPress: () => this._removeSong(i) }]
 
-                    return (<Swipeout key={i}
-                        right={swipeButtons}
-                        backgroundColor="transparent">
-                        <SongListitem
-                          backgroundColor="transparent"
-                          imageURI={{ uri: track.album.images[1].url }}
-                          name={track.name}
-                          artists={track.artists.map(d => d.name).join(', ')}
-                          albumName={track.album.name}/>
-                      </Swipeout>)
-                  } else {
-                    return <Listitem key={i} indent={constants.unit * 4} backgroundColor="transparent"/>
-                  }
-                })}
-              </View>
-            </Card>
-          </View>
+                  return (<Swipeout key={i}
+                      right={swipeButtons}
+                      backgroundColor="transparent">
+                      <SongListitem
+                        backgroundColor="transparent"
+                        imageURI={{ uri: track.album.images[1].url }}
+                        name={track.name}
+                        artists={track.artists.map(d => d.name).join(', ')}
+                        albumName={track.album.name}/>
+                    </Swipeout>)
+
+                } else {
+                  return <Listitem key={i} indent={constants.unit * 3} backgroundColor="transparent"/>
+                }
+              })}
+              {(() => {
+                if (this.state.upNext.length === 0) {
+                  return (
+                    <Listitem indent={constants.unit * 3} backgroundColor="transparent">
+                      <Text style={{ color: '#CCC' }}>Add songs to the queue</Text>
+                    </Listitem>
+                  )
+                }
+              })()}
+            </View>
+          </Card>
 
 
         </ScrollView>

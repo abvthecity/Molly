@@ -11,7 +11,7 @@ import classes.Song;
 public class SocketListener {
 public static WebsocketEndpoint ws;
 
-public static void route(JSONObject msg) {
+public static synchronized void route(JSONObject msg) {
 	System.out.println(msg.toJSONString());
 	String emit = (String) msg.get("emit");
 	
@@ -19,6 +19,7 @@ public static void route(JSONObject msg) {
 	if (emit.equals("updateChannelQueue")) updateChannelQueue((String) msg.get("channel"), (JSONArray) msg.get("queue"));
 	if (emit.equals("startChannel")) startChannel((String) msg.get("channel"));
 	if (emit.equals("stopChannel")) stopChannel((String) msg.get("channel"));
+	if (emit.equals("skipSongInChannel")) skipSongInChannel((String) msg.get("channel"));
 }
 
 public static void addTrackToQueue(String channelId, JSONObject trackData) {
@@ -64,6 +65,14 @@ public static void stopChannel(String channelId) {
 		return;
 	}
 	ChannelManager.getChannel(channelId).goOffline();
+}
+
+public static void skipSongInChannel(String channelId) {
+	if (!ChannelManager.exists(channelId)) {
+		System.out.println("ERROR: CHANNEL " + channelId + " DOES NOT EXIST.");
+		return;
+	}
+	ChannelManager.getChannel(channelId).startNextSong();
 }
 
 }

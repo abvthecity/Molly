@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
     borderRadius: constants.borderRadiusLg,
     backgroundColor: 'transparent',
     overflow: 'hidden',
-    minHeight: 72,
+    // minHeight: 72,
     flex: 1
   },
 })
