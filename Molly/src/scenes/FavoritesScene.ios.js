@@ -60,11 +60,11 @@ class FavoritesScene extends Component {
       }]}
     */
 
-    fetch(constants.server + '/channels?favorites=true')
+    fetch(constants.server + '/channels')
       .then(res => res.json())
       .then(res => {
 
-        console.log(res);
+        // console.log(res);
 
         let date = new Date();
 
@@ -89,10 +89,12 @@ class FavoritesScene extends Component {
         }
 
         // grab trackdata from spotify
-        let tracks = res.channels.map(d => d.currentTrackURI.split(':').pop())
+        let tracks = res.channels.filter(d => d.currentTrackURI).map(d => d.currentTrackURI.split(':').pop())
         return fetch(constants.spotify + 'tracks/?ids=' + tracks.join(','))
           .then(data => data.json())
           .then(data => {
+            if ('error' in data) return cards
+
             let tracksObj = {}
             for (let track of data.tracks) {
               tracksObj[track.uri] = track

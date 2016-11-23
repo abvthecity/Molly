@@ -1,7 +1,6 @@
 package classes;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Queue;
 
 import org.json.simple.JSONArray;
@@ -40,14 +39,11 @@ public Channel(String clientId, String channelId, String channelName){
 @Override
 public void run() {
 	while (true) {
-		// lock await 
 		if (isLive && currentSongURI != null) {
 			currentTime = System.currentTimeMillis() - startTime;
 			if (currentTime > duration) {
 				startNextSong();
 			}
-		} else if (songQueue.size() > 0) {
-			startNextSong();
 		}
 	}
 }
@@ -76,11 +72,6 @@ public void startNextSong() {
 
 public void addSong(Song song) {
 	songQueue.add(song);
-	emitUpdate();
-}
-
-public void replaceQueue(List<Song> newQueue) {
-	this.songQueue = (ArrayList<Song>) newQueue;
 	emitUpdate();
 }
 

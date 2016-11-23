@@ -66,7 +66,7 @@ class ExploreScene extends Component {
       .then(res => res.json())
       .then(res => {
 
-        console.log(res);
+        // console.log(res);
 
         let date = new Date();
 

@@ -1,8 +1,5 @@
 package server;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -25,15 +22,7 @@ public static void addTrackToQueue(String channelId, JSONObject trackData) {
 }
 
 public static void updateChannelQueue(String channelId, JSONArray queue) {
-	System.out.println("REPLACE " + channelId + "'s QUEUE TO " + queue.toJSONString());
-	List<Song> newQueue = new ArrayList<Song>();
-	for (Object obj : queue) {
-		JSONObject o = (JSONObject) obj;
-		String uri = (String) o.get("uri");
-		long duration = (long) o.get("duration");
-		newQueue.add(new Song(uri, duration));
-	}
-	ChannelManager.getChannel(channelId).replaceQueue(newQueue);
+	
 }
 
 }

@@ -1,7 +1,6 @@
 package classes;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Queue;
 
 import org.json.simple.JSONArray;
@@ -79,8 +78,8 @@ public void addSong(Song song) {
 	emitUpdate();
 }
 
-public void replaceQueue(List<Song> newQueue) {
-	this.songQueue = (ArrayList<Song>) newQueue;
+public void replaceQueue(ArrayList<Song> newQueue) {
+	this.songQueue = newQueue;
 	emitUpdate();
 }
 

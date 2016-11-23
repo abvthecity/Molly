@@ -25,7 +25,6 @@ public static void addTrackToQueue(String channelId, JSONObject trackData) {
 }
 
 public static void updateChannelQueue(String channelId, JSONArray queue) {
-	System.out.println("REPLACE " + channelId + "'s QUEUE TO " + queue.toJSONString());
 	List<Song> newQueue = new ArrayList<Song>();
 	for (Object obj : queue) {
 		JSONObject o = (JSONObject) obj;
@@ -33,7 +32,6 @@ public static void updateChannelQueue(String channelId, JSONArray queue) {
 		long duration = (long) o.get("duration");
 		newQueue.add(new Song(uri, duration));
 	}
-	ChannelManager.getChannel(channelId).replaceQueue(newQueue);
 }
 
 }
