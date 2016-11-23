@@ -64,13 +64,11 @@ public void startNextSong() {
 			duration = nextSong.getDuration();
 			currentTime = 0;
 			startTime = System.currentTimeMillis();
-			System.out.println("START SONG " + currentSongURI);
 		} else {
 			currentSongURI = null;
 			duration = 0;
 			currentTime = 0;
 			startTime = 0;
-			System.out.println("START SONG none expected");
 		}
 		emitUpdate();
 	}

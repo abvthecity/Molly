@@ -17,7 +17,7 @@ class socket {
 
     this.ws.onmessage = e => {
       // a message was received
-      // console.log(e.data)
+      console.log(e.data)
       let parsedJSON = JSON.parse(e.data)
 
       for (let listener of Object.keys(this.listeners)) {
@@ -34,7 +34,7 @@ class socket {
 
     this.ws.onclose = e => {
       // connection closed
-      // console.log(e.code, e.reason)
+      console.log(e.code, e.reason)
       this.ws.close()
       this.connected = false
     };

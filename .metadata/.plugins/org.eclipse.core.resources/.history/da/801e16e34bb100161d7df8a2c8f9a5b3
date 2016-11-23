@@ -64,13 +64,11 @@ public void startNextSong() {
 			duration = nextSong.getDuration();
 			currentTime = 0;
 			startTime = System.currentTimeMillis();
-			System.out.println("START SONG " + currentSongURI);
 		} else {
 			currentSongURI = null;
 			duration = 0;
 			currentTime = 0;
 			startTime = 0;
-			System.out.println("START SONG none expected");
 		}
 		emitUpdate();
 	}
@@ -94,7 +92,6 @@ public void goLive() {
 	isLive = true;
 	if (!this.isAlive()) {
 		this.start();
-		emitUpdate();
 	}
 }
 
@@ -102,7 +99,6 @@ public void goOffline() {
 	isLive = false;
 	if (this.isAlive()) {
 		this.interrupt();
-		emitUpdate();
 	}
 }
 
@@ -136,7 +132,6 @@ public JSONObject toJSON() {
 
 	if (isLive) {
 		obj.put("currentTrackURI", currentSongURI);
-		obj.put("currentTrackStartTime", startTime);
 		obj.put("currentTrackTime", currentTime);
 		obj.put("currentTrackDuration", duration);
 	}

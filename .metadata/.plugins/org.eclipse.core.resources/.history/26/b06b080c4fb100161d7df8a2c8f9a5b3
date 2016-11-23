@@ -17,8 +17,6 @@ public static void route(JSONObject msg) {
 	
 	if (emit.equals("addTrackToQueue")) addTrackToQueue((String) msg.get("channel"), (JSONObject) msg.get("track"));
 	if (emit.equals("updateChannelQueue")) updateChannelQueue((String) msg.get("channel"), (JSONArray) msg.get("queue"));
-	if (emit.equals("startChannel")) startChannel((String) msg.get("channel"));
-	if (emit.equals("stopChannel")) stopChannel((String) msg.get("channel"));
 }
 
 public static void addTrackToQueue(String channelId, JSONObject trackData) {
@@ -48,22 +46,6 @@ public static void updateChannelQueue(String channelId, JSONArray queue) {
 		newQueue.add(new Song(uri, duration));
 	}
 	ChannelManager.getChannel(channelId).replaceQueue(newQueue);
-}
-
-public static void startChannel(String channelId) {
-	if (!ChannelManager.exists(channelId)) {
-		System.out.println("ERROR: CHANNEL " + channelId + " DOES NOT EXIST.");
-		return;
-	}
-	ChannelManager.getChannel(channelId).goLive();
-}
-
-public static void stopChannel(String channelId) {
-	if (!ChannelManager.exists(channelId)) {
-		System.out.println("ERROR: CHANNEL " + channelId + " DOES NOT EXIST.");
-		return;
-	}
-	ChannelManager.getChannel(channelId).goOffline();
 }
 
 }

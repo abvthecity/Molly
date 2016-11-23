@@ -31,11 +31,11 @@ class BroadcastScene extends Component {
   constructor(props) {
     super(props)
 
-    this._addSong = this._addSong.bind(this)
-    this._renderSwitch =  this._renderSwitch.bind(this)
+    this._addSong =       this._addSong.bind(this)
     this._renderHeader =  this._renderHeader.bind(this)
     this._onMessage =     this._onMessage.bind(this)
     this._updateChannel = this._updateChannel.bind(this)
+    this._flipSwitch =    this._flipSwitch.bind(this)
   }
 
   static propTypes = {
@@ -56,10 +56,16 @@ class BroadcastScene extends Component {
   }
 
   componentWillMount() {
-    let _this = this;
-
     // add an emit listener
     this.props.socket.addListener("broadcast", this._onMessage)
+
+    // get the channel's info
+    this._fetchCurrentInfo()
+  }
+
+  _fetchCurrentInfo() {
+    let _this = this
+    if (!this.props.clientId) return;
 
     // get the channel's info
     get(constants.server + 'channel?id=' + this.props.clientId)
@@ -76,15 +82,75 @@ class BroadcastScene extends Component {
   }
 
   _updateChannel(channelData) {
-    let _this = this;
-    this.setState({
+    let _this = this
+
+    let newState = {
       channelName: channelData.name,
       hostName: channelData.hostId,
       upNext: channelData.upNext,
       live: channelData.isLive,
-    }, () => {
+    }
+
+    if (channelData.currentTrackURI) {
+      newState.nowPlaying = {
+        uri: channelData.currentTrackURI,
+        startTime: channelData.currentTrackStartTime,
+        startTime: channelData.currentTrackTime,
+        duration: channelData.currentTrackDuration,
+        album_cover: null,
+        song_title: null,
+        artist_name: null,
+      }
+    } else newState.nowPlaying = null
+
+    this.setState(newState, () => {
+      // start the clock
+      this._updateTimer()
+
+      // get nowPlaying track datum
+      if (channelData.currentTrackURI) {
+        get(constants.spotify + 'tracks/' + channelData.currentTrackURI.split(':').pop())
+          .then(data => {
+            Image.prefetch(data.album.images[1].url)
+            let nowPlaying = this.state.nowPlaying
+            Object.assign(nowPlaying, {
+              album_cover: { uri: data.album.images[1].url },
+              song_title: data.name,
+              artist_name: data.artists.map(d => d.name).join(', '),
+            })
+            return nowPlaying
+          })
+          .then(nowPlaying => this.setState({ nowPlaying }))
+          .catch(console.error)
+      }
+
+      // next steps only apply if there is a queue
+      if (this.state.upNext.length === 0) return;
+
+      // get playingNext data
+      let playingNextURI = ''
+      if (typeof this.state.upNext[0] === 'string')
+        playingNextURI = this.state.upNext[0]
+      else playingNextURI = this.state.upNext[0].uri
+      playingNextURI = playingNextURI.split(':').pop()
+      get(constants.spotify + 'tracks/' + playingNextURI)
+        .then(data => {
+          Image.prefetch(data.album.images[1].url)
+          return {
+            uri: data.uri,
+            startTime: 0,
+            startTime: 0,
+            duration: data.duration_ms,
+            album_cover: { uri: data.album.images[1].url },
+            song_title: data.name,
+            artist_name: data.artists.map(d => d.name).join(', '),
+          }
+        })
+        .then(playingNext => this.setState({ playingNext }))
+        .catch(console.error)
+
+      // get upNext track data
       let ids = this.state.upNext.map(d => d.split(':').pop()).join(',');
-      if (ids.length === 0) return
       get(constants.spotify + 'tracks/?ids=' + ids)
         .then(data => {
           let tracksObj = {}
@@ -109,34 +175,60 @@ class BroadcastScene extends Component {
     }
   }
 
-  _renderSwitch() {
-    return (
-      <Switch
-        onValueChange={value => {
-          if (value) {
-            this.setState({ live: value })
-          } else {
-            AlertIOS.alert('End broadcast?', 'Ending this session will kick listeners off. Are you sure?', () => {
-              this.setState({ live: value })
-            })
-          }
-        }}
-        value={this.state.live}
-        tintColor="rgba(255, 255, 255, 0.35)"
-      />
-    )
+  _updateTimer() {
+    let _this = this;
+    clearInterval(this.t)
+
+    if (!this.state.live) return;
+
+    this.t = setInterval(() => {
+      // if nothing is playing, don't continue
+      if (_this.state.nowPlaying === null) return;
+
+      let nowPlaying = _this.state.nowPlaying;
+      let date = new Date();
+      nowPlaying.currentTime = date.getTime() - nowPlaying.startTime
+
+      _this.setState({ nowPlaying })
+
+      if (nowPlaying.currentTime >= nowPlaying.duration - 100) {
+        _this._fetchCurrentInfo()
+      }
+
+    }, 100);
+  }
+
+  _flipSwitch(value) {
+    if (value) {
+      this.props.socket.send(JSON.stringify({
+        emit: 'startChannel',
+        channel: this.props.clientId
+      }))
+    } else {
+      AlertIOS.alert('End broadcast?', 'Ending this session will kick listeners off. Are you sure?', () => {
+        this.props.socket.send(JSON.stringify({
+          emit: 'stopChannel',
+          channel: this.props.clientId
+        }))
+      })
+    }
   }
 
   _renderHeader() {
     let content = <Text style={{ color: 'white', textAlign: 'center', fontWeight: '500', opacity: 0.7, letterSpacing: -0.2}}>OFFLINE</Text>
     if (this.state.live) content = <Text style={{ color: 'white', textAlign: 'center', fontWeight: '800', letterSpacing: -0.2}}>BROADCASTING</Text>
 
+    let renderSwitch = () => (<Switch
+      onValueChange={this._flipSwitch}
+      value={this.state.live}
+      tintColor="rgba(255, 255, 255, 0.35)"/>)
+
     return (
       <BlurNavigator light={true}
         onLeftButtonPress={this.props.goBack}
         leftButtonTitle="Exit"
         leftButtonDisabled={this.state.live}
-        rightContent={this._renderSwitch}
+        rightContent={renderSwitch}
       >{content}</BlurNavigator>
     )
   }
@@ -185,18 +277,9 @@ class BroadcastScene extends Component {
 
   render() {
 
-    const header = (
-      <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-        <View>
-          <Text style={{ color: 'white', fontSize: 24, fontWeight: '900' }}>{this.state.channelName}</Text>
-          <Text style={{ color: 'white', fontSize: 18, fontWeight: '500' }}>{this.state.hostName}</Text>
-        </View>
-        <Button tintColor="white">Edit</Button>
-      </View>
-    )
-
     const controls = () => {
-      if (this.state.nowPlaying != null) {
+      if (this.state.nowPlaying) {
+        console.log(this.state.nowPlaying)
         return (<Swiper
           style={{ overflow: 'visible', marginLeft: constants.unit * 2, marginTop: constants.unit * 3 }}
           loop={false}
@@ -210,10 +293,13 @@ class BroadcastScene extends Component {
           <Card style={{ flex: 1, marginRight: constants.unit * 3 }}>
             <NowPlayingCardView nowPlaying={this.state.nowPlaying} />
           </Card>
-
-          <Card style={{ flex: 1, marginRight: constants.unit * 3 }}>
-            <NowPlayingCardView nowPlaying={this.state.playingNext} />
-          </Card>
+          {(() => {
+            if (this.state.playingNext) {
+              return (<Card style={{ flex: 1, marginRight: constants.unit * 3 }}>
+                <NowPlayingCardView nowPlaying={this.state.playingNext} />
+              </Card>)
+            }
+          })()}
 
         </Swiper>)
       }
@@ -223,46 +309,48 @@ class BroadcastScene extends Component {
       <LinearGradient colors={['#FF6E88', '#BF2993']} {...this.props} style={[{ flex: 1 }, this.props.style]}>
         {this._renderHeader()}
 
+        {/* SPOTIFY MODAL */}
         <SpotifySearchModal
           visible={this.state.searchSpotify}
           cancel={() => this.setState({ searchSpotify: false })}
           addSong={this._addSong} />
 
-        <ScrollView style={{
-          backgroundColor: 'transparent',
-          paddingTop: constants.navpad
-        }}
+        {/* BROADCAST CONTROLLER */}
+        <ScrollView style={{ backgroundColor: 'transparent', paddingTop: constants.navpad }}
           contentInset={{ top: 20, bottom: 20 }} contentOffset={{ y: -20 }}
           onLayout={event => {
             let { x, y, width, height } = event.nativeEvent.layout;
             this.setState({ width })
           }}>
-          <View style={{ padding: constants.unit * 4 }}>{header}</View>
 
+          {/* HEADING */}
+          <View style={{ padding: constants.unit * 4 }}>
+            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+              <View>
+                <Text style={{ color: 'white', fontSize: 24, fontWeight: '900' }}>{this.state.channelName}</Text>
+                <Text style={{ color: 'white', fontSize: 18, fontWeight: '500' }}>{this.state.hostName}</Text>
+              </View>
+              <Button tintColor="white">Edit</Button>
+            </View>
+          </View>
+
+          {/* Swipable now-playing controls */}
           {controls()}
 
+          {/* UP NEXT */}
           <View style={{ paddingHorizontal: constants.unit * 4 }}>
             <Card style={{ marginBottom: constants.unit * 3 }} shadow={false}>
-              <View style={{ padding: constants.unit * 3 }}>
-                <HeadingWithAction
-                  title="Up Next"
-                  buttonTitle="Add song"
-                  onButtonPress={() => this.setState({ searchSpotify: true })}
-                />
-              </View>
+              <HeadingWithAction
+                title="Up Next"
+                buttonTitle="Add song"
+                style={{ padding: constants.unit * 3 }}
+                onButtonPress={() => this.setState({ searchSpotify: true })} />
               <View>
                 {this.state.upNext.map((track, i) => {
                   if (typeof track !== 'string') {
-                    let swipeButtons = [
-                      {
-                        text: 'Remove',
-                        type: 'delete',
-                        onPress: () => this._removeSong(i)
-                      }
-                    ]
+                    let swipeButtons = [{ text: 'Remove', type: 'delete', onPress: () => this._removeSong(i) }]
 
-                    return (
-                      <Swipeout key={i}
+                    return (<Swipeout key={i}
                         right={swipeButtons}
                         backgroundColor="transparent">
                         <SongListitem
@@ -270,10 +358,8 @@ class BroadcastScene extends Component {
                           imageURI={{ uri: track.album.images[1].url }}
                           name={track.name}
                           artists={track.artists.map(d => d.name).join(', ')}
-                          albumName={track.album.name}
-                        />
-                      </Swipeout>
-                    )
+                          albumName={track.album.name}/>
+                      </Swipeout>)
                   } else {
                     return <Listitem key={i} indent={constants.unit * 4} backgroundColor="transparent"/>
                   }

@@ -87,7 +87,7 @@ class PlayerScene extends Component {
   _fetchCurrentInfo() {
     let _this = this
 
-    console.log(this.props.channelId)
+    // console.log(this.props.channelId)
 
     if (!this.props.channelId) return;
 

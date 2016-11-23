@@ -70,7 +70,7 @@ public void startNextSong() {
 			duration = 0;
 			currentTime = 0;
 			startTime = 0;
-			System.out.println("START SONG none expected");
+			System.out.println("START SONG null");
 		}
 		emitUpdate();
 	}

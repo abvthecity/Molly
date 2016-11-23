@@ -50,20 +50,4 @@ public static void updateChannelQueue(String channelId, JSONArray queue) {
 	ChannelManager.getChannel(channelId).replaceQueue(newQueue);
 }
 
-public static void startChannel(String channelId) {
-	if (!ChannelManager.exists(channelId)) {
-		System.out.println("ERROR: CHANNEL " + channelId + " DOES NOT EXIST.");
-		return;
-	}
-	ChannelManager.getChannel(channelId).goLive();
-}
-
-public static void stopChannel(String channelId) {
-	if (!ChannelManager.exists(channelId)) {
-		System.out.println("ERROR: CHANNEL " + channelId + " DOES NOT EXIST.");
-		return;
-	}
-	ChannelManager.getChannel(channelId).goOffline();
-}
-
 }
