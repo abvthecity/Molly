@@ -20,6 +20,30 @@ public static void route(JSONObject msg) {
 	if (emit.equals("startChannel")) startChannel((String) msg.get("channel"));
 	if (emit.equals("stopChannel")) stopChannel((String) msg.get("channel"));
 	if (emit.equals("skipSongInChannel")) skipSongInChannel((String) msg.get("channel"));
+	if (emit.equals("userJoinedChannel")) userJoinedChannel((String) msg.get("channel"), (String) msg.get("clientId"));
+	if (emit.equals("userLeftChannel")) userLeftChannel((String) msg.get("channel"), (String) msg.get("clientId"));
+}
+
+public static void userLeftChannel(String channelId, String clientId) {
+	System.out.println("REMOVE FROM " + channelId + " USER " + clientId);
+	// check existence
+	if (!ChannelManager.exists(channelId)) {
+		System.out.println("ERROR: CHANNEL " + channelId + " DOES NOT EXIST.");
+		return;
+	}
+	// make call
+	ChannelManager.getChannel(channelId).removeUser(clientId);
+}
+
+public static void userJoinedChannel(String channelId, String clientId) {
+	System.out.println("ADD TO " + channelId + " USER " + clientId);
+	// check existence
+	if (!ChannelManager.exists(channelId)) {
+		System.out.println("ERROR: CHANNEL " + channelId + " DOES NOT EXIST.");
+		return;
+	}
+	// make call
+	ChannelManager.getChannel(channelId).addUser(new User(clientId, false));
 }
 
 public static void addTrackToQueue(String channelId, JSONObject trackData) {

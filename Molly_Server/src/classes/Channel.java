@@ -21,7 +21,9 @@ private ChannelRunner runner;
 public String channelId;
 public String clientId;
 public String channelName;
+public int listenerCount;
 public ArrayList<Song> songQueue;
+public ArrayList<User> userQueue;
 public boolean isLive;
 
 public String currentSongURI;
@@ -34,6 +36,9 @@ public Channel(String clientId, String channelId, String channelName){
 	this.channelId = channelId;
 	this.channelName = channelName;
 	this.songQueue = new ArrayList<Song>();
+	this.userQueue = new ArrayList<User>();
+	listenerCount = 0;
+	
 	startTime = System.currentTimeMillis();
 	isLive = false;
 }
@@ -94,6 +99,22 @@ public void addSong(Song song) {
 	songQueue.add(song);
 	emitUpdate();
 	queueNotEmpty.signal();
+	lock.unlock();
+}
+
+public void addUser(User user) {
+	lock.lock();
+	userQueue.add(user);
+	emitUpdate();
+	listenerCount = userQueue.size();
+	lock.unlock();
+}
+
+public void removeUser(String clientId) {
+	lock.lock();
+	userQueue.remove(clientId);
+	emitUpdate();
+	listenerCount = userQueue.size();
 	lock.unlock();
 }
 

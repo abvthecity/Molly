@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<session version="1.0">
-<refactoring comment="Delete resource &apos;Molly-Server&apos;" deleteContents="true" description="Delete resource &apos;Molly-Server&apos;" element1="/Molly-Server" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="1" stamp="1479704003209"/>
-</session>
