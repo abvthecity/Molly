@@ -3,7 +3,8 @@ import {
   View, ScrollView,
   Image, Text, Switch,
   TouchableOpacity, TouchableHighlight,
-  StyleSheet, AlertIOS, Modal, TextInput
+  StyleSheet, AlertIOS, Modal, TextInput,
+  NativeModules, NativeEventEmitter
 } from 'react-native'
 
 import LinearGradient from 'react-native-linear-gradient'
@@ -25,6 +26,9 @@ import Button from '../components/Button'
 import Swipeout from '../components/Swipeout'
 
 import SpotifySearchModal from './SpotifySearchModal'
+
+const SpotifyAPI = NativeModules.SpotifyAPI;
+const SpotifyAPIEventEmitter = new NativeEventEmitter(SpotifyAPI);
 
 class BroadcastScene extends Component {
 
@@ -51,17 +55,29 @@ class BroadcastScene extends Component {
     channelName:  null,
     serverOffset: 0,
 
-    nowPlaying_uri: channelData.currentTrackURI,
-    nowPlaying_startTime: channelData.currentTrackStartTime + channelData.serverOffset,
-    nowPlaying_currentTime: channelData.currentTrackTime - channelData.serverOffset,
-    nowPlaying_duration: channelData.currentTrackDuration,
-    nowPlaying_albumCover: null,
-    nowPlaying_songTitle: null,
-    nowPlaying_artistName: null,
+    // nowPlaying: {
+    //   uri: null,
+    //   startTime: null,
+    //   currentTime: null,
+    //   duration: null,
+    //   album_cover: null,
+    //   song_title: null,
+    //   artist_name: null,
+    // },
+    nowPlaying: null,
 
+    // playingNext: {
+    //   uri: null,
+    //   startTime: null,
+    //   currentTime: null,
+    //   duration: null,
+    //   album_cover: null,
+    //   song_title: null,
+    //   artist_name: null,
+    // },
     playingNext: null,
 
-    upNext:      [],
+    upNext: [], // either Strings or Spotify Track Objects
 
     searchSpotify: false, // open up the module
   }
@@ -92,89 +108,94 @@ class BroadcastScene extends Component {
       .catch(console.error);
   }
 
-  _updateChannel(channelData) {
+  async _updateChannel(channelData) {
     let _this = this
 
+    // set basic info
     let newState = {
       channelName: channelData.name,
       hostName: channelData.hostId,
-      upNext: channelData.upNext,
       live: channelData.isLive,
       serverOffset: channelData.serverOffset,
     }
 
+    // set nowPlaying
     if (channelData.currentTrackURI) {
-      newState.nowPlaying = {
+      newState.nowPlaying = this.state.nowPlaying
+      if (newState.nowPlaying === null) {
+        newState.nowPlaying = {
+          uri: null,
+          startTime: null,
+          currentTime: null,
+          duration: null,
+          album_cover: null,
+          song_title: null,
+          artist_name: null,
+        }
+      }
+
+      Object.assign(newState.nowPlaying, {
         uri: channelData.currentTrackURI,
-        startTime: channelData.currentTrackStartTime + channelData.serverOffset,
-        currentTime: channelData.currentTrackTime - channelData.serverOffset,
-        duration: channelData.currentTrackDuration,
-        album_cover: null,
-        song_title: null,
-        artist_name: null,
+        startTime: channelData.currentTrackStartTime - channelData.serverOffset,
+        currentTime: channelData.currentTrackTime,
+        duration: channelData.currentTrackDuration
+      })
+
+      // update info if necessary
+      if (this.state.nowPlaying === null) {
+        try {
+          let spotifyData = await get(constants.spotify + 'tracks/' + channelData.currentTrackURI.split(':').pop())
+          Image.prefetch(spotifyData.album.images[1].url)
+          Object.assign(newState.nowPlaying, {
+            album_cover: { uri: spotifyData.album.images[1].url },
+            song_title: spotifyData.name,
+            artist_name: spotifyData.artists.map(d => d.name).join(', '),
+          })
+        } catch(error) {
+          console.error(error)
+        }
+
       }
     } else newState.nowPlaying = null
-    newState.playingNext = null
 
-    this.setState(newState, () => {
-      // start the clock
-      this._updateTimer()
-
-      // get nowPlaying track datum
-      if (channelData.currentTrackURI) {
-        get(constants.spotify + 'tracks/' + channelData.currentTrackURI.split(':').pop())
-          .then(data => {
-            Image.prefetch(data.album.images[1].url)
-            let nowPlaying = this.state.nowPlaying
-            Object.assign(nowPlaying, {
-              album_cover: { uri: data.album.images[1].url },
-              song_title: data.name,
-              artist_name: data.artists.map(d => d.name).join(', '),
-            })
-            return nowPlaying
-          })
-          .then(nowPlaying => this.setState({ nowPlaying }))
-          .catch(console.error)
-      }
-
-      // next steps only apply if there is a queue
-      if (this.state.upNext.length === 0) return;
-
-      // get playingNext data
-      let playingNextURI = ''
-      if (typeof this.state.upNext[0] === 'string')
-        playingNextURI = this.state.upNext[0]
-      else playingNextURI = this.state.upNext[0].uri
-      playingNextURI = playingNextURI.split(':').pop()
-      get(constants.spotify + 'tracks/' + playingNextURI)
-        .then(data => {
-          Image.prefetch(data.album.images[1].url)
-          return {
-            uri: data.uri,
+    // get playingNext data
+    if (channelData.upNext.length > 0) {
+      if (this.state.playingNext === null) {
+        try {
+          let spotifyData = await get(constants.spotify + 'tracks/' + channelData.upNext[0].split(':').pop())
+          Image.prefetch(spotifyData.album.images[1].url)
+          newState.playingNext = {
+            uri: spotifyData.uri,
             startTime: 0,
             currentTime: 0,
-            duration: data.duration_ms,
-            album_cover: { uri: data.album.images[1].url },
-            song_title: data.name,
-            artist_name: data.artists.map(d => d.name).join(', '),
+            duration: spotifyData.duration_ms,
+            album_cover: { uri: spotifyData.album.images[1].url },
+            song_title: null,
+            artist_name: null,
           }
-        })
-        .then(playingNext => this.setState({ playingNext }))
-        .catch(console.error)
+        } catch(error) {
+          console.error(error)
+        }
+      }
+    } else newState.playingNext = null
 
-      // get upNext track data
-      let ids = this.state.upNext.map(d => d.split(':').pop()).join(',');
-      get(constants.spotify + 'tracks/?ids=' + ids)
-        .then(data => {
-          let tracksObj = {}
-          for (let track of data.tracks) {
-            tracksObj[track.uri] = track
-            Image.prefetch(track.album.images[0].url)
-          }
-          return this.state.upNext.map(trackId => tracksObj[trackId])
-        }).then(upNext => _this.setState({ upNext }))
-        .catch(console.error)
-    })
+    // get upNext track data
+    if (channelData.upNext.length > 0) {
+      let ids = channelData.upNext.map(d => d.split(':').pop()).join(',');
+      try {
+        let spotifyData = await get(constants.spotify + 'tracks/?ids=' + ids)
+        let tracksObj = {}
+        for (let track of spotifyData.tracks) {
+          tracksObj[track.uri] = track
+          Image.prefetch(track.album.images[0].url)
+        }
+        newState.upNext = channelData.upNext.map(trackId => tracksObj[trackId])
+      } catch(error) {
+        console.error(error)
+      }
+    } else newState.upNext = []
+
+    this.setState(newState, this._updateTimer)
   }
 
   componentWillUnmount() {
