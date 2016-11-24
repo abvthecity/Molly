@@ -76,8 +76,8 @@ class ChannelCard extends Component {
         {/* LOWER SIDE */}
         <View style={styles.lower}>
           <View>
-            <Text style={{ fontSize: 22, fontWeight: '700', letterSpacing: -0.3 }}>{this.props.title}</Text>
-            <Text style={{ fontSize: 14, fontWeight: '500' }}>{this.props.host}</Text>
+            <Text style={{ fontSize: 22, fontWeight: '700', letterSpacing: -0.3 }} tail="tail" numberOfLines={2}>{this.props.title}</Text>
+            <Text style={{ fontSize: 14, fontWeight: '500' }} tail="tail" numberOfLines={1}>{this.props.host}</Text>
           </View>
         </View>
 

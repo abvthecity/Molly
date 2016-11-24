@@ -13,33 +13,44 @@ function millisToMinutesAndSeconds(millis) {
 }
 
 
-const NowPlayingCardView = props => (
-  <View style={styles.playing}>
-    <View style={styles.playing_album_art}>
-      <Image style={{ flex: 1 }} source={props.nowPlaying.album_cover} />
-    </View>
-    <View style={styles.playing_details}>
-      <View>
-        <Text style={[styles.smallText, { color: '#FF2D55' }]}>NOW PLAYING</Text>
-        <Text style={{ fontSize: 18, fontWeight: '800', color: 'black', letterSpacing: -0.5 }}>{props.nowPlaying.song_title}</Text>
-        <Text style={{ fontSize: 18, fontWeight: '500', color: '#808080', letterSpacing: -0.5 }}>{props.nowPlaying.artist_name}</Text>
+const NowPlayingCardView = props => {
+
+  if (props.nowPlaying.uri) {
+    return (
+      <View style={styles.playing}>
+        <View style={styles.playing_album_art}>
+          <Image style={{ flex: 1 }} source={props.nowPlaying.album_cover} />
+        </View>
+        <View style={styles.playing_details}>
+          <View>
+            <Text style={[styles.smallText, { color: '#FF2D55' }]}>NOW PLAYING</Text>
+            <Text style={{ fontSize: 18, fontWeight: '800', color: 'black', letterSpacing: -0.5 }} tail="tail" numberOfLines={1}>{props.nowPlaying.song_title}</Text>
+            <Text style={{ fontSize: 18, fontWeight: '500', color: '#808080', letterSpacing: -0.5 }} tail="tail" numberOfLines={1}>{props.nowPlaying.artist_name}</Text>
+          </View>
+          <View style={{ marginTop: -constants.unit * 8 }}>
+            <ProgressViewIOS
+              progress={props.nowPlaying.currentTime / props.nowPlaying.duration}
+              progressTintColor={props.nowPlaying.accent || '#FF2D55'}
+              trackTintColor={'rgba(0, 0, 0, 0.15)'}
+              style={{ height: 3, borderRadius: 1.5, overflow: 'hidden'}}
+            />
+            <Text style={{ fontSize: 13, fontWeight: '500', color: '#B2B2B2', textAlign: 'right' }}>
+              {/* {props.nowPlaying.duration} */}
+              {millisToMinutesAndSeconds(props.nowPlaying.currentTime)}
+            </Text>
+          </View>
+          {/* <Text style={[styles.smallText, { color: '#808080' }]}>N/A LISTENERS</Text> */}
+        </View>
       </View>
-      <View style={{ marginTop: -constants.unit * 8 }}>
-        <Text style={{ fontSize: 13, fontWeight: '500', color: '#B2B2B2', textAlign: 'right' }}>
-          {/* {props.nowPlaying.duration} */}
-          {millisToMinutesAndSeconds(props.nowPlaying.currentTime)}
-        </Text>
-        <ProgressViewIOS
-          progress={props.nowPlaying.currentTime / props.nowPlaying.duration}
-          progressTintColor={props.nowPlaying.accent || '#FF2D55'}
-          trackTintColor={'rgba(0, 0, 0, 0.15)'}
-          style={{ height: 3, borderRadius: 1.5, overflow: 'hidden'}}
-        />
+    )
+  } else {
+    return (
+      <View style={[styles.playing, styles.playing_details]}>
+        <Text style={[styles.smallText, { color: '#FF2D55' }]}>NOT PLAYING</Text>
       </View>
-      <Text style={[styles.smallText, { color: '#808080' }]}>54 LISTENERS</Text>
-    </View>
-  </View>
-)
+    )
+  }
+}
 
 NowPlayingCardView.propTypes = {
   nowPlaying: PropTypes.shape({
@@ -76,13 +87,13 @@ const styles = StyleSheet.create({
     borderRadius: constants.borderRadiusSm,
     borderColor: 'rgba(0, 0, 0, 0.1)',
     borderWidth: StyleSheet.hairlineWidth,
-    overflow: 'hidden'
+    overflow: 'hidden',
+    marginRight: constants.unit * 2
   },
   playing_details: {
     flex: 1,
     flexDirection: 'column',
     justifyContent: 'space-between',
-    marginLeft: constants.unit * 2
   },
   smallText: {
     fontSize: 11,

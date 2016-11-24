@@ -47,12 +47,21 @@ class BroadcastScene extends Component {
     live:   false, // on/off switch
     width:  375,   // useful for the swipe feature (default: size of iPhone 6)
 
-    hostName:    null,
-    channelName: null,
-    nowPlaying:  null,
-    playingNext: null,
-    upNext:      [],
+    hostName:     null,
+    channelName:  null,
     serverOffset: 0,
+
+    nowPlaying_uri: channelData.currentTrackURI,
+    nowPlaying_startTime: channelData.currentTrackStartTime + channelData.serverOffset,
+    nowPlaying_currentTime: channelData.currentTrackTime - channelData.serverOffset,
+    nowPlaying_duration: channelData.currentTrackDuration,
+    nowPlaying_albumCover: null,
+    nowPlaying_songTitle: null,
+    nowPlaying_artistName: null,
+
+    playingNext: null,
+
+    upNext:      [],
 
     searchSpotify: false, // open up the module
   }
@@ -340,8 +349,8 @@ class BroadcastScene extends Component {
           <View style={{ margin: constants.unit * 4, marginBottom: 0 }}>
             <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>
               <View>
-                <Text style={{ color: 'white', fontSize: 24, fontWeight: '900' }}>{this.state.channelName}</Text>
-                <Text style={{ color: 'white', fontSize: 18, fontWeight: '500' }}>{this.state.hostName}</Text>
+                <Text style={{ color: 'white', fontSize: 24, fontWeight: '900' }} tail="tail" numberOfLines={2}>{this.state.channelName}</Text>
+                <Text style={{ color: 'white', fontSize: 18, fontWeight: '500' }} tail="tail" numberOfLines={1}>{this.state.hostName}</Text>
               </View>
               <Button tintColor="white">Edit</Button>
             </View>

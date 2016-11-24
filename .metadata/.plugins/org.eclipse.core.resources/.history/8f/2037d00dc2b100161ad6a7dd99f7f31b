@@ -48,7 +48,7 @@ private class ChannelRunner extends Thread {
 				if (currentSongURI != null && currentTime < duration) {
 					currentTime = System.currentTimeMillis() - startTime;
 				} else {
-					while (songQueue.isEmpty() && currentSongURI == null) {
+					while (songQueue.isEmpty()) {
 						System.out.println("Waiting for more songs in queue.");
 						queueNotEmpty.await();
 					}

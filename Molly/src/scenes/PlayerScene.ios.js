@@ -44,6 +44,7 @@ class PlayerScene extends Component {
         currentTime: 0,
         duration: 1
       },
+      live: false,
       upNext: []
     }
 
@@ -208,6 +209,16 @@ class PlayerScene extends Component {
       inputRange: [0, 1], outputRange: [0, 24]
     })
 
+    const playerState = () => {
+      if (this.state.live && this.state.nowPlaying && this.state.nowPlaying.uri) {
+        return 'LIVE'
+      }
+      if (this.state.live) {
+        return 'NOT PLAYING'
+      }
+      return 'OFFLINE'
+    }
+
     return (
       // <LinearGradient colors={['white', '#F0F0F0']} style={{ flex: 1 }} {...this.props}>
       // <Modal {...this.props} transparent={false} supportedOrientations={['portrait']} animationType={'slide'}>
@@ -222,20 +233,22 @@ class PlayerScene extends Component {
               fontSize: 20,
               fontWeight: '900',
               textAlign: 'center'
-            }}>{this.state.title}</Text>
+            }} tail="tail" numberOfLines={1}>{this.state.title}</Text>
             <Text style={{
               color: 'white',
               fontSize: 11,
               fontWeight: '500',
               textAlign: 'center'
-            }}>{this.state.host}</Text>
+            }} tail="tail" numberOfLines={1}>{this.state.host}</Text>
           </BlurNavigator>
           <ScrollView style={{ paddingTop: 64 }}>
             <Card shadow={true} style={[{ zIndex: 2}, { flex: 1 }]}>
 
               <View style={styles.card_object_inner}>
                 <View style={{ position: 'absolute', top: 2, left: 0, right: 0 }}>
-                  <Text style={{ flex: 1, fontSize: 11, fontWeight: '500', color: '#FF2D55', textAlign: 'center' }}>LIVE</Text>
+                  <Text style={{ flex: 1, fontSize: 11, fontWeight: '500', color: '#FF2D55', textAlign: 'center' }}>
+                    {playerState()}
+                  </Text>
                 </View>
 
                 <TouchableWithoutFeedback onPress={this.toggleMute}>
