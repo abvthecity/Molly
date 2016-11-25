@@ -21,6 +21,11 @@ import Button from '../components/Button'
 
 class FavoritesScene extends Component {
 
+  constructor(props) {
+    super(props);
+    this.socketId = null
+  }
+
   static propTypes = {
     goBack: PropTypes.func
   }
@@ -34,11 +39,11 @@ class FavoritesScene extends Component {
     this._updateTimer()
 
     // establish a socket here!
-    this.props.socket.addListener("favorites", this._onMessage)
+    this.socketId = this.props.socket.addListener(this._onMessage)
   }
 
   componentWillUnmount() {
-    this.props.socket.removeListener("favorites")
+    this.props.socket.removeListener(this.socketId)
     clearInterval(this.t)
   }
 

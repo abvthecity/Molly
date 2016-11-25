@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -44,7 +45,7 @@ protected void doGet(HttpServletRequest request, HttpServletResponse response) t
 	// set headers
 	response.setContentType("application/json");
 	PrintWriter out = response.getWriter();
-
+	
 	// get parameters
 	String channelId = request.getParameter("id");
 

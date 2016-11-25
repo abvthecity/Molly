@@ -48,6 +48,7 @@ class PlayerScene extends Component {
       upNext: []
     }
 
+    this.socketId = null
     this.toggleMute = this.toggleMute.bind(this)
     this._updateTimer = this._updateTimer.bind(this)
   }
@@ -55,7 +56,7 @@ class PlayerScene extends Component {
   componentWillMount() {
     this._fetchCurrentInfo()
 
-    this.props.socket.addListener("player", this._onMessage)
+    this.socketId = this.props.socket.addListener(this._onMessage)
   }
 
   componentWillUnmount() {
@@ -63,7 +64,7 @@ class PlayerScene extends Component {
       if (error) console.log(error)
     })
 
-    this.props.socket.removeListener("player")
+    this.props.socket.removeListener(this.socketId)
 
     // remove timers
     if (this.t) clearInterval(this.t)

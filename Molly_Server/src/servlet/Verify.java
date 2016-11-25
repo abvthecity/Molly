@@ -2,16 +2,20 @@ package servlet;
 
 
 import java.io.IOException;
+import java.io.PrintWriter;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.json.simple.JSONObject;
+
 /**
  * Servlet implementation class Verify
  */
-@WebServlet("/Verify")
+@WebServlet("/verify")
 public class Verify extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
@@ -35,21 +39,21 @@ public class Verify extends HttpServlet {
 //	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 //	 */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		String info = request.getParameter("hi");
-		String info2 = request.getParameter("hey");
-		System.out.println("comes here");
-//		response.setHeader();
-		response.getWriter().append("{\"object\": \"key\"}"+info+"   "+info2);
-	}
-
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		System.out.println("comes here2");
-		doGet(request, response);
+    	// set headers
+    	response.setContentType("application/json");
+    	PrintWriter out = response.getWriter();
+    	
+    	long clientTime = Long.parseLong(request.getParameter("clientTime"));
+    	long serverTime = System.currentTimeMillis();
+    	long serverClientRequestDiffTime = serverTime - clientTime;
+    	
+    	JSONObject obj = new JSONObject();
+    	
+    	obj.put("diff", serverClientRequestDiffTime);
+    	obj.put("serverTime", serverTime);
+    	
+    	out.print(obj.toJSONString());
+    	out.flush();
 	}
 
 }

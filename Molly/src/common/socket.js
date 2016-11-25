@@ -1,3 +1,5 @@
+import shortid from 'shortid'
+
 function isFunction(functionToCheck) {
  var getType = {};
  return functionToCheck && getType.toString.call(functionToCheck) === '[object Function]';
@@ -41,15 +43,16 @@ class socket {
 
   }
 
-  addListener(name, func = () => {}) {
-    if (isFunction(func)) {
-      this.listeners[name] = func
-    }
+  addListener(func = null) {
+    let socketId = shortid.generate()
+    if (isFunction(func))
+      this.listeners[socketId] = func
+    return socketId
   }
 
-  removeListener(name) {
-    if (this.listeners[name]) {
-      delete this.listeners[name]
+  removeListener(socketId) {
+    if (this.listeners[socketId]) {
+      delete this.listeners[socketId]
     }
   }
 

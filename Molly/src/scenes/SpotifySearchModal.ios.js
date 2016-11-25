@@ -18,6 +18,7 @@ class SpotifySearchModal extends Component {
   constructor(props) {
     super(props)
     this._onChangeText = this._onChangeText.bind(this)
+    // this._onEndEditing = this._onEndEditing.bind(this)
     this._spotifySearch = this._spotifySearch.bind(this)
   }
 
@@ -27,7 +28,7 @@ class SpotifySearchModal extends Component {
   }
 
   _onChangeText(query) {
-    this.setState({ query }, this._spotifySearch)
+    this.setState({ query })
   }
 
   _spotifySearch() {
@@ -57,7 +58,8 @@ class SpotifySearchModal extends Component {
             placeholder="Search tracks on Spotify"
             value={this.state.query}
             style={styles.search_input}
-            onChangeText={this._onChangeText}/>
+            onChangeText={this._onChangeText}
+            onEndEditing={this._spotifySearch} />
             <Button style={{ marginLeft: constants.unit * 2}} onPress={this.props.cancel}>Cancel</Button>
         </BlurView>
 

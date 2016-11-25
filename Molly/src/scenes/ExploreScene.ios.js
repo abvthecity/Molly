@@ -10,7 +10,7 @@ import {
 import LinearGradient from 'react-native-linear-gradient'
 
 import constants from '../common/constants'
-import API from '../common/API'
+import { get, post } from '../common/fetch'
 
 import BlurStatusBar from '../components/BlurStatusBar'
 import ChannelCard from '../components/ChannelCard'
@@ -19,6 +19,11 @@ import Swipeout from '../components/Swipeout'
 import Button from '../components/Button'
 
 class ExploreScene extends Component {
+
+  constructor(props) {
+    super(props)
+    this.socketId = null
+  }
 
   state = {
     browseTitle: 'Explore',
@@ -32,15 +37,15 @@ class ExploreScene extends Component {
       .then(res => this.setState({ name: res.display_name }))
       .catch(console.error)
 
+    this._setServerOffset()
     this._getChannels()
-    this._updateTimer()
 
     // establish a socket here!
-    this.props.socket.addListener("explore", this._onMessage)
+    this.socketId = this.props.socket.addListener(this._onMessage)
   }
 
   componentWillUnmount() {
-    this.props.socket.removeListener("explore")
+    this.props.socket.removeListener(this.socketId)
     clearInterval(this.t)
   }
 
@@ -48,98 +53,33 @@ class ExploreScene extends Component {
     // something happnes here
   }
 
-  _getChannels() {
-    let _this = this;
-
-    /*
-      {channels: [{
-        id: string
-        name: string,
-        favorite: bool,
-        currentTrackURI: string,
-        currentTrackTime: number,
-        currentTrackDuration: number
-      }]}
-    */
-
-    fetch(constants.server + '/channels')
-      .then(res => res.json())
-      .then(res => {
-
-        // console.log(res);
-
-        let date = new Date();
-
-        let cards = res.channels.map(d => ({
-          title: d.name,
-          host: d.hostId,
-          favorite: d.favorite,
-          channelId: d.id,
-          nowPlaying: {
-            uri: d.currentTrackURI,
-            startTime: date.getTime() - d.currentTrackTime,
-            currentTime: d.currentTrackTime,
-            duration: d.currentTrackDuration
-          }
-        }))
-
-        // just to get things started, in case spotify is slow
-        _this.setState({ cards })
-
-        if (res.channels.length == 0) {
-          return cards;
-        }
-
-        // grab trackdata from spotify
-        let tracks = res.channels.filter(d => d.currentTrackURI).map(d => d.currentTrackURI.split(':').pop())
-        return fetch(constants.spotify + 'tracks/?ids=' + tracks.join(','))
-          .then(data => data.json())
-          .then(data => {
-            if ('error' in data) return cards
-
-            let tracksObj = {}
-            for (let track of data.tracks) {
-              tracksObj[track.uri] = track
-              Image.prefetch(track.album.images[0].url)
-            }
-
-            return cards.map(card => ({
-              title: card.title,
-              host: card.host,
-              favorite: card.favorite,
-              channelId: card.host,
-              nowPlaying: {
-                album_cover: { uri: tracksObj[card.nowPlaying.uri].album.images[0].url },
-                song_title: tracksObj[card.nowPlaying.uri].name,
-                artist_name: tracksObj[card.nowPlaying.uri].artists.map(d => d.name).join(', '),
-                uri: card.nowPlaying.uri,
-                startTime: card.nowPlaying.startTime,
-                currentTime: card.nowPlaying.currentTime,
-                duration: card.nowPlaying.duration
-              }
-            }))
-
-          })
-          .then(cards => _this.setState({ cards }))
-
-      }).catch(console.error)
+  async _setServerOffset() {
+    // network time protocol implementation
+    try {
+      let clientTime = (new Date()).getTime()
+      let res = await get(constants.server + 'verify?clientTime=' + clientTime)
+      let nowTime = (new Date()).getTime()
+      let serverClientRequestDiffTime = res.diff
+      let serverTime = res.serverTime
+      let serverClientResponseDiffTime = nowTime - serverTime
+      let responseTime = (serverClientRequestDiffTime - nowTime + clientTime - serverClientResponseDiffTime) / 2
+      this.setState({ serverOffset: serverClientResponseDiffTime - responseTime })
+    } catch(error) {
+      console.error(error)
+    }
   }
 
-  _updateTimer() {
-    let _this = this;
-    clearInterval(this.t)
+  async _getChannels() {
+    try {
+      let channelsData = await get(constants.server + '/channels')
+      let cards = channelsData.channels.map(d => d.id)
 
-    this.t = setInterval(() => {
-      let cards = _this.state.cards.map(card => {
-        let newCard = card;
-        let date = new Date();
-        newCard.nowPlaying.currentTime = date.getTime() - newCard.nowPlaying.startTime;
-        return newCard;
-      })
-
-      _this.setState({ cards })
-    }, 100);
+      this.setState({ cards })
+    } catch(error) {
+      console.error(error)
+    }
   }
+
 
   render() {
 
@@ -204,14 +144,6 @@ class ExploreScene extends Component {
               this.props.openPlayer(card.channelId)
             }
 
-            let channelCard = <ChannelCard
-              title={card.title}
-              host={card.host}
-              favorite={card.favorite}
-              nowPlaying={card.nowPlaying}
-              border={true}
-            />
-
             let swipeButtonComponent = (
               <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'center' }}>
                 <Button>Save</Button>
@@ -241,7 +173,7 @@ class ExploreScene extends Component {
                     activeOpacity={0.7}
                     onPress={press}
                     style={{ overflow: 'visible' }} >
-                    {channelCard}
+                    <ChannelCard socket={this.props.socket} id={card} border={true} />
                   </TouchableOpacity>
                 </Swipeout>
               </View>

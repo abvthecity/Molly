@@ -20,7 +20,7 @@ import BlurStatusBar from '../components/BlurStatusBar'
 import Listitem from '../components/Listitem'
 import SongListitem from '../components/SongListitem'
 import Card from '../components/Card'
-import NowPlayingCardView from '../components/NowPlayingCardView'
+import ChannelCardNowPlayingView from '../components/ChannelCardNowPlayingView'
 import HeadingWithAction from '../components/HeadingWithAction'
 import Button from '../components/Button'
 import Swipeout from '../components/Swipeout'
@@ -35,6 +35,7 @@ class BroadcastScene extends Component {
   constructor(props) {
     super(props)
 
+    this.socketId = null
     this._addSong =       this._addSong.bind(this)
     this._renderHeader =  this._renderHeader.bind(this)
     this._onMessage =     this._onMessage.bind(this)
@@ -54,6 +55,8 @@ class BroadcastScene extends Component {
     hostName:     null,
     channelName:  null,
     serverOffset: 0,
+    swiperContext: null,
+    swiperIndex: 0,
 
     // nowPlaying: {
     //   uri: null,
@@ -84,44 +87,78 @@ class BroadcastScene extends Component {
 
   componentWillMount() {
     // add an emit listener
-    this.props.socket.addListener("broadcast", this._onMessage)
+    this.socketId = this.props.socket.addListener(this._onMessage)
+
+    this._setServerOffset()
 
     // get the channel's info
     this._fetchCurrentInfo()
   }
 
-  _fetchCurrentInfo() {
-    let _this = this
+  componentWillUnmount() {
+    this.props.socket.removeListener(this.socketId)
+    clearInterval(this.t)
+  }
+
+  _onMessage(e) {
+    // console.log(e)
+    if (e.emit == 'channel_updated' && e.channel == this.props.clientId) {
+      Object.assign(e.data, { timeStamp: e.timeStamp })
+      this._updateChannel(e.data)
+    }
+  }
+
+  async _setServerOffset() {
+    // network time protocol implementation
+    try {
+      let clientTime = (new Date()).getTime()
+      let res = await get(constants.server + 'verify?clientTime=' + clientTime)
+      let nowTime = (new Date()).getTime()
+      let serverClientRequestDiffTime = res.diff
+      let serverTime = res.serverTime
+      let serverClientResponseDiffTime = nowTime - serverTime
+      let responseTime = (serverClientRequestDiffTime - nowTime + clientTime - serverClientResponseDiffTime) / 2
+      this.setState({ serverOffset: serverClientResponseDiffTime - responseTime })
+    } catch(error) { console.error(error) }
+  }
+
+  async _fetchCurrentInfo() {
     if (!this.props.clientId) return;
 
-    // get the channel's info
-    get(constants.server + 'channel?id=' + this.props.clientId)
-      .then(res => {
-        if ('error' in res) {
-          // channel doesn't exist? That's ok. We'll create a new one
-          return post(constants.server + 'channel', {
-            host: this.props.clientId,
-            name: this.props.clientId + '\'s Channel',
-          }).then(data => data.channel)
-        } else return res
-      }).then(this._updateChannel) // update channel simply updates the state
-      .catch(console.error);
+    try {
+      // get the channel's info
+      let channelInfo = await get(constants.server + 'channel?id=' + this.props.clientId)
+      if ('error' in channelInfo) {
+        // channel doesn't exist? That's ok. We'll create a new one
+        channelInfo = (await post(constants.server + 'channel', {
+          host: this.props.clientId,
+          name: this.props.clientId + '\'s Channel',
+        })).channel
+      }
+      // update channel simply updates the state
+      this._updateChannel(channelInfo)
+    } catch(error) {
+      console.error(error)
+    }
+
   }
 
   async _updateChannel(channelData) {
-    let _this = this
 
     // set basic info
     let newState = {
       channelName: channelData.name,
       hostName: channelData.hostId,
       live: channelData.isLive,
-      serverOffset: channelData.serverOffset,
+      timeStamp: channelData.timeStamp
     }
 
     // set nowPlaying
     if (channelData.currentTrackURI) {
+
+      // inherit old data
       newState.nowPlaying = this.state.nowPlaying
+
       if (newState.nowPlaying === null) {
         newState.nowPlaying = {
           uri: null,
@@ -134,15 +171,17 @@ class BroadcastScene extends Component {
         }
       }
 
-      Object.assign(newState.nowPlaying, {
+      newState.nowPlaying = Object.assign({}, newState.nowPlaying, {
         uri: channelData.currentTrackURI,
-        startTime: channelData.currentTrackStartTime - channelData.serverOffset,
+        startTime: channelData.currentTrackStartTime - this.state.serverOffset,
         currentTime: channelData.currentTrackTime,
         duration: channelData.currentTrackDuration
       })
 
+      console.log(newState.nowPlaying)
+
       // update info if necessary
-      if (this.state.nowPlaying === null) {
+      if (this.state.nowPlaying === null || this.state.nowPlaying.uri !== channelData.currentTrackURI) {
         try {
           let spotifyData = await get(constants.spotify + 'tracks/' + channelData.currentTrackURI.split(':').pop())
           Image.prefetch(spotifyData.album.images[1].url)
@@ -170,8 +209,8 @@ class BroadcastScene extends Component {
             currentTime: 0,
             duration: spotifyData.duration_ms,
             album_cover: { uri: spotifyData.album.images[1].url },
-            song_title: null,
-            artist_name: null,
+            song_title: spotifyData.name,
+            artist_name: spotifyData.artists.map(d => d.name).join(', '),
           }
         } catch(error) {
           console.error(error)
@@ -195,19 +234,14 @@ class BroadcastScene extends Component {
       }
     } else newState.upNext = []
 
+    if (newState.timeStamp && newState.timeStamp < this.state.timeStamp) return;
     this.setState(newState, this._updateTimer)
-  }
 
-  componentWillUnmount() {
-    this.props.socket.removeListener("broadcast")
-  }
-
-  _onMessage(e) {
-    // console.log(e)
-    if (e.emit == 'channel_updated' && e.channel == this.props.clientId) {
-      Object.assign(e.data, { serverOffset: this.state.serverOffset })
-      this._updateChannel(e.data)
+    if (this.state.swiperContext && this.state.swiperindex !== 0) {
+      this.state.swiperContext.scrollBy(-this.state.swiperIndex, false)
+      this.setState({ swiperindex: 0 })
     }
+
   }
 
   _updateTimer() {
@@ -221,8 +255,7 @@ class BroadcastScene extends Component {
       if (_this.state.nowPlaying === null) return;
 
       let nowPlaying = _this.state.nowPlaying;
-      let date = new Date();
-      nowPlaying.currentTime = date.getTime() - nowPlaying.startTime
+      nowPlaying.currentTime = (new Date()).getTime() - nowPlaying.startTime
 
       _this.setState({ nowPlaying })
 
@@ -269,10 +302,11 @@ class BroadcastScene extends Component {
   }
 
   _onMomentumScrollEnd(e, state, context) {
-
+    this.setState({
+      swiperContext: context,
+      swiperIndex: state.index
+    })
     if (state.index !== 0) {
-      context.scrollBy(-state.index, false)
-
       this.props.socket.send(JSON.stringify({ emit: 'skipSongInChannel', channel: this.props.clientId }))
     }
   }
@@ -324,12 +358,12 @@ class BroadcastScene extends Component {
           showsButtons={false}
           onMomentumScrollEnd={this._onMomentumScrollEnd}>
           <Card style={{ flex: 1, marginRight: constants.unit * 3 }}>
-            <NowPlayingCardView nowPlaying={this.state.nowPlaying} />
+            <ChannelCardNowPlayingView nowPlaying={this.state.nowPlaying} />
           </Card>
           {(() => {
             if (this.state.playingNext) {
               return (<Card style={{ flex: 1, marginRight: constants.unit * 3 }}>
-                <NowPlayingCardView nowPlaying={this.state.playingNext} />
+                <ChannelCardNowPlayingView nowPlaying={this.state.playingNext} />
               </Card>)
             } else {
               return (<View style={{

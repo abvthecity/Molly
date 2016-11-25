@@ -3,6 +3,7 @@
 	<name>Molly_Server</name>
 	<comment></comment>
 	<projects>
+		<project>Servers</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

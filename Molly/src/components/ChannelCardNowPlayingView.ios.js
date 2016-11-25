@@ -6,16 +6,9 @@ import {
 
 import constants from '../common/constants'
 
-function millisToMinutesAndSeconds(millis) {
-  var minutes = Math.floor(millis / 60000);
-  var seconds = ((millis % 60000) / 1000).toFixed(0);
-  return minutes + ":" + (seconds < 10 ? '0' : '') + seconds;
-}
+const ChannelCardNowPlayingView = props => {
 
-
-const NowPlayingCardView = props => {
-
-  if (props.nowPlaying.uri) {
+  if (props.nowPlaying && props.nowPlaying.uri) {
     return (
       <View style={styles.playing}>
         <View style={styles.playing_album_art}>
@@ -36,7 +29,7 @@ const NowPlayingCardView = props => {
             />
             <Text style={{ fontSize: 13, fontWeight: '500', color: '#B2B2B2', textAlign: 'right' }}>
               {/* {props.nowPlaying.duration} */}
-              {millisToMinutesAndSeconds(props.nowPlaying.currentTime)}
+              {constants.millisToMinutesAndSeconds(props.nowPlaying.currentTime)}
             </Text>
           </View>
           {/* <Text style={[styles.smallText, { color: '#808080' }]}>N/A LISTENERS</Text> */}
@@ -52,7 +45,7 @@ const NowPlayingCardView = props => {
   }
 }
 
-NowPlayingCardView.propTypes = {
+ChannelCardNowPlayingView.propTypes = {
   nowPlaying: PropTypes.shape({
     album_cover: PropTypes.object,
     song_title: PropTypes.string,
@@ -63,7 +56,7 @@ NowPlayingCardView.propTypes = {
   })
 }
 
-NowPlayingCardView.defaultProps = {
+ChannelCardNowPlayingView.defaultProps = {
   nowPlaying: {
     album_cover: null,
     song_title: null,
@@ -102,4 +95,4 @@ const styles = StyleSheet.create({
   }
 })
 
-export default NowPlayingCardView
+export default ChannelCardNowPlayingView

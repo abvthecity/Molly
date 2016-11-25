@@ -44,16 +44,16 @@ const styles = StyleSheet.create({
     borderRadius: constants.borderRadiusLg,
   },
   cardBorder: {
-    borderWidth: StyleSheet.hairlineWidth,
+    // borderWidth: StyleSheet.hairlineWidth,
   },
   cardShadow: {
     shadowColor: 'black',
     shadowOffset: {
       width: 0,
-      height: 7,
+      height: 4,
     },
     shadowOpacity: 0.25,
-    shadowRadius: 30,
+    shadowRadius: 20,
     overflow: 'visible'
   },
   card_wrap: {
