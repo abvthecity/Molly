@@ -245,6 +245,7 @@ class SpotifyAPI: RCTEventEmitter, SPTAudioStreamingDelegate {
         if error == nil {
           callback([NSNull()])
         } else {
+          print(error!)
           callback([error!])
         }
       })
@@ -294,11 +295,11 @@ class SpotifyAPI: RCTEventEmitter, SPTAudioStreamingDelegate {
     }
   }
 
-  // Get current track's seconds
-  @objc(getCurrentSeconds:)
-  func getCurrentSeconds(callback: @escaping RCTResponseSenderBlock) {
+  // Get current track's milliseconds
+  @objc(getCurrentPosition:)
+  func getCurrentPosition(callback: @escaping RCTResponseSenderBlock) {
     if (self.player != nil) {
-      callback([NSNull(), self.player.playbackState.position])
+      callback([NSNull(), self.player.playbackState.position * 1000.0])
     } else {
       callback([NSNull(), NSNull()])
     }

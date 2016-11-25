@@ -3,6 +3,9 @@ package server;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import org.json.simple.JSONObject;
+
 import java.util.Set;
 
 import classes.Channel;
@@ -19,24 +22,28 @@ public static Channel createChannel(String clientId, String channelName) {
 	}
 	
 	channels.put(channelId, new Channel(clientId, channelId, channelName));
+	emitUpdate();
 	return channels.get(channelId);
 }
 
 public static void removeChannel(String channelId) {
 	if (exists(channelId)) {
 		channels.remove(channelId);
+		emitUpdate();
 	}
 }
 
 public static void startChannel(String channelId) {
 	if (exists(channelId)) {
 		channels.get(channelId).goLive();
+		emitUpdate();
 	}
 }
 
 public static void stopChannel(String channelId) {
 	if (exists(channelId)) {
 		channels.get(channelId).goOffline();
+		emitUpdate();
 	}
 }
 
@@ -61,6 +68,12 @@ public static Map<String, Channel> getChannelsByClientId(String clientId) {
 	}
 
 	return outputMap;       // can be empty
+}
+
+public static void emitUpdate() {
+	JSONObject msg = new JSONObject();
+	msg.put("emit", "channels_list_updated");
+	ws.sendAll(msg);
 }
 
 public static int size() {

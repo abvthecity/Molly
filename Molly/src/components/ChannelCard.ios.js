@@ -133,7 +133,7 @@ class ChannelCard extends Component {
         }
       }
 
-      newState.nowPlaying = Object.assign({}, newState.nowPlaying, {
+      Object.assign(newState.nowPlaying, {
         uri: channelData.currentTrackURI,
         startTime: channelData.currentTrackStartTime - this.state.serverOffset,
         currentTime: channelData.currentTrackTime,
@@ -141,19 +141,16 @@ class ChannelCard extends Component {
       })
 
       // update info if necessary
-      if (this.state.nowPlaying === null || this.state.nowPlaying.uri !== channelData.currentTrackURI) {
-        try {
-          let spotifyData = await get(constants.spotify + 'tracks/' + channelData.currentTrackURI.split(':').pop())
-          Image.prefetch(spotifyData.album.images[1].url)
-          Object.assign(newState.nowPlaying, {
-            album_cover: { uri: spotifyData.album.images[1].url },
-            song_title: spotifyData.name,
-            artist_name: spotifyData.artists.map(d => d.name).join(', '),
-          })
-        } catch(error) {
-          console.error(error)
-        }
-
+      try {
+        let spotifyData = await get(constants.spotify + 'tracks/' + channelData.currentTrackURI.split(':').pop())
+        Image.prefetch(spotifyData.album.images[1].url)
+        Object.assign(newState.nowPlaying, {
+          album_cover: { uri: spotifyData.album.images[1].url },
+          song_title: spotifyData.name,
+          artist_name: spotifyData.artists.map(d => d.name).join(', '),
+        })
+      } catch(error) {
+        console.error(error)
       }
     } else newState.nowPlaying = null
 
@@ -181,7 +178,7 @@ class ChannelCard extends Component {
         _this._fetchCurrentInfo()
       }
 
-    }, 100);
+    }, 200);
   }
 
   render() {

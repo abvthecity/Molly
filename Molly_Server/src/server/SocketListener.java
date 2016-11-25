@@ -7,6 +7,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import classes.Song;
+import classes.User;
 
 public class SocketListener {
 public static WebsocketEndpoint ws;

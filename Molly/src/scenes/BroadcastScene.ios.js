@@ -35,7 +35,6 @@ class BroadcastScene extends Component {
   constructor(props) {
     super(props)
 
-    this.socketId = null
     this._addSong =       this._addSong.bind(this)
     this._renderHeader =  this._renderHeader.bind(this)
     this._onMessage =     this._onMessage.bind(this)
@@ -98,6 +97,12 @@ class BroadcastScene extends Component {
   componentWillUnmount() {
     this.props.socket.removeListener(this.socketId)
     clearInterval(this.t)
+    clearInterval(this.s)
+    if (this.serverOffsetInterval) clearInterval(this.serverOffsetInterval)
+
+    SpotifyAPI.setIsPlaying(false, error => {
+      if (error) console.log(error)
+    })
   }
 
   _onMessage(e) {
@@ -108,18 +113,21 @@ class BroadcastScene extends Component {
     }
   }
 
-  async _setServerOffset() {
+  _setServerOffset() {
     // network time protocol implementation
-    try {
-      let clientTime = (new Date()).getTime()
-      let res = await get(constants.server + 'verify?clientTime=' + clientTime)
-      let nowTime = (new Date()).getTime()
-      let serverClientRequestDiffTime = res.diff
-      let serverTime = res.serverTime
-      let serverClientResponseDiffTime = nowTime - serverTime
-      let responseTime = (serverClientRequestDiffTime - nowTime + clientTime - serverClientResponseDiffTime) / 2
-      this.setState({ serverOffset: serverClientResponseDiffTime - responseTime })
-    } catch(error) { console.error(error) }
+    async function offsetFunc() {
+      try {
+        let clientTime = (new Date()).getTime()
+        let res = await get(constants.server + 'verify?clientTime=' + clientTime)
+        let nowTime = (new Date()).getTime()
+        let serverClientRequestDiffTime = res.diff
+        let serverTime = res.serverTime
+        let serverClientResponseDiffTime = nowTime - serverTime
+        let responseTime = (serverClientRequestDiffTime - nowTime + clientTime - serverClientResponseDiffTime) / 2
+        this.setState({ serverOffset: serverClientResponseDiffTime - responseTime })
+      } catch(error) { console.error(error) }
+    }
+    this.serverOffsetInterval = setInterval(offsetFunc.bind(this), 10000)
   }
 
   async _fetchCurrentInfo() {
@@ -171,49 +179,58 @@ class BroadcastScene extends Component {
         }
       }
 
-      newState.nowPlaying = Object.assign({}, newState.nowPlaying, {
+      Object.assign(newState.nowPlaying, {
         uri: channelData.currentTrackURI,
-        startTime: channelData.currentTrackStartTime - this.state.serverOffset,
+        startTime: channelData.currentTrackStartTime,
         currentTime: channelData.currentTrackTime,
         duration: channelData.currentTrackDuration
       })
 
-      console.log(newState.nowPlaying)
+      SpotifyAPI.playURI(newState.nowPlaying.uri,
+        ((new Date()).getTime() - (newState.nowPlaying.startTime - this.state.serverOffset)),
+        error => {
+          if (error) console.log(error)
+          SpotifyAPI.setIsPlaying(true, error => {
+            if (error) return console.log(error)
+          })
+        })
 
       // update info if necessary
-      if (this.state.nowPlaying === null || this.state.nowPlaying.uri !== channelData.currentTrackURI) {
-        try {
-          let spotifyData = await get(constants.spotify + 'tracks/' + channelData.currentTrackURI.split(':').pop())
-          Image.prefetch(spotifyData.album.images[1].url)
-          Object.assign(newState.nowPlaying, {
-            album_cover: { uri: spotifyData.album.images[1].url },
-            song_title: spotifyData.name,
-            artist_name: spotifyData.artists.map(d => d.name).join(', '),
-          })
-        } catch(error) {
-          console.error(error)
-        }
+      try {
+        console.log("UPDATED")
+        let spotifyData = await get(constants.spotify + 'tracks/' + channelData.currentTrackURI.split(':').pop())
+        Image.prefetch(spotifyData.album.images[1].url)
+        Object.assign(newState.nowPlaying, {
+          album_cover: { uri: spotifyData.album.images[1].url },
+          song_title: spotifyData.name,
+          artist_name: spotifyData.artists.map(d => d.name).join(', '),
+        })
+      } catch(error) {
+        console.error(error)
       }
-    } else newState.nowPlaying = null
+    } else {
+      newState.nowPlaying = null
+      SpotifyAPI.setIsPlaying(false, error => {
+        if (error) return console.log(error)
+      })
+    }
 
     // get playingNext data
     if (channelData.upNext.length > 0) {
-      if (this.state.playingNext === null) {
-        try {
-          let spotifyData = await get(constants.spotify + 'tracks/' + channelData.upNext[0].split(':').pop())
-          Image.prefetch(spotifyData.album.images[1].url)
-          newState.playingNext = {
-            uri: spotifyData.uri,
-            startTime: 0,
-            currentTime: 0,
-            duration: spotifyData.duration_ms,
-            album_cover: { uri: spotifyData.album.images[1].url },
-            song_title: spotifyData.name,
-            artist_name: spotifyData.artists.map(d => d.name).join(', '),
-          }
-        } catch(error) {
-          console.error(error)
+      try {
+        let spotifyData = await get(constants.spotify + 'tracks/' + channelData.upNext[0].split(':').pop())
+        Image.prefetch(spotifyData.album.images[1].url)
+        newState.playingNext = {
+          uri: spotifyData.uri,
+          startTime: 0,
+          currentTime: 0,
+          duration: spotifyData.duration_ms,
+          album_cover: { uri: spotifyData.album.images[1].url },
+          song_title: spotifyData.name,
+          artist_name: spotifyData.artists.map(d => d.name).join(', '),
         }
+      } catch(error) {
+        console.error(error)
       }
     } else newState.playingNext = null
 
@@ -225,7 +242,7 @@ class BroadcastScene extends Component {
         let tracksObj = {}
         for (let track of spotifyData.tracks) {
           tracksObj[track.uri] = track
-          Image.prefetch(track.album.images[0].url)
+          Image.prefetch(track.album.images[1].url)
         }
         newState.upNext = channelData.upNext.map(trackId => tracksObj[trackId])
       } catch(error) {
@@ -233,12 +250,13 @@ class BroadcastScene extends Component {
       }
     } else newState.upNext = []
 
+    // update state
     if (newState.timeStamp && newState.timeStamp < this.state.timeStamp) return;
     this.setState(newState, this._updateTimer)
 
-    if (this.state.swiperContext && this.state.swiperindex !== 0) {
+    if (this.state.nowPlaying && this.state.swiperIndex !== 0) {
       this.state.swiperContext.scrollBy(-this.state.swiperIndex, false)
-      this.setState({ swiperindex: 0 })
+      this.setState({ swiperIndex: 0 })
     }
 
   }
@@ -246,6 +264,7 @@ class BroadcastScene extends Component {
   _updateTimer() {
     let _this = this;
     clearInterval(this.t)
+    clearInterval(this.s)
 
     if (!this.state.live) return;
 
@@ -254,7 +273,7 @@ class BroadcastScene extends Component {
       if (_this.state.nowPlaying === null) return;
 
       let nowPlaying = _this.state.nowPlaying;
-      nowPlaying.currentTime = (new Date()).getTime() - nowPlaying.startTime
+      nowPlaying.currentTime = (new Date()).getTime() - (nowPlaying.startTime - this.state.serverOffset)
 
       _this.setState({ nowPlaying })
 
@@ -263,6 +282,23 @@ class BroadcastScene extends Component {
       }
 
     }, 100);
+
+    this.s = setInterval(() => {
+      // this is some broken magic shit
+      // todo: clean this up
+      if (this.state.nowPlaying) {
+        SpotifyAPI.getCurrentPosition((error, ms) => {
+          let diff = ms-((new Date()).getTime() - this.state.nowPlaying.startTime)
+          console.log(diff)
+          let myTime = ((new Date()).getTime() - this.state.nowPlaying.startTime)
+          if (Math.round(ms) > myTime + 100 || Math.round(ms) < myTime - 100) {
+            SpotifyAPI.seekTo((Math.round(ms) - diff) + 380, error => {
+              if (error) return console.log(error)
+            })
+          }
+        })
+      }
+    }, 1000)
   }
 
   _flipSwitch(value) {
@@ -272,12 +308,12 @@ class BroadcastScene extends Component {
         channel: this.props.clientId
       }))
     } else {
-      AlertIOS.alert('End broadcast?', 'Ending this session will kick listeners off. Are you sure?', () => {
+      // AlertIOS.alert('End broadcast?', 'Ending this session will kick listeners off. Are you sure?', () => {
         this.props.socket.send(JSON.stringify({
           emit: 'stopChannel',
           channel: this.props.clientId
         }))
-      })
+      // })
     }
   }
 
@@ -319,12 +355,6 @@ class BroadcastScene extends Component {
         duration: track.duration_ms
       }
     }))
-
-    this.setState({
-      searchSpotify: false,
-      query: '',
-      spotifySearchResults: [],
-    })
   }
 
   _removeSong(index) {

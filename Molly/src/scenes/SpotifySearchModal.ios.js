@@ -60,8 +60,9 @@ class SpotifySearchModal extends Component {
             style={styles.search_input}
             onChangeText={this._onChangeText}
             onEndEditing={this._spotifySearch} />
-            <Button style={{ marginLeft: constants.unit * 2}} onPress={this.props.cancel}>Cancel</Button>
+            <Button style={{ marginLeft: constants.unit * 2}} onPress={this.props.cancel}>Close</Button>
         </BlurView>
+        <View style={styles.separator} />
 
         <ScrollView style={{ flex: 1 }}>
           {this.state.results.map((track, i) => (
@@ -87,8 +88,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-end',
     alignItems: 'center',
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: '#C8C7CC'
+  },
+  separator: {
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: '#C8C7CC'
   },
   search_input: {
     flex: 1,

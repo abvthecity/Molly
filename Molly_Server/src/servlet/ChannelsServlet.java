@@ -36,7 +36,7 @@ protected void doGet(HttpServletRequest request, HttpServletResponse response) t
 	JSONArray channelsArr = new JSONArray();
 	for (Channel ch : ChannelManager.channels.values()) {
 //		if (ch.isLive) {
-			channelsArr.add(ch.toJSON());
+			channelsArr.add(ch.channelId);
 //		}
 	}
 

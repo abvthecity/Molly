@@ -21,11 +21,6 @@ import Button from '../components/Button'
 
 class FavoritesScene extends Component {
 
-  constructor(props) {
-    super(props);
-    this.socketId = null
-  }
-
   static propTypes = {
     goBack: PropTypes.func
   }

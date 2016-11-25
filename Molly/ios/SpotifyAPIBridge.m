@@ -29,6 +29,6 @@ RCT_EXTERN_METHOD(nextSongURI:(RCTResponseSenderBlock)callback)
 RCT_EXTERN_METHOD(searchForMusic:(NSString *)searchQuery queryType:(NSString *)queryType callback:(RCTResponseSenderBlock)callback)
 RCT_EXTERN_METHOD(getMetadata:(RCTResponseSenderBlock)callback)
 RCT_EXTERN_METHOD(getMetadata:(NSString *)songURI callback:(RCTResponseSenderBlock)callback)
-RCT_EXTERN_METHOD(getCurrentSeconds:(RCTResponseSenderBlock)callback)
+RCT_EXTERN_METHOD(getCurrentPosition:(RCTResponseSenderBlock)callback)
 
 @end

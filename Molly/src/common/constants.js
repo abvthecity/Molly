@@ -1,3 +1,6 @@
+let server = '192.168.1.75'
+let port = '8080'
+
 export default {
   // styles
   borderRadiusSm: 4,
@@ -8,7 +11,8 @@ export default {
 
   // http urls
   spotify: 'https://api.spotify.com/v1/',
-  server: 'http://localhost:8080/Molly_Server/',
+  server: 'http://'+ server +':'+ port +'/Molly_Server/',
+  socket: 'ws://'+ server +':'+ port +'/Molly_Server/ws',
 
   // functions
   millisToMinutesAndSeconds: function (millis) {

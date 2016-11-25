@@ -1,4 +1,5 @@
 import shortid from 'shortid'
+import constants from './constants'
 
 function isFunction(functionToCheck) {
  var getType = {};
@@ -9,7 +10,7 @@ class socket {
 
   constructor() {
 
-    this.ws = new WebSocket("ws://localhost:8080/Molly_Server/ws")
+    this.ws = new WebSocket(constants.socket)
     this.connected = false
     this.listeners = {}
 

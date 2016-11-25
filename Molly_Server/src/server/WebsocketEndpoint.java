@@ -45,7 +45,7 @@ import messages.UpdatePlaylistMessage;
 public class WebsocketEndpoint {
 private static final Logger logger = Logger.getLogger("BotEndpoint");
 private static final JSONParser parser = new JSONParser();
-private final Set<Session> sessions = new HashSet<>();
+private static final Map<String, Session> sessions = new HashMap<String, Session>();
 private static Lock lock = new ReentrantLock();
 
 public WebsocketEndpoint() {
@@ -57,7 +57,7 @@ public WebsocketEndpoint() {
 public void openConnection(Session session) {
 	lock.lock();
 	logger.log(Level.INFO, "Connection opened. (id:)" + session.getId());
-	sessions.add(session);
+	sessions.put(session.getId(), session);
 	lock.unlock();
 }
 
@@ -65,7 +65,7 @@ public void openConnection(Session session) {
 public void close(Session session) {
 	lock.lock();
 	logger.log(Level.INFO, "Connection closed. (id:)" + session.getId());
-	sessions.remove(session);
+	sessions.remove(session.getId());
 	lock.unlock();
 }
 
@@ -93,7 +93,7 @@ public void onMessage(String message, Session session) {
 
 public void sendAll(JSONObject msg) {
 	lock.lock();
-	for (Session e : sessions) {
+	for (Session e : sessions.values()) {
 		sendToSession(e, msg);
 	}
 	lock.unlock();
@@ -103,7 +103,7 @@ private void sendToSession(Session session, JSONObject message) {
 	try {
 		session.getBasicRemote().sendText(message.toJSONString());
 	} catch (IOException ex) {
-		sessions.remove(session);
+		sessions.remove(session.getId());
 		logger.log(Level.SEVERE, ex.getMessage(), ex.getStackTrace());
 	}
 }

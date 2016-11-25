@@ -28,8 +28,8 @@ public boolean isLive;
 
 public String currentSongURI;
 public long startTime;     // SYSTEM milliseconds
-public long currentTime;     // ms, percent of duration
-public long duration;     // ms, duration given by spotify
+public long currentTime;   // ms, percent of duration
+public long duration;      // ms, duration given by spotify
 
 public Channel(String clientId, String channelId, String channelName){
 	this.clientId = clientId;

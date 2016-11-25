@@ -22,7 +22,7 @@ class ExploreScene extends Component {
 
   constructor(props) {
     super(props)
-    this.socketId = null
+    this._onMessage = this._onMessage.bind(this)
   }
 
   state = {
@@ -32,12 +32,10 @@ class ExploreScene extends Component {
   }
 
   componentWillMount() {
-    fetch(constants.spotify + 'users/' + this.props.clientId)
-      .then(res => res.json())
+    get(constants.spotify + 'users/' + this.props.clientId)
       .then(res => this.setState({ name: res.display_name }))
       .catch(console.error)
 
-    this._setServerOffset()
     this._getChannels()
 
     // establish a socket here!
@@ -49,30 +47,15 @@ class ExploreScene extends Component {
     clearInterval(this.t)
   }
 
-  _onMessage() {
-    // something happnes here
-  }
-
-  async _setServerOffset() {
-    // network time protocol implementation
-    try {
-      let clientTime = (new Date()).getTime()
-      let res = await get(constants.server + 'verify?clientTime=' + clientTime)
-      let nowTime = (new Date()).getTime()
-      let serverClientRequestDiffTime = res.diff
-      let serverTime = res.serverTime
-      let serverClientResponseDiffTime = nowTime - serverTime
-      let responseTime = (serverClientRequestDiffTime - nowTime + clientTime - serverClientResponseDiffTime) / 2
-      this.setState({ serverOffset: serverClientResponseDiffTime - responseTime })
-    } catch(error) {
-      console.error(error)
+  _onMessage(e) {
+    if (e.emit == 'channels_list_updated') {
+      this._getChannels()
     }
   }
 
   async _getChannels() {
     try {
-      let channelsData = await get(constants.server + '/channels')
-      let cards = channelsData.channels.map(d => d.id)
+      let cards = (await get(constants.server + '/channels')).channels
 
       this.setState({ cards })
     } catch(error) {
@@ -141,7 +124,7 @@ class ExploreScene extends Component {
           {this.state.cards.map((card, i) => {
 
             let press = e => {
-              this.props.openPlayer(card.channelId)
+              this.props.openPlayer(card)
             }
 
             let swipeButtonComponent = (
