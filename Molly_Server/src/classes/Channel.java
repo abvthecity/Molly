@@ -182,6 +182,7 @@ public JSONObject toJSON() {
 	    name: string,
 	    favorite: bool,
 	    isLive: bool,
+	    listenerCount: int, 
 	    currentTrackURI: string, (optional)
 	    currentTrackTime: number, (optional)
 	    currentTrackDuration: number (optional)
@@ -194,6 +195,7 @@ public JSONObject toJSON() {
 	obj.put("name", channelName);
 	obj.put("favorite", false);
 	obj.put("isLive", isLive);
+	obj.put("listenerCount", listenerCount);
 
 	if (currentSongURI != null) {
 		obj.put("currentTrackURI", currentSongURI);

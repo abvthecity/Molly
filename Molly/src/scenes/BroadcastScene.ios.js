@@ -193,7 +193,6 @@ class BroadcastScene extends Component {
         } catch(error) {
           console.error(error)
         }
-
       }
     } else newState.nowPlaying = null
 
