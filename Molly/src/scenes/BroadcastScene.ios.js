@@ -176,6 +176,7 @@ class BroadcastScene extends Component {
           album_cover: null,
           song_title: null,
           artist_name: null,
+          listener_count: 0
         }
       }
 
@@ -183,7 +184,8 @@ class BroadcastScene extends Component {
         uri: channelData.currentTrackURI,
         startTime: channelData.currentTrackStartTime,
         currentTime: channelData.currentTrackTime,
-        duration: channelData.currentTrackDuration
+        duration: channelData.currentTrackDuration,
+        listener_count: channelData.listenerCount,
       })
 
       SpotifyAPI.playURI(newState.nowPlaying.uri,
@@ -289,7 +291,7 @@ class BroadcastScene extends Component {
       if (this.state.nowPlaying) {
         SpotifyAPI.getCurrentPosition((error, ms) => {
           let diff = ms-((new Date()).getTime() - this.state.nowPlaying.startTime)
-          console.log(diff)
+          // console.log(diff)
           let myTime = ((new Date()).getTime() - this.state.nowPlaying.startTime)
           if (Math.round(ms) > myTime + 100 || Math.round(ms) < myTime - 100) {
             SpotifyAPI.seekTo((Math.round(ms) - diff) + 380, error => {

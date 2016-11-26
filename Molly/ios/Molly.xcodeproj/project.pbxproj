@@ -28,6 +28,7 @@
 		B620FE6D1DDDBF4B008A2A1A /* SpotifyAPIBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = B620FE6C1DDDBF4B008A2A1A /* SpotifyAPIBridge.m */; };
 		B6F7C6C01DDDA351004BE494 /* SpotifyAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6F7C6BE1DDDA351004BE494 /* SpotifyAPI.swift */; };
 		C4BBF2AA9D354B589E4CC39D /* libRNBlur.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 658F1BB148A2455AAD90386A /* libRNBlur.a */; };
+		F205B7D41DE8F20700072AC1 /* vinyl@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = F205B7D31DE8F20700072AC1 /* vinyl@3x.png */; };
 		F2AEBCED1DDEEB400088A9E4 /* SpotifyAudioPlayback.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F2AEBCEA1DDEEB400088A9E4 /* SpotifyAudioPlayback.framework */; };
 		F2AEBCEE1DDEEB400088A9E4 /* SpotifyAuthentication.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F2AEBCEB1DDEEB400088A9E4 /* SpotifyAuthentication.framework */; };
 		F2AEBCEF1DDEEB400088A9E4 /* SpotifyMetadata.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F2AEBCEC1DDEEB400088A9E4 /* SpotifyMetadata.framework */; };
@@ -208,6 +209,7 @@
 		B6F7C6AA1DDDA351004BE494 /* Molly-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Molly-Bridging-Header.h"; sourceTree = "<group>"; };
 		B6F7C6BE1DDDA351004BE494 /* SpotifyAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpotifyAPI.swift; sourceTree = "<group>"; };
 		BD596AFC4A3E4D298356EDCB /* RNBlur.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNBlur.xcodeproj; path = "../node_modules/react-native-blur/ios/RNBlur.xcodeproj"; sourceTree = "<group>"; };
+		F205B7D31DE8F20700072AC1 /* vinyl@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "vinyl@3x.png"; sourceTree = "<group>"; };
 		F2AEBCEA1DDEEB400088A9E4 /* SpotifyAudioPlayback.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SpotifyAudioPlayback.framework; sourceTree = "<group>"; };
 		F2AEBCEB1DDEEB400088A9E4 /* SpotifyAuthentication.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SpotifyAuthentication.framework; sourceTree = "<group>"; };
 		F2AEBCEC1DDEEB400088A9E4 /* SpotifyMetadata.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SpotifyMetadata.framework; sourceTree = "<group>"; };
@@ -337,6 +339,7 @@
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				13B07FB11A68108700A75B9A /* LaunchScreen.xib */,
+				F205B7D31DE8F20700072AC1 /* vinyl@3x.png */,
 				13B07FB71A68108700A75B9A /* main.m */,
 				B6F7C6AA1DDDA351004BE494 /* Molly-Bridging-Header.h */,
 			);
@@ -715,6 +718,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F205B7D41DE8F20700072AC1 /* vinyl@3x.png in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
 			);

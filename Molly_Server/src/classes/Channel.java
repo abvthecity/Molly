@@ -105,16 +105,16 @@ public void addSong(Song song) {
 public void addUser(User user) {
 	lock.lock();
 	userQueue.add(user);
-	emitUpdate();
 	listenerCount = userQueue.size();
+	emitUpdate();
 	lock.unlock();
 }
 
 public void removeUser(String clientId) {
 	lock.lock();
 	userQueue.remove(clientId);
-	emitUpdate();
 	listenerCount = userQueue.size();
+	emitUpdate();
 	lock.unlock();
 }
 

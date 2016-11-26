@@ -32,7 +32,11 @@ const ChannelCardNowPlayingView = props => {
               {constants.millisToMinutesAndSeconds(props.nowPlaying.currentTime)}
             </Text>
           </View>
-          {/* <Text style={[styles.smallText, { color: '#808080' }]}>N/A LISTENERS</Text> */}
+          {/* {(() => {
+            if (props.nowPlaying.listener_count) { */}
+              <Text style={[styles.smallText, { color: '#808080' }]}>{props.nowPlaying.listener_count} LISTENERS</Text>
+            {/* } */}
+          {/* })()} */}
         </View>
       </View>
     )
@@ -52,7 +56,8 @@ ChannelCardNowPlayingView.propTypes = {
     artist_name: PropTypes.string,
     uri: PropTypes.string,
     currentTime: PropTypes.number,
-    duration: PropTypes.number
+    duration: PropTypes.number,
+    listener_count: PropTypes.number,
   })
 }
 
@@ -63,7 +68,8 @@ ChannelCardNowPlayingView.defaultProps = {
     artist_name: null,
     uri: null,
     currentTime: 0,
-    duration: 1
+    duration: 1,
+    listener_count: 0,
   }
 }
 
