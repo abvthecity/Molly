@@ -38,7 +38,7 @@ public Channel(String clientId, String channelId, String channelName){
 	this.songQueue = new ArrayList<Song>();
 	this.userQueue = new ArrayList<User>();
 	listenerCount = 0;
-	
+
 	startTime = System.currentTimeMillis();
 	isLive = false;
 }
@@ -122,7 +122,7 @@ public void replaceQueue(List<Song> newQueue) {
 	lock.lock();
 	this.songQueue = (ArrayList<Song>) newQueue;
 	emitUpdate();
-	if (!newQueue.isEmpty()) 
+	if (!newQueue.isEmpty())
 		queueNotEmpty.signal();
 	lock.unlock();
 }
@@ -132,6 +132,8 @@ public void setChannelName(String channelName) {
 	this.channelName = channelName;
 	lock.unlock();
 }
+
+public void setNumChannelLikes(
 
 public void goLive() {
 	lock.lock();
@@ -182,7 +184,7 @@ public JSONObject toJSON() {
 	    name: string,
 	    favorite: bool,
 	    isLive: bool,
-	    listenerCount: int, 
+	    listenerCount: int,
 	    currentTrackURI: string, (optional)
 	    currentTrackTime: number, (optional)
 	    currentTrackDuration: number (optional)
