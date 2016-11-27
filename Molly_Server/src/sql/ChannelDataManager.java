@@ -194,32 +194,6 @@ public static Channel getChannel(String clientID){
 
 			int dislikes = getDislikes(clientID);
 			channel.setNumChannelDislikes(dislikes);
-			//System.out.println("UserDataManager : "+user.getIfCLientIsDJ());
-			Connection conn = null;
-			PreparedStatement ps = null;
-			try {
-				Class.forName(JDBC_DRIVER);
-				conn = DriverManager.getConnection(DB_URL);
-				ps = conn.prepareStatement("UPDATE Channel SET dislikesNum="+dislikes+" WHERE clientID=?");
-				ps.setString(1, clientID);
-				int result = ps.executeUpdate();
-				if (result == 0) {
-					System.out.println("UserDataManager.createUser|user: clientID "
-							+ clientID + " not in database, couldn't set as dj.");
-				}
-
-			} catch (SQLException sqle) {
-				System.out.println ("UserDataManager SQLException: " + sqle.getMessage());
-			} catch (ClassNotFoundException cnfe) {
-				System.out.println ("UserDataManager ClassNotFoundException: " + cnfe.getMessage());
-			} finally {
-				try {
-					ps.close();
-				} catch (SQLException e) { /* Do nothing */ }
-				try {
-					conn.close();
-				} catch (SQLException e) { /* Do nothing */ }
-			}
 	}
 
 	public static int getLikes(String clientID){
@@ -288,35 +262,8 @@ public static Channel getChannel(String clientID){
 	}
 
 	public static void setLikes(String clientID){
-
 			int likes = getLikes(clientID);
 			channel.setNumChannelLikes(likes);
-			//System.out.println("UserDataManager : "+user.getIfCLientIsDJ());
-			Connection conn = null;
-			PreparedStatement ps = null;
-			try {
-				Class.forName(JDBC_DRIVER);
-				conn = DriverManager.getConnection(DB_URL);
-				ps = conn.prepareStatement("UPDATE Channel SET likesNum="+likes+" WHERE clientID=?");
-				ps.setString(1, clientID);
-				int result = ps.executeUpdate();
-				if (result == 0) {
-					System.out.println("UserDataManager.createUser|user: clientID "
-							+ clientID + " not in database, couldn't set as dj.");
-				}
-
-			} catch (SQLException sqle) {
-				System.out.println ("UserDataManager SQLException: " + sqle.getMessage());
-			} catch (ClassNotFoundException cnfe) {
-				System.out.println ("UserDataManager ClassNotFoundException: " + cnfe.getMessage());
-			} finally {
-				try {
-					ps.close();
-				} catch (SQLException e) { /* Do nothing */ }
-				try {
-					conn.close();
-				} catch (SQLException e) { /* Do nothing */ }
-			}
 	}
 
 	public static int getNumChannelSubscribers(String clientID){

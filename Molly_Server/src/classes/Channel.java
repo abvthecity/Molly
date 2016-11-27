@@ -30,6 +30,9 @@ public String currentSongURI;
 public long startTime;     // SYSTEM milliseconds
 public long currentTime;   // ms, percent of duration
 public long duration;      // ms, duration given by spotify
+public int numLikes;
+public int numDislikes;
+
 
 public Channel(String clientId, String channelId, String channelName){
 	this.clientId = clientId;
@@ -38,6 +41,8 @@ public Channel(String clientId, String channelId, String channelName){
 	this.songQueue = new ArrayList<Song>();
 	this.userQueue = new ArrayList<User>();
 	listenerCount = 0;
+	numLikes = 0;
+	numDislikes = 0;
 
 	startTime = System.currentTimeMillis();
 	isLive = false;
@@ -133,7 +138,17 @@ public void setChannelName(String channelName) {
 	lock.unlock();
 }
 
-public void setNumChannelLikes(
+public void setNumChannelLikes(int likes) {
+	lock.lock();
+	this.numLikes = likes;
+	lock.unlock();
+}
+
+public void setNumChannelDislikes(int dislikes) {
+	lock.lock();
+	this.dislikes = dislikes;
+	lock.unlock();
+}
 
 public void goLive() {
 	lock.lock();
