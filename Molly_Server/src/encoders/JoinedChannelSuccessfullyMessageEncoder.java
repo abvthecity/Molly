@@ -8,7 +8,7 @@ import javax.websocket.EndpointConfig;
 
 import messages.DJIsOfflineMessage;
 import messages.JoinedChannelSuccessfullyMessage;
-import server.MainServer;
+
 
 public class JoinedChannelSuccessfullyMessageEncoder implements Encoder.Text<JoinedChannelSuccessfullyMessage>{
 
