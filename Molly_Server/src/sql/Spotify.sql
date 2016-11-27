@@ -11,9 +11,9 @@ PRIMARY KEY (`clientID`)
 CREATE TABLE `SpotifyDJ`.`Channel` (
 `clientID` VARCHAR(50) NOT NULL,
 `channelName` varchar(50),
-`channelTags` Varchar(1000) Null,
 `subscribersNum` int NULL,
 `likesNum` int NULL,
+`dislikesNum` int NULL,
 PRIMARY KEY (`clientID`)
 );
 
