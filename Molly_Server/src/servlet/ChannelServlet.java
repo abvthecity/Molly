@@ -68,6 +68,8 @@ protected void doGet(HttpServletRequest request, HttpServletResponse response) t
 	}
 
 	Channel ch = ChannelManager.getChannel(channelId);
+	
+	
 	JSONObject obj = ch.toJSON();
 
 	out.print(obj.toJSONString());
@@ -105,6 +107,7 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response) 
 //      Map<String, Channel> clientChannels = ChannelManager.getChannelsByClientId(clientId);
 
 	Channel newChannel = ChannelManager.createChannel(clientId, channelName);
+	ChannelDataManager.createChannel(clientId, channelName);
 	JSONObject channelObj = newChannel.toJSON();
 
 	JSONObject obj = new JSONObject();
@@ -123,6 +126,7 @@ protected void doPut(HttpServletRequest request, HttpServletResponse response) t
 	String channelId = request.getParameter("channelId");
 	String channelName = request.getParameter("channelName");
 	ChannelManager.getChannel(channelId).setChannelName(channelName);
+	ChannelDataManager.updateChannelName(channelId, channelName);
 
 	// todo: database stuff
 }
