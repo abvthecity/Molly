@@ -146,7 +146,7 @@ public void setNumChannelLikes(int likes) {
 
 public void setNumChannelDislikes(int dislikes) {
 	lock.lock();
-	this.dislikes = dislikes;
+	this.numDislikes = dislikes;
 	lock.unlock();
 }
 
