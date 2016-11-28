@@ -9,16 +9,16 @@ import java.util.ArrayList;
 
 public class FavoriteDataManager {
 
-	//initializing the Driver
+	// initializing the Driver
 	static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
 	static final String DB_URL = "jdbc:mysql://localhost/SpotifyDJ?user=root&password=root&useSSL = false";
 
-	public static void addFavorite(String clientID, String channelID){
+	public static void addFavorite(String clientID, String channelID) {
 
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
-		if(checkUserExists( clientID) && checkUserExists( channelID) ){
+		if (checkUserExists(clientID) && checkUserExists(channelID)) {
 
 			try {
 				Class.forName(JDBC_DRIVER);
@@ -28,38 +28,36 @@ public class FavoriteDataManager {
 				ps.setString(2, channelID);
 				ps.executeUpdate();
 
-			}catch (ClassNotFoundException cnfe) {
+			} catch (ClassNotFoundException cnfe) {
 				// TODO Auto-generated catch block
 				cnfe.printStackTrace();
-			}
-				catch (SQLException sqle) {
+			} catch (SQLException sqle) {
 				// TODO Auto-generated catch block
 				sqle.printStackTrace();
-			}
-			finally {
+			} finally {
 				try {
 					ps.close();
-				} catch (SQLException e) { /* Do nothing */ }
+				} catch (SQLException e) {
+					/* Do nothing */ }
 
 				try {
 					conn.close();
-				} catch (SQLException e) { /* Do nothing */ }
+				} catch (SQLException e) {
+					/* Do nothing */ }
 			}
 		}
 	}
 
-
-
-	public static boolean checkUserExists(String clientID){
+	public static boolean checkUserExists(String clientID) {
 
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 
-		int i =0;
+		int i = 0;
 		boolean flag = false;
 
-try {
+		try {
 
 			Class.forName(JDBC_DRIVER);
 			conn = DriverManager.getConnection(DB_URL);
@@ -71,37 +69,34 @@ try {
 				flag = true;
 			}
 
-		}catch (ClassNotFoundException e){
+		} catch (ClassNotFoundException e) {
 			e.getStackTrace();
 
-		}
-		catch (SQLException e){
+		} catch (SQLException e) {
 			e.getStackTrace();
-		}
-		finally {
+		} finally {
 			try {
 				ps.close();
-			} catch (SQLException e) { /* Do nothing */ }
+			} catch (SQLException e) {
+				/* Do nothing */ }
 
 			try {
 				conn.close();
-			} catch (SQLException e) { /* Do nothing */ }
+			} catch (SQLException e) {
+				/* Do nothing */ }
 		}
-
-
 
 		return flag;
 	}
 
-
-	public static String[] getFavorites(String clientID){
+	public static String[] getFavorites(String clientID) {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		String[] favorites = new String[50];
-		int i =0;
+		int i = 0;
 
-try {
+		try {
 
 			Class.forName(JDBC_DRIVER);
 			conn = DriverManager.getConnection(DB_URL);
@@ -114,23 +109,22 @@ try {
 				i++;
 			}
 
-		}catch (ClassNotFoundException e){
+		} catch (ClassNotFoundException e) {
 			e.getStackTrace();
 
-		}
-		catch (SQLException e){
+		} catch (SQLException e) {
 			e.getStackTrace();
-		}
-		finally {
+		} finally {
 			try {
 				ps.close();
-			} catch (SQLException e) { /* Do nothing */ }
+			} catch (SQLException e) {
+				/* Do nothing */ }
 
 			try {
 				conn.close();
-			} catch (SQLException e) { /* Do nothing */ }
+			} catch (SQLException e) {
+				/* Do nothing */ }
 		}
-
 
 		return favorites;
 	}
