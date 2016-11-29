@@ -16,7 +16,8 @@ class LandingScene extends Component {
   static propTypes = {
     // title: PropTypes.string,
     // navigator: PropTypes.object.isRequired,
-    login: PropTypes.func.isRequired
+    login: PropTypes.func.isRequired,
+    guest: PropTypes.func.isRequired,
   }
 
   render() {
@@ -42,6 +43,11 @@ class LandingScene extends Component {
           <TouchableHighlight onPress={this.props.login} style={{ borderRadius: 22 }}>
             <View style={styles.login_button}>
               <Text style={styles.login_button_text}>LOGIN WITH SPOTIFY</Text>
+            </View>
+          </TouchableHighlight>
+          <TouchableHighlight onPress={this.props.guest} style={{ borderRadius: 22 }}>
+            <View style={styles.login_button}>
+              <Text style={styles.login_button_text}>SKIP FOR NOW</Text>
             </View>
           </TouchableHighlight>
           <View>

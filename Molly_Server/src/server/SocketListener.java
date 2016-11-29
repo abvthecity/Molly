@@ -23,6 +23,11 @@ public static void route(JSONObject msg) {
 	if (emit.equals("skipSongInChannel")) skipSongInChannel((String) msg.get("channel"));
 	if (emit.equals("userJoinedChannel")) userJoinedChannel((String) msg.get("channel"), (String) msg.get("clientId"));
 	if (emit.equals("userLeftChannel")) userLeftChannel((String) msg.get("channel"), (String) msg.get("clientId"));
+	if (emit.equals("newFavoriteChannel")) userAddedFavoriteChannel((String) msg.get("channelId"), (String) msg.get("clientId"));
+}
+
+public static void userAddedFavoriteChannel(String channelId, String clientId) {
+	System.out.println("channel: " + channelId + ", client: " + clientId);
 }
 
 public static void userLeftChannel(String channelId, String clientId) {

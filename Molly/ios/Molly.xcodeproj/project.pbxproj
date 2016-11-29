@@ -496,7 +496,7 @@
 						TestTargetID = 13B07F861A680F5B00A75B9A;
 					};
 					13B07F861A680F5B00A75B9A = {
-						DevelopmentTeam = K565TGBZ43;
+						DevelopmentTeam = TY7C3PV5TB;
 						LastSwiftMigration = 0810;
 					};
 				};
@@ -844,7 +844,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = NO;
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = K565TGBZ43;
+				DEVELOPMENT_TEAM = TY7C3PV5TB;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(PROJECT_DIR)",
 					"$(PROJECT_DIR)/**",
@@ -865,7 +865,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = cs201.Molly;
 				PRODUCT_NAME = Molly;
-				SWIFT_OBJC_BRIDGING_HEADER = "/Users/rachitk/Documents/fp_team_05/Molly/ios/Molly-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "/Users/aniruddh/Desktop/fp_team_05/Molly/ios/Molly-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 3.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -880,7 +880,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = K565TGBZ43;
+				DEVELOPMENT_TEAM = TY7C3PV5TB;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(PROJECT_DIR)",
 					"$(PROJECT_DIR)/**",
@@ -901,7 +901,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = cs201.Molly;
 				PRODUCT_NAME = Molly;
-				SWIFT_OBJC_BRIDGING_HEADER = "/Users/rachitk/Documents/fp_team_05/Molly/ios/Molly-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "/Users/aniruddh/Desktop/fp_team_05/Molly/ios/Molly-Bridging-Header.h";
 				SWIFT_VERSION = 3.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
