@@ -1,5 +1,6 @@
 package server;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -12,6 +13,7 @@ import classes.Channel;
 
 public class ChannelManager {
 public static Map<String, Channel> channels = new HashMap<String, Channel>();
+public static Map<String, ArrayList<String> > favorites = new HashMap<String, ArrayList<String> >();
 public static WebsocketEndpoint ws;
 
 public static Channel createChannel(String clientId, String channelName) {
@@ -68,6 +70,27 @@ public static Map<String, Channel> getChannelsByClientId(String clientId) {
 	}
 
 	return outputMap;       // can be empty
+}
+
+public static void addChannelToFavorites(String clientID, String channelID){
+	if(favorites.containsKey(clientID)){
+		favorites.get(clientID).add(channelID);
+	}
+	else{
+		ArrayList<String> temp = new ArrayList<String>();
+		temp.add(channelID);
+		favorites.put(clientID, temp);
+	}
+}
+
+public static ArrayList<String> getFavorites(String clientID){
+	if(favorites.containsKey(clientID)){
+		return favorites.get(clientID);
+	}
+	else{
+		ArrayList<String> temp = new ArrayList<String>();
+		return temp;
+	}
 }
 
 public static void emitUpdate() {

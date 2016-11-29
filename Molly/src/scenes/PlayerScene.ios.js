@@ -153,13 +153,6 @@ class PlayerScene extends Component {
       timeStamp: channelData.timeStamp
     }
 
-    if (!channelData.isLive) {
-      this.toggleMute()
-    }
-    else {
-      this.toggleMute()
-    }
-
     if (channelData.currentTrackURI) {
 
       newState.nowPlaying = this.state.nowPlaying
@@ -182,14 +175,20 @@ class PlayerScene extends Component {
         duration: channelData.currentTrackDuration
       })
 
-      SpotifyAPI.playURI(newState.nowPlaying.uri,
-        ((new Date()).getTime() - (newState.nowPlaying.startTime - this.state.serverOffset)),
-        error => {
-          if (error) console.log(error)
-          SpotifyAPI.setIsPlaying(!this.state.muted, error => {
-            if (error) return console.log(error)
+      if (newState.live) {
+        SpotifyAPI.playURI(newState.nowPlaying.uri,
+          ((new Date()).getTime() - (newState.nowPlaying.startTime - this.state.serverOffset)),
+          error => {
+            if (error) console.log(error)
+            SpotifyAPI.setIsPlaying(!this.state.muted, error => {
+              if (error) return console.log(error)
+            })
           })
+      } else {
+        SpotifyAPI.setIsPlaying(false, error => {
+          if (error) return console.log(error)
         })
+      }
 
       // update info if necessary
       try {
