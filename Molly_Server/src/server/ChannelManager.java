@@ -38,14 +38,14 @@ public static void removeChannel(String channelId) {
 public static void startChannel(String channelId) {
 	if (exists(channelId)) {
 		channels.get(channelId).goLive();
-		emitUpdate();
+//		emitUpdate();
 	}
 }
 
 public static void stopChannel(String channelId) {
 	if (exists(channelId)) {
 		channels.get(channelId).goOffline();
-		emitUpdate();
+//		emitUpdate();
 	}
 }
 

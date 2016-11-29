@@ -167,9 +167,8 @@ class ExploreScene extends Component {
             }
 
             let swipeButtonComponent = (
-
               <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'center' }}>
-                return <Button onPress={() => this._postNewFavoriteChannel(card)}>Save</Button>
+                <Button onPress={() => this._postNewFavoriteChannel(card)}>Save</Button>
               </View>
             )
 

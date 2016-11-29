@@ -61,7 +61,7 @@ public class Bookmarks extends HttpServlet {
     	}
     	
 
-    	obj.put("messages", list);
+    	obj.put("favorites", list);
 		String json = obj.toString();
 		//Create String to send in response to get request
 //		String jsonObject = "\"clientFavorites\": [";

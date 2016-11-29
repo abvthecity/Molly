@@ -1,4 +1,7 @@
 let server = '138.68.57.114'
+if (__DEV__) {
+  server = 'localhost'
+}
 let port = '8080'
 
 export default {

@@ -27,7 +27,13 @@ public static void route(JSONObject msg) {
 }
 
 public static void userAddedFavoriteChannel(String channelId, String clientId) {
-	System.out.println("channel: " + channelId + ", client: " + clientId);
+	// add using channel manager
+	ChannelManager.addChannelToFavorites(clientId, channelId);
+}
+
+public static void getUserFavorites(String clientId) {
+	ArrayList<String> favoritesForClientId = ChannelManager.getFavorites(clientId);
+	
 }
 
 public static void userLeftChannel(String channelId, String clientId) {

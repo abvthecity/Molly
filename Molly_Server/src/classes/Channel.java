@@ -11,6 +11,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import server.ChannelManager;
+import server.SocketListener;
 
 public class Channel {
 
@@ -166,6 +167,7 @@ public void goLive() {
 	runner = new ChannelRunner();
 	runner.start();
 	emitUpdate();
+	ChannelManager.emitUpdate();
 	lock.unlock();
 }
 
@@ -178,6 +180,7 @@ public void goOffline() {
 		runner = null;
 	}
 	emitUpdate();
+	ChannelManager.emitUpdate();
 	queueNotEmpty.signal();
 	lock.unlock();
 }
