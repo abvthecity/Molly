@@ -40,6 +40,7 @@ class Routes extends Component {
     loaded: false,
     loginAttempted: false,
     isLoggedIn: false,
+    isGuest: false,
     showPlayer: false,
     playerChannelId: null,
     clientId: null
@@ -93,6 +94,13 @@ class Routes extends Component {
     console.log("CALLED")
   }
 
+  _guest = () => {
+    this.setState({
+      isLoggedIn: true,
+      isGuest: true
+    })
+  }
+
   _logout = () => {
     console.log("SOMETHING")
     SpotifyAPI.logout((error, res) => {
@@ -132,7 +140,7 @@ class Routes extends Component {
     if (!this.state.isLoggedIn) {
       return (
         <View style={{ flex: 1 }}>
-          <LandingScene login={this._login} />
+          <LandingScene login={this._login} guest={this._guest} />
           {(() => {
             if (this.state.loginAttempted) {
               return (
@@ -162,6 +170,7 @@ class Routes extends Component {
             openLive={this._openLive}
             openPlayer={this._openPlayer}
             logout={this._logout}
+            isGuest={this.state.isGuest}
             socket={socket} />
           <PlayerModal clientId={this.state.clientId}
             visible={this.state.showPlayer}

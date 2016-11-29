@@ -74,33 +74,48 @@ class ExploreScene extends Component {
     )
 
     const favoritesBlock = (<LinearGradient
-      colors={['#FFA832', '#FF5F33']} style={styles.colorBlock}>
-      <Text style={{ color: 'white', fontSize: 26 }}>My</Text>
-      <Text style={{ color: 'white', fontSize: 26, fontWeight: '900' }}>Favorites</Text>
-      <Image source={require('../img/icons/heart.png')} style={{
-        tintColor: 'white',
-        width: 24,
-        height: 24,
-        position: 'absolute',
-        opacity: 0.5,
-        bottom: constants.unit * 3,
-        left: constants.unit * 3
-      }} />
-    </LinearGradient>)
+        colors={['#FFA832', '#FF5F33']} style={styles.colorBlock}>
+        <Text style={{ color: 'white', fontSize: 26 }}>My</Text>
+        <Text style={{ color: 'white', fontSize: 26, fontWeight: '900' }}>Favorites</Text>
+        <Image source={require('../img/icons/heart.png')} style={{
+          tintColor: 'white',
+          width: 24,
+          height: 24,
+          position: 'absolute',
+          opacity: 0.5,
+          bottom: constants.unit * 3,
+          left: constants.unit * 3
+        }} />
+      </LinearGradient>)
 
     const liveBlock = (<LinearGradient
-      colors={['#FF6E88', '#BF2993']} style={styles.colorBlock}>
-      <Text style={{ color: 'white', fontSize: 26 }}>Go <Text style={{ fontWeight: '900' }}>LIVE</Text></Text>
-      <Image source={require('../img/icons/radio.png')} style={{
-        tintColor: 'white',
-        width: 24,
-        height: 24,
-        position: 'absolute',
-        opacity: 0.5,
-        bottom: constants.unit * 3,
-        left: constants.unit * 3
-      }} />
-    </LinearGradient>)
+        colors={['#FF6E88', '#BF2993']} style={styles.colorBlock}>
+        <Text style={{ color: 'white', fontSize: 26 }}>Go <Text style={{ fontWeight: '900' }}>LIVE</Text></Text>
+        <Image source={require('../img/icons/radio.png')} style={{
+          tintColor: 'white',
+          width: 24,
+          height: 24,
+          position: 'absolute',
+          opacity: 0.5,
+          bottom: constants.unit * 3,
+          left: constants.unit * 3
+        }} />
+      </LinearGradient>)
+
+    const guestBlock = (<LinearGradient
+        colors={['#FF6E88', '#BF2993']} style={styles.colorBlock}>
+        <Text style={{ color: 'white', fontSize: 26, flex: 1, flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>Guest Mode</Text>
+        <Text style={{ color: 'white', fontSize: 20, fontWeight: 'bold', flex: 1, flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>Please Login through Spotify!</Text>
+        <Image source={require('../img/icons/radio.png')} style={{
+          tintColor: 'white',
+          width: 24,
+          height: 24,
+          position: 'absolute',
+          opacity: 0.5,
+          bottom: constants.unit * 3,
+          left: constants.unit * 3
+        }} />
+      </LinearGradient>)
 
     return (
       <View {...this.props} style={{ flex: 1 }}>
@@ -110,10 +125,24 @@ class ExploreScene extends Component {
           {/* SECTION 1 */}
           <LinearGradient colors={['white', '#F0F0F0']} style={{ backgroundColor: 'transparent', padding: constants.unit * 4 }}>
             {header}
-            <View style={styles.blocks_wrap}>
-              <TouchableHighlight onPress={this.props.openFavorites} style={[styles.colorBlockWrap, { marginRight: 2.5 }]}>{favoritesBlock}</TouchableHighlight>
-              <TouchableHighlight onPress={this.props.openLive} style={[styles.colorBlockWrap, { marginLeft: 2.5 }]}>{liveBlock}</TouchableHighlight>
-            </View>
+            {(() => {
+              if (!this.props.isGuest) {
+                return (
+                  <View style={styles.blocks_wrap}>
+                    <TouchableHighlight onPress={this.props.openFavorites} style={[styles.colorBlockWrap, { marginRight: 2.5 }]}>{favoritesBlock}</TouchableHighlight>
+                    <TouchableHighlight onPress={this.props.openLive} style={[styles.colorBlockWrap, { marginLeft: 2.5 }]}>{liveBlock}</TouchableHighlight>
+                  </View>
+                )
+              } else {
+                return (
+                  <View style={styles.blocks_wrap}>
+                    <TouchableHighlight style={[styles.colorBlockWrap, { marginRight: 2.5 }]}>
+                      {guestBlock}
+                    </TouchableHighlight>
+                  </View>
+                )
+              }
+            })()}
           </LinearGradient>
 
           {/* SECTION 2 */}
@@ -124,12 +153,14 @@ class ExploreScene extends Component {
           {this.state.cards.map((card, i) => {
 
             let press = e => {
-              this.props.openPlayer(card)
+              if (!this.props.isGuest) {
+                this.props.openPlayer(card)
+              }
             }
 
             let swipeButtonComponent = (
               <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'center' }}>
-                <Button>Save</Button>
+                return <Button>Save</Button>
               </View>
             )
 
@@ -155,7 +186,6 @@ class ExploreScene extends Component {
                   <TouchableOpacity
                     activeOpacity={0.7}
                     onPress={press}
-                    disable={true}
                     style={{ overflow: 'visible' }} >
                     <ChannelCard socket={this.props.socket} id={card} border={true} />
                   </TouchableOpacity>
