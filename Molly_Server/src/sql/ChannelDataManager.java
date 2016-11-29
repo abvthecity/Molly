@@ -20,7 +20,7 @@ public class ChannelDataManager {
 	static Channel channel;
 
 	public  static void createChannel(String clientId, String channelName, String[] channelTags, int channelsSubscriberNum, int channelLikesNum ){
-		channel = new Channel(clientId, channelName);
+		channel = new Channel(clientId, clientId, channelName);
 		Connection conn = null;
 		PreparedStatement ps = null;
 		String tags="";
@@ -113,8 +113,7 @@ public static Channel getChannel(String clientID){
 				likes = rs.getInt("likesNum");
 				subscribers = rs.getInt("subscribersNum");
 				channelName = rs.getString("channelName");
-				channel= new Channel(clientID, channelName);
-				System.out.println("here   "+channel.getClientID());
+				channel= new Channel(clientID, clientID, channelName);
 			}
 		}catch (ClassNotFoundException e){
 			e.getStackTrace();
@@ -301,7 +300,7 @@ public static Channel getChannel(String clientID){
 	public static void addNumChannelSubscribers(String clientID){
 
 			int sub = getLikes(clientID);
-			channel.setNumChannelSubscribers(sub);
+//			channel.setNumChannelLikes(sub);
 			//System.out.println("UserDataManager : "+user.getIfCLientIsDJ());
 			Connection conn = null;
 			PreparedStatement ps = null;

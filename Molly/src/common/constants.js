@@ -1,4 +1,4 @@
-let server = '192.168.1.75'
+let server = 'localhost'
 let port = '8080'
 
 export default {

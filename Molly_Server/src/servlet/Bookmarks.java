@@ -3,6 +3,7 @@ package servlet;
 import java.io.IOException;
 
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,6 +18,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
+import server.ChannelManager;
 import sql.FavoriteDataManager;
 import sql.UserDataManager;
 
@@ -41,7 +43,8 @@ public class Bookmarks extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		String clientID = request.getParameter("clientID");
-		String[] bookmarks = FavoriteDataManager.getFavorites(clientID);//search in sql
+		//String[] bookmarks = FavoriteDataManager.getFavorites(clientID);//search in sql
+		ArrayList<String> bookmarks = ChannelManager.getFavorites(clientID);
 		response.setContentType("application/json");
 		PrintWriter out = response.getWriter();     
 		
@@ -50,9 +53,9 @@ public class Bookmarks extends HttpServlet {
 //    	String json = JSONValue.toJSONString(map);
     	JSONObject obj = new JSONObject();
     	JSONArray list = new JSONArray();
-    	for(int i = 0; i< bookmarks.length; i++){
-    		if(bookmarks[i] != null){
-    			list.add(bookmarks[i]);
+    	for(int i = 0; i< bookmarks.size(); i++){
+    		if(bookmarks.get(i) != null){
+    			list.add(bookmarks.get(i));
     		}
     		
     	}
@@ -83,7 +86,8 @@ public class Bookmarks extends HttpServlet {
 		
 			String clientID = request.getParameter("userClientID");
 			String channelID = request.getParameter("channelClientID");
-			FavoriteDataManager.addFavorite(clientID, channelID);
+			//FavoriteDataManager.addFavorite(clientID, channelID);
+			ChannelManager.addChannelToFavorites(clientID, channelID);
 	}
 
 }

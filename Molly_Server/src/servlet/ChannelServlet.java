@@ -107,7 +107,7 @@ protected void doPost(HttpServletRequest request, HttpServletResponse response) 
 //      Map<String, Channel> clientChannels = ChannelManager.getChannelsByClientId(clientId);
 
 	Channel newChannel = ChannelManager.createChannel(clientId, channelName);
-	ChannelDataManager.createChannel(clientId, channelName);
+//	ChannelDataManager.createChannel(clientId, clientId, channelName);
 	JSONObject channelObj = newChannel.toJSON();
 
 	JSONObject obj = new JSONObject();

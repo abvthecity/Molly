@@ -98,6 +98,22 @@ class PlayerScene extends Component {
       Object.assign(e.data, { timeStamp: e.timeStamp })
       this._updateChannel(e.data)
     }
+    // else if(e.emit == 'stopChannel' && e.channel == this.props.channelId) {
+    //   this.setState({ muted: !this.state.muted}, () => {
+    //     if (this.state.muted) {
+    //       Animated.timing(this.state.animatedValue,
+    //         { toValue: 0, easing: Easing.elastic(0) }
+    //       ).start()
+    //
+    //     } else {
+    //       Animated.spring(this.state.animatedValue,
+    //         { toValue: 1, velocity: 3, tension: 20, friction: 5 }
+    //       ).start()
+    //     }
+    //
+    //     this._setPlaying()
+    //   })
+    // }
   }
 
   _setServerOffset() {
@@ -135,6 +151,13 @@ class PlayerScene extends Component {
       hostName: channelData.hostId,
       live: channelData.isLive,
       timeStamp: channelData.timeStamp
+    }
+
+    if (!channelData.isLive) {
+      this.toggleMute()
+    }
+    else {
+      this.toggleMute()
     }
 
     if (channelData.currentTrackURI) {
@@ -271,6 +294,7 @@ class PlayerScene extends Component {
         Animated.timing(this.state.animatedValue,
           { toValue: 0, easing: Easing.elastic(0) }
         ).start()
+
       } else {
         Animated.spring(this.state.animatedValue,
           { toValue: 1, velocity: 3, tension: 20, friction: 5 }
@@ -312,7 +336,7 @@ class PlayerScene extends Component {
           </Text>
         </View>
 
-        <TouchableWithoutFeedback onPress={this.toggleMute}>
+        <TouchableWithoutFeedback onPress={this.toggleMute} disabled={!this.state.live}>
           <View style={{ width: 343, height: 343, flex: 1 }}>
             <Animated.View style={{
               flex: 1,
