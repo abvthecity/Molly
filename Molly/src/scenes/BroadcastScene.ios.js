@@ -188,14 +188,20 @@ class BroadcastScene extends Component {
         listener_count: channelData.listenerCount,
       })
 
-      SpotifyAPI.playURI(newState.nowPlaying.uri,
-        ((new Date()).getTime() - (newState.nowPlaying.startTime - this.state.serverOffset)),
-        error => {
-          if (error) console.log(error)
-          SpotifyAPI.setIsPlaying(true, error => {
-            if (error) return console.log(error)
+      if (channelData.isLive) {
+        SpotifyAPI.playURI(newState.nowPlaying.uri,
+          ((new Date()).getTime() - (newState.nowPlaying.startTime - this.state.serverOffset)),
+          error => {
+            if (error) console.log(error)
+            SpotifyAPI.setIsPlaying(true, error => {
+              if (error) return console.log(error)
+            })
           })
+      } else {
+        SpotifyAPI.setIsPlaying(false, error => {
+          if (error) return console.log(error)
         })
+      }
 
       // update info if necessary
       try {
@@ -309,6 +315,7 @@ class BroadcastScene extends Component {
         emit: 'startChannel',
         channel: this.props.clientId
       }))
+
     } else {
       // AlertIOS.alert('End broadcast?', 'Ending this session will kick listeners off. Are you sure?', () => {
         this.props.socket.send(JSON.stringify({

@@ -155,6 +155,7 @@ class ExploreScene extends Component {
                   <TouchableOpacity
                     activeOpacity={0.7}
                     onPress={press}
+                    disable={true}
                     style={{ overflow: 'visible' }} >
                     <ChannelCard socket={this.props.socket} id={card} border={true} />
                   </TouchableOpacity>
